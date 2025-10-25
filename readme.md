@@ -2,10 +2,17 @@
 
 A comprehensive AI-powered SEO content management and automation platform designed to streamline content creation, keyword research, topic clustering, and SEO optimization workflows.
 
+---
+
+## ⚠️ IMPORTANT NOTICE
+
+### **This software was developed under contract for a client and is shared here solely as a portfolio demonstration of my technical capabilities. The code is proprietary and not licensed for use, modification, or distribution by others. All rights remain with the original client. This repository is for viewing purposes only.**
+
+---
+
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Python](https://img.shields.io/badge/python-3.10.12-blue)
 ![Flask](https://img.shields.io/badge/flask-3.0.1-green)
-![License](https://img.shields.io/badge/license-MIT-green)
 
 ## 📋 Table of Contents
 
@@ -529,18 +536,10 @@ chmod +x export_database.sh
 ```bash
 # Install development dependencies
 pip install -r dashboard/requirements.txt
-pip install pytest black flake8
 
-# Run tests
-pytest
-
-# Format code
-black dashboard/
-
-# Lint
-flake8 dashboard/
+# and you'll also need a MySql server running locally
 ```
 
-**Made with ❤️ by Daniel Lobo**
 
-*Flawless Dashboard - Where custom tools meet excellence in boosting productivity*
+
+**Made with ❤️ by Daniel Lobo**
