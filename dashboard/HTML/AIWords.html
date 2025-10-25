@@ -1,0 +1,104 @@
+{% extends 'dashboard.html' %}
+
+{% block breadcrumbs %}  
+<div style='display:flex; flex-direction: column; width:100%; margin-right:20px; margin-bottom:-16px;'>
+    <div style='display:flex; margin-bottom:20px; text-transform: uppercase;'> 
+        <span>SEO Tools</span>
+        <span>AI Words Removal</span>           
+    </div>        
+    <h1>AI Words Removal</h1>
+    
+</div>    
+{% endblock %}    
+
+{% block tool_content %} 
+{% if acess_flag_ai_words %} 
+<style>  
+.AIWords_root{
+    display       : flex;  
+    flex-direction: column;
+    height        : calc(100% - 0px);
+    width         : 100%;
+    overflow      : hidden;   
+    box-sizing    : border-box;
+}
+</style>    
+
+<div class="AIWords_root tw_Groups-Container">
+    <div style="display:flex;height:50%;width:100%;gap:6px">
+        <div style='display:flex;flex-direction:column;width:50%' class="tw_Ctrl-Group">
+            <h3 class="tw_h3" style="margin-bottom:10px;margin-top:0px">Content to process</h3>
+            <textarea  id='AIWORDS::input' class='tw_input' style=height:100% placeholder="Paste here the text you want to remove AI words from"></textarea>
+        </div>
+        <div style='display:flex;flex-direction:column;width:50%' class="tw_Ctrl-Group">
+            <h3 class="tw_h3" style="margin-bottom:10px;margin-top:0px">Black list exclusions</h3>
+            <textarea id='AIWORDS::exclusions' class='tw_input' style=height:100%
+            placeholder="Paste here any terms from the list bad words list you want to ignore"></textarea>
+        </div>
+    </div>
+    <div style="display:flex;height:50%;width:100%;gap:6px">
+        <div style='display:flex;flex-direction:column;width:50%' class="tw_Ctrl-Group">
+            <h3 class="tw_h3" style="margin-bottom:10px;margin-top:10px">Output</h3>
+            <textarea  id='AIWORDS::output' class='tw_input' style="height:100%" placeholder="" readonly></textarea>
+        </div>
+        <div style='display:flex;flex-direction:column-reverse;width:50%'>
+            <div style='display:flex;flex-direction:row-reverse;gap:16px;margin-top:20px;width:400px;margin-left:auto;'>
+                <button id='AIWORDS::remove' class='tw_button-alt' style="margin-top:-1px;display:flex;flex-direction:row;">
+                    Remove
+                    <div id='AIWORDS::spinner' class='DASHBOARD_Loader' style='width:26px;height:26px;margin-top:-4px;'></div>             
+                </button>
+                <select id='AIWORDS::prompts' class="tw_input" style="height:32px">                             
+                </select>       
+                <div class="tw_h4;" style="margin-bottom:10px;margin-top:4px;border-bottom:1px solid gray">Prompt</div>  
+            </div>
+        </div>
+    </div>    
+</div>
+
+<script> 
+(async function(){  
+    //console.log(DASHBOARD_Cookie('AIWORDS::FixPrompt'))               
+    await DASHBOARD_UpdateSettings()   
+    let select       = document.getElementById('AIWORDS::prompts')
+    select.innerHTML = ''        
+    for (const prompt in DASHBOARD_OptionO('More Prompts')['Fix content']){            
+        let option      = document.createElement('option');
+        option.value    = prompt;
+        option.label    = prompt;              
+        select.appendChild(option);
+    } 
+})()       
+document.getElementById('AIWORDS::remove').onclick = async function(){
+    await DASHBOARD_UpdateSettings()
+    document.getElementById('AIWORDS::spinner').style.display = 'block';
+    try {
+        let templates     = DASHBOARD_OptionO('More Prompts')['Fix content'][document.getElementById('AIWORDS::prompts').value];            
+        let template_vars = {}
+        let prompts   = {
+            'AI Words - System' : DASHBOARD_ExpandPrompt(template_vars, templates[0]),
+            'AI Words - User'   : DASHBOARD_ExpandPrompt(template_vars, templates[1]),            
+        }  
+        let options = DASHBOARD_FetchOPtions();
+        options.body = JSON.stringify({
+            'Article'                : document.getElementById('AIWORDS::input').value,
+            'BlackListExclusions'    : document.getElementById('AIWORDS::exclusions').value,
+            'Prompts'                : prompts,
+            'Ignore Self Rererences' : 'Ignore',
+            'Model'                  : DASHBOARD_GetModel('black-list'),
+            'Model2ndPass'           : DASHBOARD_GetModel('black-list-2nd'), 
+        })
+        let reply = await DASHBOARD_Fetch('/content_creator-remove_blacklisted_words_b', options);
+        document.getElementById('AIWORDS::output').value = reply['Reply'];
+    } catch (err) {
+        DASHBOARD_except(err)
+    } finally {
+        document.getElementById('AIWORDS::spinner').style.display = 'none';
+    }
+}
+</script>    
+
+{% else %}
+    <h1 class='az-content-title DASHBOARD_Noaccess'>You don't have access to this tool</h1>
+{% endif %}  
+    
+{% endblock %}

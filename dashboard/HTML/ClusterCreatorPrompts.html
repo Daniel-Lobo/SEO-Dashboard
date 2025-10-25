@@ -1,0 +1,406 @@
+<style> 
+.CLUSTERCREATOR-PROMPTS_root{
+    display :flex;
+    width   :100%;      
+    overflow-y: auto;
+}  
+.CLUSTERCREATOR-PROMPTS_editor_column{
+    display        : flex;
+    flex-direction : column;
+    width          : 40%;    
+} 
+.CLUSTERCREATOR-PROMPTS_editor_row{
+    display        : flex;
+    flex-direction : row;
+    flex-wrap      : nowrap;  
+    height         : 100%;  
+} 
+.CLUSTERCREATOR-PROMPTS_editor{
+    background-color : var(--theme-clr-weak);     
+    flex-direction   : column;       
+    display          : none;
+    width            : 100%;    
+    border           : 1px solid #252935;
+    border-top       : none; 
+    padding          : 10 10 10 10;
+    height           : 100% ; 
+    overflow         : auto;  
+    scrollbar-color: grey var(--KEYWORDS-bg-color) ;;
+} 
+.CLUSTERCREATOR-PROMPTS_editor::placeholder {   
+    font-weight      : normal;   
+}
+.CLUSTERCREATOR-PROMPTS_editor:focus {
+    border           : 1px solid #252935;
+    border-top       : none;
+    outline: none !important;
+}
+.CLUSTERCREATOR-PROMPTS_view_column{
+    display        : flex;
+    flex-direction : column;
+    width          : 30%;
+} 
+.CLUSTERCREATOR-PROMPTS_list_column{
+    display        : flex;
+    flex-direction : column;
+    width          : 30%;
+    gap            : 10px
+}
+.CLUSTERCREATOR-PROMPTS_tabs-header{
+    display          : flex;    
+    flex-direction   : column ;   
+    background-color : white;          
+    margin           : 0 -1 0 0;
+    padding          : 0 0 0 0; 
+    height           : 100%;
+    gap              : 0px;    
+}
+.CLUSTERCREATOR-PROMPTS_editor-variables{
+    display          : flex;       
+    flex-direction   : row-reverse ;
+    background-color : var(--theme-clr-weak);          
+    margin           : 0 0 0 0;
+    padding          : 0 0 0 0; 
+    width            : 100%;   
+    height           : 176px;
+    border-left      : 1px solid #252935; 
+    border-right     : 1px solid #252935; 
+    border-top       : 1px solid #252935; 
+}
+.CLUSTERCREATOR-PROMPTS_editor-variable{    
+    background-color : #252935;      
+    color            : white; 
+    border           : none;  
+    margin           : 4 3 0 3;
+    padding          : 10 0 10 0; 
+    border-radius    : 10px ;
+}
+.CLUSTERCREATOR-PROMPTS_tabs-button{
+    background-color : white;   
+    color            : #252935;             
+    border           : none;    
+    padding          : 10 10 10 10;      
+    margin-bottom    : 0px;    
+    border-right     : 1px solid #252935; 
+    height           : 60px;     
+    text-align       : right;       
+}
+.CLUSTERCREATOR-PROMPTS_tabs-button-selected{
+    background-color : var(--theme-clr-weak);             
+    padding          : 10 10 10 10;      
+    margin-bottom    : 0px;      
+    height           : 60px;     
+    text-align       : right;  
+    z-index          : 0; 
+    border           : 1px solid #252935; 
+    border-right     : none ;                   
+}
+</style>
+
+<div id='CLUSTERCREATOR-PROMPTS::root' class='CLUSTERCREATOR-PROMPTS_root'>    
+    <div class='CLUSTERCREATOR-PROMPTS_tabs-header' id='CLUSTERCREATOR-PROMPTS::tabs-header'>        
+        <button class='CLUSTERCREATOR-PROMPTS_tabs-button az-content-label' onclick='CLUSTERCREATOR_PROMPTS_SelectTab(this)'>Initial System</button>
+        <button class='CLUSTERCREATOR-PROMPTS_tabs-button az-content-label' onclick='CLUSTERCREATOR_PROMPTS_SelectTab(this)'>Initial User</button>      
+        <button class='CLUSTERCREATOR-PROMPTS_tabs-button az-content-label' onclick='CLUSTERCREATOR_PROMPTS_SelectTab(this)'>Introdution System</button>
+        <button class='CLUSTERCREATOR-PROMPTS_tabs-button az-content-label' onclick='CLUSTERCREATOR_PROMPTS_SelectTab(this)'>Introdution User</button>  
+        <button class='CLUSTERCREATOR-PROMPTS_tabs-button az-content-label' onclick='CLUSTERCREATOR_PROMPTS_SelectTab(this)'>Section System</button>
+        <button class='CLUSTERCREATOR-PROMPTS_tabs-button az-content-label' onclick='CLUSTERCREATOR_PROMPTS_SelectTab(this)'>Section User</button>  
+        <button class='CLUSTERCREATOR-PROMPTS_tabs-button az-content-label' onclick='CLUSTERCREATOR_PROMPTS_SelectTab(this)'>FAQ System</button>
+        <button class='CLUSTERCREATOR-PROMPTS_tabs-button az-content-label' onclick='CLUSTERCREATOR_PROMPTS_SelectTab(this)'>FAQ User</button>  
+        <button class='CLUSTERCREATOR-PROMPTS_tabs-button az-content-label' onclick='CLUSTERCREATOR_PROMPTS_SelectTab(this)'>Conclusion System</button>
+        <button class='CLUSTERCREATOR-PROMPTS_tabs-button az-content-label' onclick='CLUSTERCREATOR_PROMPTS_SelectTab(this)'>Conclusion User</button>               
+    </div>    
+    <div class='CLUSTERCREATOR-PROMPTS_editor_column'>          
+        <div class='CLUSTERCREATOR-PROMPTS_editor-variables'>   
+            <div style='background-color:#252935; margin:10px; padding:0; border-radius: 10px;'>         
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{KEYWORD}</button>   
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{OUTLINE}</button> 
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{INTENT}</button>
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{SECTION}</button>   
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{FULL_SECTION}</button> 
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{TONES}</button> 
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{TONES_FULL}</button> 
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{AUDIENCE}</button> 
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{FACTS}</button> 
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{NTONES==2}{@NTONES==2}</button> 
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{NTONES==1}{@NTONES==1}</button> 
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{NLINKS==1}{@NLINKS==1}</button> 
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{NLINKS==2+}{@NLINKS==2+}</button> 
+                <button class='CLUSTERCREATOR-PROMPTS_editor-variable az-content-label' onclick='CLUSTERCREATOR_PROMPTS.AppendTag(this)'>{INTERNAL_LINKS}</button>                 
+            </div>                           
+        </div>
+        <div class='CLUSTERCREATOR-PROMPTS_editor_row' id='CLUSTERCREATOR-PROMPTS::editor_row'>    
+            <textarea contenteditable class='CLUSTERCREATOR-PROMPTS_editor' placeholder='Initial SYSTEM prompt' style='display:flex;'></textarea>
+            <textarea contenteditable class='CLUSTERCREATOR-PROMPTS_editor' placeholder='Initial USER prompt'></textarea>
+            <textarea contenteditable class='CLUSTERCREATOR-PROMPTS_editor' placeholder='Introduction SYSTEM prompt'></textarea>
+            <textarea contenteditable class='CLUSTERCREATOR-PROMPTS_editor' placeholder='Introduction USER prompt'></textarea>
+            <textarea contenteditable class='CLUSTERCREATOR-PROMPTS_editor' placeholder='Section SYSTEM prompt'></textarea>
+            <textarea contenteditable class='CLUSTERCREATOR-PROMPTS_editor' placeholder='Section USER prompt'></textarea>
+            <textarea contenteditable class='CLUSTERCREATOR-PROMPTS_editor' placeholder='FAQ SYSTEM prompt'></textarea>
+            <textarea contenteditable class='CLUSTERCREATOR-PROMPTS_editor' placeholder='FAQ USER prompt'></textarea>
+            <textarea contenteditable class='CLUSTERCREATOR-PROMPTS_editor' placeholder='Conclusion SYSTEM prompt'></textarea>
+            <textarea contenteditable class='CLUSTERCREATOR-PROMPTS_editor' placeholder='Conclusion USER prompt'></textarea>
+        </div>    
+    </div>
+    <div style='width:10px'></div>
+    <div class='CLUSTERCREATOR-PROMPTS_view_column'>    
+        <select id='CLUSTERCREATOR-PROMPTS::Keyword' class="form-control select2-no-search select2-hidden-accessible">
+            <option value='PlaceHolder' label="PlaceHolder"></option>                    
+        </select> 
+        <textarea contenteditable id='CLUSTERCREATOR-PROMPTS::view' class='CLUSTERCREATOR-PROMPTS_editor' 
+        style='display:flex;margin-top:10px;border-top: 1px solid #252935; height:662px'></textarea>
+    </div>
+    <div style='width:10px'></div>
+    <div class='CLUSTERCREATOR-PROMPTS_list_column'>   
+        <div class="az-content-label mg-b-5">PROMPTS LIST</div>   
+        <div style='display:flex;width:100%;gap:10px'>     
+            <button class='btn btn-az-secondary' style='position:relative;flex-grow: 1;' id='CLUSTERCREATOR-PROMPTS_new-button'>New Prompt</button>  
+            <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em' id='CLUSTERCREATOR-PROMPTS::save' viewBox="0 0 448 512">
+                <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/>
+            </svg>       
+            <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em;' id='CLUSTERCREATOR-PROMPTS::load' viewBox="0 0 576 512">
+                <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
+            </svg>
+            <input type='file' accept='.json' id='CLUSTERCREATOR-PROMPTS::load-dialog' style='display:none'></input>
+        </div>       
+        <input id='CLUSTERCREATOR-PROMPTS_new-input' class='form-control' name='DASHBOARD::hide-me'style='display:none' placeholder='type the new prompt anem and hit enter'></input>         
+        <div id='CLUSTERCREATOR-PROMPTS_list' style='display:flex;flex-direction:column;background-color:#eae4f2;height:100%;padding:10 10 10 10;border:1px solid #252935; '>
+            <div class='DASHBOARD_ClicableText' onclick="CLUSTERCREATOR_PROMPTS.PromptClicked(event)">Default</div>
+        </div>        
+    </div>
+</div>
+
+<script>  
+    var CLUSTERCREATOR_PROMPTS = {
+        __legacy          : {},
+        __promtps         : {'Default' : {}},
+        __currrent_prompt :  'Default',
+        __current_editor  : null,        
+        GetPrompts(){
+            let prompts = {'Legacy' : this.__legacy};
+            for (let [key, value] of Object.entries(this.__promtps)){
+                prompts[key] = value;
+            }
+            return prompts
+        },
+        SetLegacyPrompt(msgs){
+            this.__legacy  = {}
+            let secs       = ['Intro SYSTEM','Intro USER','Section SYSTEM','Section USER','FAQ SYSTEM','FAQ USER','Conclusion SYSTEM','Conclusion USER']
+            for (let i=0; i<msgs.length; i++) {
+                this.__legacy[secs[i]] = msgs[i];
+            }
+        },
+        GetCurrPrompt(){
+            return this.__promtps[this.__currrent_prompt];
+        },
+        GetPromptsNames(){
+            let names = [];
+            for (let [key, value] of Object.entries(this.GetPrompts())){
+                names.push(key);
+            }
+            return names
+        },
+        CreatePrompt(prompt){
+            this.__promtps[prompt] = {};
+            this.__currrent_prompt = prompt
+            this.UpdatePrompt();
+        },
+        PromptClicked(event){            
+            let prompt             = event.target.innerHTML;
+            this.__currrent_prompt = prompt
+            let editors            = document.getElementById('CLUSTERCREATOR-PROMPTS::editor_row').children;
+            let keys               = ['Initial SYSTEM', 'Initial USER', 'Intro SYSTEM', 'Intro USER', 'Section SYSTEM', 'Section USER',
+                                      'FAQ SYSTEM',    'FAQ USER',     'Conclusion SYSTEM', 'Conclusion USER']
+            for (let i = 0; i < keys.length; i++){
+                editors[i].value = this.__promtps[this.__currrent_prompt][keys[i]];
+            }        
+            for (const child of document.getElementById('CLUSTERCREATOR-PROMPTS_list').children){
+                child.style['text-decoration'] = 'none';
+            }
+            event.target.style['text-decoration'] = 'underline';
+        },
+        SetCurrentEditor(editor){
+            this.__current_editor = editor;
+            CLUSTERCREATOR_PROMPTS_FormatView(this.__current_editor)
+        },
+        GetCurrEditor(){
+            return this.__current_editor;
+        },
+        AppendTag(TagButtton){
+            this.__current_editor.value += TagButtton.innerHTML + '\n';
+            CLUSTERCREATOR_PROMPTS_FormatView(this.__current_editor)
+        },  
+        async FromJson(json){           
+            if (false === 'Prompts' in JSON.parse(json)) return;
+            this.__promtps = JSON.parse(json).Prompts;
+            let d          = await DASHBOARD_Fetch('/content-creator_default-prompt');       
+            let dflt       = {}
+            let secs       = ['Initial SYSTEM','Initial USER','Intro SYSTEM','Intro USER','Section SYSTEM','Section USER','FAQ SYSTEM','FAQ USER','Conclusion SYSTEM','Conclusion USER']
+            for (let i=0; i<d.Reply.length; i++) {
+                dflt[secs[i]] = d.Reply[i];
+            }
+            this.__promtps.Default = dflt;
+            document.getElementById('CLUSTERCREATOR-PROMPTS_list').innerHTML = ''
+            for (let [key, value] of Object.entries(this.__promtps)){
+                document.getElementById('CLUSTERCREATOR-PROMPTS_list').innerHTML +=
+                `<div class='DASHBOARD_ClicableText' onclick="CLUSTERCREATOR_PROMPTS.PromptClicked(event)">${key}</div>`
+            }
+            document.getElementById('CLUSTERCREATOR-PROMPTS_list').children[0].click();
+        },
+        UpdatePrompt(){
+            let editors = document.getElementById('CLUSTERCREATOR-PROMPTS::editor_row').children;
+            this.__promtps[this.__currrent_prompt] = {
+                'Initial SYSTEM'      : editors[0].value,
+                'Initial USER'        : editors[1].value,
+                'Intro SYSTEM'        : editors[2].value,
+                'Intro USER'          : editors[3].value,
+                'Section SYSTEM'      : editors[4].value,
+                'Section USER'        : editors[5].value,
+                'FAQ SYSTEM'          : editors[6].value,
+                'FAQ USER'            : editors[7].value,
+                'Conclusion SYSTEM'   : editors[8].value,
+                'Conclusion USER'     : editors[9].value,
+            }           
+        }        
+    }   
+    document.getElementById('CLUSTERCREATOR-PROMPTS::save').onclick = function(){
+        const a     = document.createElement('a');
+        let prompts = CLUSTERCREATOR_PROMPTS.GetPrompts();
+        delete prompts.Default;
+        delete prompts.Legacy;
+        const blob  = new Blob([JSON.stringify({Prompts : prompts}, null,'\t')]);
+        a.href      = URL.createObjectURL(blob);
+        a.download  = 'Prompts.json';                     
+        a.click();
+    }
+    document.getElementById('CLUSTERCREATOR-PROMPTS::load').onclick = function(){
+        var diag      = document.getElementById('CLUSTERCREATOR-PROMPTS::load-dialog')        
+        diag.onchange = function() {            
+            var reader       = new FileReader();
+            reader.onloadend = function() {                              
+                CLUSTERCREATOR_PROMPTS.FromJson(this.result)                    
+            }            
+            reader.readAsText(this.files[0], 'UTF-8');                     
+        }
+        diag.click();    
+    }
+    document.getElementById('CLUSTERCREATOR-PROMPTS_new-button').onclick = function(event){
+        document.getElementById("CLUSTERCREATOR-PROMPTS_new-input").value         = '';
+        document.getElementById("CLUSTERCREATOR-PROMPTS_new-input").style.display = 'flex';
+        event.stopPropagation()
+    }
+    document.getElementById('CLUSTERCREATOR-PROMPTS_new-input').onclick = function(event){       
+        event.stopPropagation();
+    }
+    document.getElementById('CLUSTERCREATOR-PROMPTS_new-input').onkeypress = function(event){       
+        event.stopPropagation();
+        if (event.key === 'Enter'){  
+            let _this = document.getElementById('CLUSTERCREATOR-PROMPTS_new-input');                                          
+            CLUSTERCREATOR_PROMPTS.CreatePrompt(_this.value);
+            _this.style.display = 'none';            
+            document.getElementById('CLUSTERCREATOR-PROMPTS_list').innerHTML += 
+            `<div class='DASHBOARD_ClicableText' onclick="CLUSTERCREATOR_PROMPTS.PromptClicked(event)">${_this.value}</div>`
+        }   
+    }
+    function CLUSTERCREATOR_PROMPTS_SelectTab(tab){
+        let buttons = document.getElementById('CLUSTERCREATOR-PROMPTS::tabs-header').children;
+        let editors = document.getElementById('CLUSTERCREATOR-PROMPTS::editor_row').children;
+        for (i=0; i<buttons.length; i++){
+            let child  = buttons[i];
+            let editor = editors[i];
+            if (child === tab) {
+                child.classList      = 'CLUSTERCREATOR-PROMPTS_tabs-button-selected az-content-label'
+                editor.style.display = 'flex';
+                CLUSTERCREATOR_PROMPTS.SetCurrentEditor(editor);
+            } else {
+                child.classList      = 'CLUSTERCREATOR-PROMPTS_tabs-button az-content-label'
+                editor.style.display = 'none';
+            }            
+        }
+    }
+    async function CLUSTERCREATOR_PROMPTS_InitUI() {        
+        let kwords_select       = document.getElementById('CLUSTERCREATOR-PROMPTS::Keyword');
+        kwords_select.innerHTML = ''       
+        for (const name of KEYWORDS.ListKeywordsNames()){
+            var option       = document.createElement('option');
+            option.value     = name;
+            option.innerHTML = name;
+            kwords_select.appendChild(option);
+        }          
+    } 
+    function CLUSTERCREATOR_PROMPTS_Expandprompt(template, k, section='', full_section=''){
+        let kword        = k.GetKeyWord();
+        let Outline      = k.GetOutline();
+        let Intent       = k.GetIntent();
+        let Facts        = k.GetFacts();
+        let prompt       = template
+        let FullTones    = ''
+        let Tones        = ''   
+        let Links        = CLUSTER_CONTENT_CREATOR_GetLinks(section, kword);        
+        let links_str    = ''
+        for (let i=0; i<Links.length; i++){
+            let sec    =  Links[i]['Section'];
+            let anchor =  Links[i]['Anchor'];
+            let url    =  Links[i]['TargetURL'];
+            links_str += `Link${i+1}:\nTarget URL:${url}\nAnchor text:${anchor}\nSection:${sec}\n`
+        }   
+        let descriptions = CLUSTERCREATOR_SETTINGS.GetToneDescriptions();   
+        let index        = 0;    
+        for (let [tone, description] of Object.entries(descriptions)){
+            Tones     += tone + ', ';
+            FullTones += index > 0 ? '\n\n' + tone + ': ' + description : tone + ': ' + description;
+            index ++;
+        }        
+        Tones  = Tones.substring(0, Tones.length-2) + ' ';
+        prompt = prompt.replaceAll("</p>", '');
+        prompt = prompt.replaceAll('{KEYWORD}', kword);
+        prompt = prompt.replaceAll('{OUTLINE}', Outline);
+        prompt = prompt.replaceAll('{INTENT}', Intent);
+        prompt = prompt.replaceAll('{TONES}', Tones);
+        prompt = prompt.replaceAll('{TONES_FULL}', FullTones);
+        prompt = prompt.replaceAll('{AUDIENCE}', CLUSTERCREATOR_SETTINGS.GetAudience());
+        prompt = prompt.replaceAll('{FACTS}', Facts);
+        prompt = prompt.replaceAll('{SECTION}', section);
+        prompt = prompt.replaceAll('{FULL_SECTION}', full_section);
+        prompt = prompt.replaceAll('{INTERNAL_LINKS}', links_str);
+        let regex = /({NTONES==2})(.*)({@NTONES==2})/g
+        prompt = prompt.replaceAll(regex, CLUSTERCREATOR_SETTINGS.GetTones().length === 2 ? '$2' : '');
+        regex  = /({NTONES==1})(.*)({@NTONES==1})/g
+        prompt = prompt.replaceAll(regex, CLUSTERCREATOR_SETTINGS.GetTones().length === 1 ? '$2' : '');
+        regex  = /({NLINKS==1})(.*)({@NLINKS==1})/g
+        prompt = prompt.replaceAll(regex, Links.length === 1 ? '$2' : '');
+        regex  = /({NLINKS==2\+})(.*)({@NLINKS==2\+})/g
+        prompt = prompt.replaceAll(regex, Links.length > 1 ? '$2' : '');      
+        return prompt;
+    }
+    function CLUSTERCREATOR_PROMPTS_FormatView(editor){
+        let k = KEYWORDS.GetKeyWord(document.getElementById('CLUSTERCREATOR-PROMPTS::Keyword').value)
+        if (k === null) return;        
+        document.getElementById('CLUSTERCREATOR-PROMPTS::view').innerHTML = CLUSTERCREATOR_PROMPTS_Expandprompt(editor.value, k);
+        CLUSTERCREATOR_PROMPTS.UpdatePrompt()
+    }
+    async function CLUSTERCREATOR_PROMPTS_BindEvents(){  
+        return;     
+        for (const editor of document.getElementById('CLUSTERCREATOR-PROMPTS::editor_row').children){
+            editor.onkeypress = function(){CLUSTERCREATOR_PROMPTS_FormatView(editor)};
+            editor.onkeydown  = editor.onkeypress;
+            editor.onchange   = editor.onkeypress;
+            editor.onclick    = editor.onkeypress;
+        }
+        document.getElementById('CLUSTERCREATOR-PROMPTS::Keyword').onchange = function(){
+            CLUSTERCREATOR_PROMPTS_FormatView(CLUSTERCREATOR_PROMPTS.GetCurrEditor())
+        }
+        let d       = await DASHBOARD_Fetch('/content-creator_default-prompt');        
+        let editors = document.getElementById('CLUSTERCREATOR-PROMPTS::editor_row').children;
+        for (let i=0; i<d.Reply.length; i++) {
+            editors[i].value = d.Reply[i]
+        }
+        CLUSTERCREATOR_PROMPTS.SetLegacyPrompt(d.Legacy)
+        CLUSTERCREATOR_PROMPTS.UpdatePrompt();
+    }
+    CLUSTERCREATOR_PROMPTS_SelectTab(document.getElementById('CLUSTERCREATOR-PROMPTS::tabs-header').children[0]);
+    CLUSTERCREATOR_PROMPTS_BindEvents();
+    CLUSTERCREATOR_PROMPTS_InitUI();   
+</script>
+
+

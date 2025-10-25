@@ -1,0 +1,220 @@
+{% extends 'dashboard.html' %}
+
+{% block breadcrumbs %}  
+    <span>SEO Tools</span>
+    <span>Outline generator</span>    
+{% endblock %}  
+
+{% block tool_content %} 
+    {% if acess_flag_outline_gen %} 
+    <style>
+        .OutlineGen_title{
+            text-justify: left;
+        }
+        .OutlineGen_BaseColumn{
+            display       : flex;
+            flex-direction: column;
+            height        : 100%;;   
+            width         : 100%;                     
+        }
+        .OutlineGen_SERPColumn{
+            display        : flex;
+            flex-direction : column;             
+            padding-bottom : 4px;
+        }
+        .OutlineGen_SERPRow{
+            display        : flex;
+            flex-direction : row;
+            gap            : 8px;
+        }
+        .OutlineGen_URLSRow{
+            display        : flex;
+            flex-direction : row;
+            gap            : 20px;
+            visibility     : hidden;  
+            height         : 420px;          
+        }
+        .OutlineGen_URLSColumn{
+            display        : flex;
+            flex-direction : column;            
+            width          : 780px;
+            gap            : 4px;
+        }
+        .OutlineGen_URLSBaseColumn{
+            display        : flex;
+            flex-direction : column;            
+            width          : 780px;           
+        }
+        .OutlineGen_ScrapeButtonRow{
+            display        : flex;
+            flex-direction : row;
+            gap            : 8px;
+        }
+        .OutlineGen_ScrapeButton{
+            width : 250px;
+        }
+        .OutlineGen_ScrapeButtonSpacer{
+            width : 530px;
+        }
+        .OutlineGen_OutlinesBaseColumn{
+            display        : flex;
+            flex-direction : column;            
+            width          : 780px;
+            visibility     : hidden;            
+        }        
+    </style>   
+    <div class='OutlineGen_BaseColumn'> 
+
+        <h1 class='az-content-title'>Outline generator</h1>
+        <div class='OutlineGen_SERPColumn'> 
+            <div class='az-content-label mg-b-5 OutlineGen_title'>Find URLS</div>
+            <p class='mg-b-20 OutlineGen_title'>Build a list of the top ranked URL maching the desired keyword</p> 
+            <div class='OutlineGen_SERPRow'>                
+                <input id='OUTLINE_GEN::Keyword' class="form-control" placeholder='Keyword' type="text">               
+                <select id='OUTLINE_GEN::Country' class="form-control select2-no-search select2-hidden-accessible">
+                    <option value='US' label="United States" data-select2-id="15"></option>                    
+                    <option value="CA" data-select2-id="26">Canada</option>
+                    <option value="UK" data-select2-id="27">United Kingdom</option>
+                    <option value="AU" data-select2-id="28">Australia</option>
+                    <option value="Netherlands" data-select2-id="29">Netherlands</option>
+                </select>                
+                <button class="btn btn-az-primary btn-block DASHBOARD_button", onclick='OutlineGen_SERP()'>Build URL list</button>  
+                <div class='spacer'></div>                                  
+            </div>   
+            <div style='height:20px'></div>   
+        </div>         
+        
+        <div id='OUTLINE_GEN::URLs_Row' class='OutlineGen_URLSRow'> 
+            <div class='OutlineGen_URLSBaseColumn'> 
+                <div class='az-content-label mg-b-5 OutlineGen_title'>Scrape URL</div>
+                <p class='mg-b-20 OutlineGen_title'>Select the desired URLs<br>Click <b>Extract outlines</b> to scrape the selected URLs and extract their outlines<br>
+                    Click <b>Generate outline </b>to generate a new outline based on the ones extracted from the selected URLs - outlines unchecked URLs are ignored</p> 
+                <div id='OUTLINE_GEN::URLS_Column' class='OutlineGen_URLSColumn'></div> 
+                <div class='spacer'></div>  
+                <div class='OutlineGen_ScrapeButtonRow'>   
+                    <div class='OutlineGen_ScrapeButtonSpacer'></div>                  
+                    <button class="btn btn-az-primary OutlineGen_ScrapeButton" onclick='OutlineGen_Scrape()'>Extract outlines</button>      
+                    <button class="btn btn-az-primary OutlineGen_ScrapeButton" onclick='OutlineGen_Scrape()'>Generate outline</button>                                  
+                </div> 
+            </div> 
+            <div id='OUTLINE_GEN::Outlines_BaseColumn' class="OutlineGen_OutlinesBaseColumn">
+                <div class='az-content-label mg-b-5 OutlineGen_title'>Outlines</div>
+                <p class='mg-b-20 OutlineGen_title'>Hover over the URLs on the left to bring it's respective outline into view</p>  
+                <p class='mg-b-20'>URL</p>   
+                <textarea rows=32 class='form-control'>Outline</textarea>                  
+            </div>
+        </div> 
+
+    </div>   
+
+
+    <script>
+        var OutlineGen = {
+            __URLs    : [],
+            InsertURL : function(url) {
+                var truncated          = truncate_string(url);
+                this.__URLs[truncated] = url;
+                return truncated;
+            },
+            GetURL(truncated) {
+                return this.__URLs[truncated];
+            },
+            ClearURLs : function(url) {
+                this.__URLs = {};
+            }
+        }
+
+        function OutlineGen_AddURL(url, index) {
+            var container   = document.getElementById('OUTLINE_GEN::URLS_Column');
+            var label       = document.createElement('label');
+            var input       = document.createElement('input');
+            var span        = document.createElement('span');
+            label.classList = 'ckbox dashboard_checkbox_label';
+            input.className = 'checkbox';
+            input.type      = 'checkbox'
+            span.innerHTML  = url;
+            label.appendChild(input);
+            label.appendChild(span);
+            container.appendChild(label);            
+
+            input.id  = `OUTLINE_GEN::URL_checkbox::Index_${index}`;
+            span.id  = `OUTLINE_GEN::URL_span::Index_${index}`; 
+            return;           
+
+            span.onmouseenter = function(){  
+                return;              
+                console.log(OutlineGen.GetURL(this.innerHTML));               
+            }
+            span.onmouseleave = function(){                            
+                return                
+            }
+            span.onclick      = function(){   
+                return;                         
+                return window.open(OutlineGen.GetURL(this.innerHTML), "_blank");               
+            }
+        }
+        function OutlineGen_ClearURLS(){
+            const to_remove = []
+            for (const child of document.getElementById('OUTLINE_GEN::URLS_Column').children) {                
+                if (child.tagName.toLowerCase() == 'label' || child.tagName.toLowerCase() == 'span' ){
+                    to_remove.push(child);
+                }
+            }
+            for (const el of to_remove){
+                el.parentElement.removeChild(el);
+            }
+        }
+        async function OutlineGen_SERP(){
+            try {
+                const country  = document.getElementById('OUTLINE_GEN::Country').value;
+                const kword    = document.getElementById('OUTLINE_GEN::Keyword').value;
+                const options  = {method : 'POST', headers : {'Content-Type': 'application/json', 'Accept' : 'application/json'}};
+                const response = await fetch(`/outline_gen_serp?country_code=${country}&keyword=${kword}`, options);
+                var  urls      = await response.json();
+            } catch (error)  {
+                return
+            };             
+            if ('err' in urls) {
+                return
+            }; 
+            document.getElementById('OUTLINE_GEN::URLs_Row').style.visibility = 'visible';
+            OutlineGen_ClearURLS();
+            OutlineGen.ClearURLs();
+            var index  = 0;            
+            for (const url of urls['URLs']) {                
+                OutlineGen_AddURL(OutlineGen.InsertURL(url), index);
+                index += 1
+            }
+        }       
+        function AddOutline(url, outline, index){
+            container                = document.getElementById('OUTLINE_GEN::Outlines_Column');
+            var div                  = document.createElement('div');
+            var title                = document.createElement('p');
+            var text                 = document.createElement('textarea');
+            var but                  = document.createElement('button');
+            div.style.display        = 'flex';
+            div.style.flexDirection  = 'column';
+            div.style.marginBottom   = '20px'
+            title.style.marginBottom = '1px'
+            title.classList          = 'mg-b-20';
+            title.innerHTML          = url
+            text.classList           = 'form-control';
+            text.rows                = 15;
+            text.innerHTML           = outline;            
+            div.appendChild(title);
+            div.appendChild(text);
+            container.appendChild(div);
+        } 
+        async function OutlineGen_Scrape(){
+            document.getElementById('OUTLINE_GEN::Outlines_BaseColumn').style.visibility = 'visible';
+            document.getElementById('OUTLINE_GEN::Outlines_Column').innerHTML             = '';
+            url = document.getElementById('OUTLINE_GEN::URL_span::Index_0').innerHTML
+            AddOutline(url, url, 0);
+            AddOutline(url, url, 0);
+            AddOutline(url, url, 0);
+        }
+    </script>    
+    {% else %}
+        <h1 class='az-content-title DASHBOARD_noaccess'>You don't have acess to this tool</h1>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,84 @@
+<div class="tw_Ctrl-Group" id="SPECIAL-INSTRUCTIONS-EDITOR::root" 
+    style='position:absolute;display:none;flex-direction:row;background-color:#f9f9f9;
+    padding: 4 4 4 4; width:100%; z-index:5; padding: 10 10 10 10; gap:10px; overflow-y:hidden; height:100%;' 
+    name='DASHBOARD::hide-me' onclick='event.stopPropagation()'>
+    <div class="tw_Ctrl-Group" style='display:flex;flex-direction:column;width:33%;height:100%'>
+        <div class='az-content-label mg-b-5' style='margin-bottom:2px; position:relative'>Keywords</div>   
+        <div id='SPECIAL-INSTRUCTIONS-EDITOR::keyword-list'
+            style='display:flex;flex-direction:column;width:100%;background-color:white;gap:1px;padding:6 6 6 6;margin-top:10px;overflow-y:auto;'>                
+        </div>
+    </div>
+    <div class="tw_Ctrl-Group" style='display:flex;flex-direction:column;width:33%;height:100%'>
+        <div class='az-content-label mg-b-5' style='margin-bottom:2px; position:relative'>Sections</div>   
+        <div id='SPECIAL-INSTRUCTIONS-EDITOR::sections-list'
+        style='display:flex;flex-direction:column;width:100%;background-color:white;gap:1px;padding:6 6 6 6;margin-top:10px;overflow-y:auto;'>                
+        </div>
+    </div>   
+    <div class="tw_Ctrl-Group" style='display:flex;flex-direction:column;width:33%;height:100%'>
+        <div class='az-content-label mg-b-5' style='margin-bottom:2px; position:relative'>Special Instructions</div>   
+        <textarea id='SPECIAL-INSTRUCTIONS-EDITOR::special-intructions' class='tw_input' style="height:100%"></textarea>
+        <div style='display:flex;flex-direction:row-reverse;margin-top:6px;margin-bottom:-4px;'>
+            <buttton class='tw_button-alt' onclick='document.getElementById("SPECIAL-INSTRUCTIONS-EDITOR::root").style.display="none"'>Close</buttton>
+        </div>
+    </div>    
+</div>    
+
+<script>
+function SPECIAL_INSTRUCTIONS_EDITOR_ShowDiag(){
+    let diag                = document.getElementById('SPECIAL-INSTRUCTIONS-EDITOR::root');
+    let klist               = document.getElementById('SPECIAL-INSTRUCTIONS-EDITOR::keyword-list');
+    let slist               = document.getElementById('SPECIAL-INSTRUCTIONS-EDITOR::sections-list');
+    let instruction_display = document.getElementById('SPECIAL-INSTRUCTIONS-EDITOR::special-intructions');
+    instruction_display.onkeydown = function(){return};
+    klist.innerHTML    = '';
+    slist.innerHTML    = '';
+    diag.style.display = 'flex';
+    for (const name of KEYWORDS.ListKeywordsNames()){
+        let       p = document.createElement('p');
+        p.innerHTML = name;
+        p.className = 'DASHBOARD_ClicableText'
+        p.style     = 'margin:0 0 0 0;padding:0 0 0 0;';
+        p.onclick   = async function(){
+            instruction_display.onkeydown = function(){return};
+            instruction_display.value     = '';
+            let kword = KEYWORDS.GetKeyWord(name);
+            if (kword === null){
+                return alert(`${name} is not a keywords`)
+            }
+            for (let child of klist.children){
+                child.style.borderBottom = 'none';
+            }
+            p.style.borderBottom = 'solid 1px blue';
+            let fetch_options = DASHBOARD_FetchOPtions();
+            fetch_options.body = JSON.stringify({
+                    Query            : kword.GetOutline(),
+                    MergeSubsections : true      
+                }); 
+            let reply       = await DASHBOARD_Fetch('/content-creator_split-outline', fetch_options);       
+            let plain       = reply.Reply.Plain        
+            slist.innerHTML = '';          
+            for (let section of plain){
+                let sec_label       = document.createElement('p');
+                sec_label.innerHTML = section;
+                sec_label.className = 'DASHBOARD_ClicableText'
+                sec_label.style     = 'border-bottom:1px solid lightgray';
+                sec_label.onclick   = function(){
+                    for (const child of slist.children){
+                        child.style.borderBottom = '1px solid lightgray';
+                    }
+                    sec_label.style.borderBottom = '1px solid blue';
+                    instruction_display.value    = kword.GetSectionSpecialInstructions(section);
+                    instruction_display.onkeydown = async function(){
+                        kword.SetSectionSpecialInstructions(section, instruction_display.value);
+                    }
+                    instruction_display.onkeyup = async function(){
+                        kword.SetSectionSpecialInstructions(section, instruction_display.value);
+                    }
+                }
+                slist.appendChild(sec_label);
+            }
+        };
+        klist.appendChild(p);
+    }
+}
+</script>

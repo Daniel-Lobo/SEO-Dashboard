@@ -1,0 +1,93 @@
+<style>   
+    .users_column{      
+        margin: auto;   
+        width : 800px;   
+        height : 800px;    
+        border-left: 4px solid #0072b5;  
+        border-radius: 4px;
+        background-color: white;
+        overflow: scroll;        
+    }
+    ::-webkit-scrollbar-thumb {
+        border-radius: 10px;         
+    }
+    ::-webkit-scrollbar-track {
+        border-radius: 10px;         
+    }
+    .user_rows
+    {       
+        display:flex;
+        flex-direction: row;   
+        margin: 2px 2px 2px 2px;      
+        border-bottom: 2px solid #0072b5;      
+    }    
+    .user_name{
+        flex-basis: 200px;
+        flex-grow: 0;
+        flex-shrink: 0;        
+        background-color: white;
+    }
+    .delete_button{
+        width: 100px;
+        height:50px;
+        margin-top:3px;
+        flex-grow: 0;
+        flex-shrink: 0;        
+        background-color: #0072b5;
+        color:white;
+        border:none;
+        border-radius: 4px;        
+        top: 50%;
+        cursor: pointer;
+    }
+    .flags_column{        
+        display:flex;
+        flex-direction: column;               
+        flex-basis: 200px;
+        flex-grow: 0;
+        flex-shrink: 0;        
+        background-color: white;
+        margin: 0;
+    }
+    .flag_container{   
+        display:flex;    
+        flex-direction: row;       
+        margin: 0;      
+    }
+    .flag{
+        cursor: pointer;
+    }
+</style>  
+<meta charset="UTF-8"></meta>
+<div class="users_column">    
+    <div class="user_rows">
+        <div class="user_name">User Name</div>
+        <div class="flags_column">
+            <form class="flag_container">                
+                <input type="checkbox" class="flag"></input>   
+                <label>Contextual Bridges</label>               
+            </form>
+            <form class="flag_container">     
+                <input type="checkbox" class="flag"></input>   
+                <label>Edit domains</label>                             
+            </form>
+            <form class="flag_container"> 
+                <input type="checkbox" class="flag"></input>   
+                <label>Edit entity replacements</label>                              
+            </form>  
+            <form class="flag_container"> 
+                <input type="checkbox" class="flag"></input>   
+                <label>Prototipe outline generator</label>                              
+            </form>  
+            <form class="flag_container"> 
+                <input type="checkbox" class="flag"></input>   
+                <label>Entity generator</label>                              
+            </form>   
+            <form class="flag_container"> 
+                <input type="checkbox" class="flag"></input>   
+                <label>Domain Filter</label>                              
+            </form>            
+        </div>    
+        <button class="delete_button">Remove user</button>      
+    </div>    
+</div>    

@@ -1,0 +1,15 @@
+{
+    "id": "com.flawlessmarketing.dashboard",
+    "title": "Flawless Dashboard",
+    "author": "Daniel Lobo",
+    "description": "Flawless Dashboard Application",
+    "tagline": "Where custom tools meet excellence in boosting productivity",
+    "version": "1.0.0",
+    "healthCheckPath": "/",
+    "httpPort": 5000,
+    "addons": {
+        "localstorage": {},
+        "mysql": {}
+    },
+    "manifestVersion": 2
+}

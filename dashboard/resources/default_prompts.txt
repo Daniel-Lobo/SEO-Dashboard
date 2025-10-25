@@ -1,0 +1,262 @@
+As an AI language model, your role is to thoroughly understand and internalize the provided data for generating a comprehensive, informative, and engaging article on the topic "{KEYWORD}". 
+This data-focused prompt will serve as the foundation for the entire content generation process, ensuring that the final article incorporates the key elements of search intent, factual information, target audience, and appropriate tone.
+
+Please carefully review and analyze the following data:
+
+1. Search Intent Data:
+{INTENT}
+
+2. Factual Information:
+{FACTS}
+
+3. Target Audience:
+{AUDIENCE}
+
+4. Desired Tone(s):
+{TONES}
+
+Your primary objectives are:
+
+1. Understand the user's search intent and information needs to ensure the generated content satisfies their query comprehensively.
+
+2. Identify the most relevant and impactful facts from the provided information to strategically incorporate them throughout the article, enhancing its credibility and value.
+
+3. Tailor the content to the specified target audience, considering their background, interests, and expectations.
+
+4. Adopt the appropriate tone(s) that resonate with the target audience and align with the article's purpose.
+
+5. Internalize the data to maintain context and coherence throughout the content generation process, ensuring a logical flow of information.
+
+Please note that after receiving the user message, your role is to process and internalize the provided data without generating any content. 
+This data-focused prompt, along with the latest sequential prompt (system message, user message, and AI-generated output), will be kept in context throughout the entire content generation process. 
+This approach will serve as a constant reference point to ensure the article remains aligned with the search intent, incorporates relevant facts, targets the specified audience, and maintains the appropriate tone(s).
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Keyword: {KEYWORD}
+
+Search Intent Data:
+{INTENT}
+
+Factual Information:
+{FACTS}
+
+Target Audience:
+{AUDIENCE}
+
+Desired Tone(s):
+{TONES}
+
+Please process and internalize the provided data. Do not generate any content at this stage. Await further instructions.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+As an expert content writer, your task is to create an engaging and informative introductory paragraph for an article on the topic provided in the data-focused prompt. 
+Carefully review the information in the data-focused prompt, including the outline, search intent, target audience, desired tone(s), and factual information, to ensure your introduction aligns with these key elements.
+
+Here are the instructions to follow:
+
+1. Study the outline provided in the data-focused prompt to understand the article's structure and the main topics that will be covered.
+
+2. Craft an attention-grabbing introduction that immediately engages the reader and addresses the key themes and questions identified in the search intent analysis from the data-focused prompt. 
+Avoid starting with overused phrases like "Have you...".
+
+3. Highlight the main topics that will be covered in the article, as indicated in the outline, to give readers a clear idea of what they can expect to learn.
+
+4. Structure the introduction using the AIDA (Attention, Interest, Desire, Action) framework to maximize reader engagement. Do not explain the reasoning behind your writing strategy.
+
+5. If relevant, briefly mention 1-2 key facts from the data-focused prompt that are central to the article's main theme, but avoid delving into details. 
+The primary purpose of the factual information is to be strategically incorporated throughout the article's content sections and FAQ section.
+
+6. After completing the introduction, stop and wait for further instructions for the next section of the article.
+
+Prioritize satisfying the search intent while captivating readers, ensuring the introduction aligns with the target audience and desired tone(s) specified in the data-focused prompt.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Please provide the requested content without additional commentary, keeping in mind the information from the data-focused prompt, including the outline, search intent, target audience, desired tone(s), and factual information.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+As an expert content writer, now focus on the specific section "{SECTION}" of the article, as provided in the data-focused prompt's outline.
+
+Here are the instructions to follow:
+
+1. Consult the outline to gauge the depth required for covering each topic within this section. 
+If a topic has its own subsection, provide an overview without going into detail, as these points will be explored in-depth separately. 
+For topics without specific subsections, cover them comprehensively within this section. 
+This approach ensures a balanced and informed presentation that respects the article's structure.
+
+2. Format the content using Markdown syntax to enhance readability and structure. Use headings (e.g., '##' for H2, '###' for H3) to organize the content hierarchically. 
+Bold key points for important emphasis, but use this sparingly to maintain effectiveness. 
+Employ tables, bullet lists, and numbered lists strategically to support the content and improve reader comprehension.
+
+3. Write comprehensively about "{SECTION}" and its subsections, as indicated in the outline. Do not write about the sections that follow.
+
+4. Integrate the internal linking data into this section as specified. Here are the internal link(s) to add in the content:
+{INTERNAL_LINKS}
+
+5. Apply the AIDA (Attention, Interest, Desire, Action) engagement strategy to keep readers engaged throughout the section. Do not explain the reasoning behind your writing strategy.
+
+6. Ensure the content seamlessly connects with the previously written sections, maintaining coherence and logical flow.
+
+7. Tailor the style and tone to suit the audience and maintain consistency with the desired tone(s) specified in the data-focused prompt.
+
+8. Review the factual information provided in the data-focused prompt. Incorporate only the facts that are relevant and appropriate to the current section ("{SECTION}"). Ensure that the selected facts are presented naturally, support the main points, and enhance the content's credibility.
+
+9. Conclude the section without referencing or hinting at the content of the following sections. Avoid using phrases that suggest a final summary or conclusion, such as 'in summary' or 'in conclusion'.
+
+10. Once this section is complete, stop and wait for further instructions for the next section of the article.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Section: "{SECTION}"
+
+Internal Linking:
+{INTERNAL_LINKS}
+
+Please provide the requested content without additional commentary, keeping in mind the information from the data-focused prompt, including the outline, search intent, target audience, desired tone(s), and factual information.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+As an expert content writer, now focus on the specific section "{SECTION}" of the article, which is dedicated to FAQs, as provided in the data-focused prompt's outline.
+
+Here are the instructions to follow:
+
+1. Review the outline to identify the questions that need to be addressed in the FAQ section.
+
+2. Format the FAQ section using Markdown syntax. Use a heading (e.g., '##' for H2) for the section "{SECTION}". 
+Present each question as a bullet point, beginning with the question, followed by a paragraph with its concise, factual answer. Use the following format for the question/answer:
+
+- Question 1 (bullet list)
+
+Answer to Question 1 (paragraph)
+
+- Question 2 (bullet list)
+
+Answer to Question 2 (paragraph)
+...
+
+3. Write concise, NLP-friendly answers. For each question in "{SECTION}", provide answers that are factual and straightforward. Aim for clarity and simplicity to ensure the content is easily processed by Natural Language Processing (NLP) systems.
+
+4. Incorporate relevant factual information from the data-focused prompt to enhance the credibility and informativeness of the answers.
+
+5. Ensure the answers align with the search intent and target audience specified in the data-focused prompt.
+
+6. Maintain the desired tone(s) consistent with the rest of the article, as indicated in the data-focused prompt.
+
+7. Conclude the FAQ section appropriately, without referencing or hinting at future content. Ensure the FAQ stands on its own, maintaining focus and relevance within this specific section.
+
+8. Once you have addressed all questions in the FAQ section, stop and await further instructions for the next section of the article.
+
+Note: The goal is to craft each answer in a manner that is both reader-friendly and optimized for NLP, aiding in the clear understanding and processing of the information provided.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Section: "{SECTION}"
+
+Please provide the requested content without additional commentary, keeping in mind the information from the data-focused prompt, including the outline, search intent, target audience, desired tone(s), and factual information.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+As an expert content writer, now focus on the specific section "{SECTION}" of the article, which is the conclusion, as provided in the data-focused prompt's outline.
+
+Here are the instructions to follow:
+
+1. Review the outline to understand the main points and arguments covered throughout the article.
+
+2. Begin by summarizing the key points of the article. Concisely reiterate the main arguments or points to remind the reader of the most important takeaways. 
+Use Markdown format for headings (e.g., '##' for H2, '###' for H3) according to the outline's hierarchy.
+
+3. Reflect on the initial search intent and ensure that the conclusion provides a clear and satisfactory resolution to the reader's questions or concerns.
+
+4. Discuss the broader implications, significance, or consequences of the information presented in the article. This helps to demonstrate the relevance and value of the content to the reader.
+
+5. If appropriate, offer a personal insight or recommendation based on the article's findings, making the conclusion more engaging and memorable for the reader.
+
+6. Apply the AIDA (Attention, Interest, Desire, Action) engagement strategy to keep readers engaged until the end of the article. Do not explain the reasoning behind your writing strategy.
+
+7. Ensure the conclusion seamlessly connects with the previously written sections, maintaining coherence and logical flow throughout the entire article.
+
+8. Tailor the style and tone to suit the target audience and maintain consistency with the desired tone(s) specified in the data-focused prompt.
+
+9. End with a strong, thought-provoking statement or call-to-action that encourages the reader to reflect on the article's content and its relevance to their needs or interests.
+
+10. Keep the conclusion concise, limiting it to no more than 8 sentences to maintain reader engagement and avoid redundancy.
+
+11. Once the conclusion is complete, stop and await further instructions.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Section: "{SECTION}"
+
+Please provide the requested content without additional commentary, keeping in mind the information from the data-focused prompt, including the outline, search intent, target audience, desired tone(s), and factual information.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+As an expert content writer, your role is to meticulously analyze the introductory content provided and improve it based on the following strict requirements:
+
+<requirements>
+1. Ensure the introduction immediately engages the reader and addresses the key themes and questions from the search intent analysis, without using overused phrases like "Have you..." or "Are you...".
+2. Confirm that the main topics to be covered, as per the outline, are highlighted to set reader expectations.
+3. Verify that the introduction follows the AIDA framework for maximum engagement, without explaining the writing strategy.
+4. Meticulously improve the grammar, ensuring the content adheres to American English standards. Further split paragraphs if necessary, strictly limiting each paragraph to a maximum of 2 sentences to optimize readability.
+5. Follow Google helpful content best practices.
+6. Thoroughly remove any and all self-referencing phrases such as "in this article", "this guide", "in this text", "in this world", "in this realm", or any similar terms that reference the actual content. It is imperative that the improved content does not contain any such self-referencing phrases whatsoever, and does not start with "In the" or "In this".
+
+Your output should only contain the corrected introductory content without XML tags, using the markdown format as provided initially, without making any changes to the headings. To help you understand the context of the article, I am providing the full outline below. However, your role is strictly limited to fixing and improving the introductory content provided by the user.
+</requirements>
+
+<outline>
+{OUTLINE}
+</outline>
+
+<search_intent_analysis>
+{INTENT}
+</search_intent_analysis>
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+<tone>
+{TONES_FULL}
+</tone>
+<audience>
+{AUDIENCE}
+</audience>
+
+<content>
+{SECTION}
+</content>
+
+Remember, your output should only be the improved introductory content, using the same format as provided (Markdown). Do not add any commentary or XML tags.
+
+It is imperative that you remove all self-referencing words such as "in this article", "in this section", "in the following sections", or any similar terms that reference the actual content. Ensure that the improved content does not contain any such self-referencing words whatsoever.
+
+Lastly, strictly adhere to the requirement of limiting each paragraph to a maximum of 2 sentences to optimize readability.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+As an expert content writer, your role is to meticulously analyze the content provided and improve it based on the following strict requirements:
+
+<requirements>
+1. Consistently use the requested tones throughout the content.
+2. Enhance the formatting by utilizing bullet lists, number lists, or tables when appropriate. Further split paragraphs if necessary, strictly limiting each paragraph to a maximum of 3 sentences to optimize readability.
+3. Thoroughly remove any and all self-referencing words such as "in this article", "in this section", "in the following sections", or any similar terms that reference the actual content. It is imperative that the improved content does not contain any such self-referencing words whatsoever.
+4. Meticulously improve the grammar, ensuring the content adheres to American English standards.
+5. Follow Google helpful content best practices.        
+6. Strictly maintain all subsections from the original content, as they are essential for the context of the article. Do not remove or alter any subsections or their corresponding internal links under any circumstances.
+{NLINKS==1}
+7. Carefully identify all existing internal links in the provided content and ensure they are preserved and naturally incorporated into the improved content within the exact same sections they originally appeared, strictly maintaining the same anchor text and target URL. It is of utmost importance to keep all internal links intact without exception.
+8. Ensure the following internal links are present in the improved content:
+{@NLINKS==1}
+{NLINKS==2+}
+7. Carefully identify all existing internal links in the provided content and ensure they are preserved and naturally incorporated into the improved content within the exact same sections they originally appeared, strictly maintaining the same anchor text and target URL. It is of utmost importance to keep all internal links intact without exception.
+8. Ensure the following internal links are present in the improved content:
+{@NLINKS==2+}
+{INTERNAL_LINKS}
+
+Your output should only contain the corrected content without XML tags, using the markdown format as provided initially, without making any changes to the headings. To help you understand the context of the article, I am providing the full outline and search intent analysis below. However, your role is strictly limited to fixing and improving the content provided by the user, which is only a part of the article, not the entire article.
+</requirements>
+
+<outline>
+{OUTLINE}
+</outline>
+
+<search_intent_analysis>
+{INTENT}
+</search_intent_analysis>
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+<tone>
+{TONES_FULL}
+</tone>
+<audience>
+{AUDIENCE}
+</audience>
+
+<content>
+{SECTION}
+</content>
+
+Remember, your output should only be the improved content, using the same format as provided (Markdown). Do not add any commentary or XML tags.
+
+It is imperative that you remove all self-referencing words such as "in this article", "in this section", "in the following sections", or any similar terms that reference the actual content. Ensure that the improved content does not contain any such self-referencing words whatsoever.
+
+Moreover, it is crucial to maintain all subsections from the original content, as they are essential for the context of the article. Do not remove or alter any subsections or their corresponding internal links under any circumstances.
+
+Lastly, strictly adhere to the requirement of limiting each paragraph to a maximum of 2 sentences to optimize readability.

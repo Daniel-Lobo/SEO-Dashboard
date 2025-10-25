@@ -1,0 +1,509 @@
+<style>
+    .CHAT-VIEW_Tab-Button{        
+        background-color: transparent;
+        border          : None;
+        margin-bottom   : 20px;
+        padding         : 0 0 2 0;
+        z-index         : 1;
+        cursor          : pointer   
+    }
+    .CHAT-VIEW_redo-Button{        
+        background-color: transparent;
+        border          : None;        
+        padding         : 0 0 2 0;
+        z-index         : 1;
+        cursor          : pointer;
+    }
+
+    .CHAT-VIEW_Icon-Clickable {
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .CHAT-VIEW_Icon-Clickable:hover {
+        background-color: lightgray;
+    }
+
+    
+    .tooltip.show li {text-align:justify;}
+    .tooltip.show ul {text-align:justify;margin-right: 18px; margin-top: 18px;}
+    .tooltip li {text-align:justify;}
+    .tooltip ul {text-align:justify;margin-right: 18px; margin-top: 18px;}
+    .tooltip {width: 400px !important;}
+    .tooltip-inner {
+        width: 800px !important;
+    }
+
+    
+</style>    
+
+<div id="CHAT-VIEW::root" class="tw_Groups-Container"
+    style='position:absolute;display:none;flex-direction:row;
+    padding: 4 4 4 4; width:100%; z-index:5; padding: 10 10 10 10; gap:10px; overflow-y:hidden; height:100%;' 
+    name='DASHBOARD::hide-me' onclick='event.stopPropagation()'>
+    <div class="tw_Ctrl-Group" style='display:flex;flex-direction:column;width:20%;height:100%'>
+        <h3 class='tw_h3' style='margin-bottom:2px; position:relative'>Keywords</h3>   
+        <div id='CHAT-VIEW::keyword-list'
+            style='display:flex;flex-direction:column;width:100%;background-color:white;gap:1px;padding:6 6 6 6;margin-top:10px;margin-bottom:20px;overflow-y:auto;'>                
+        </div>
+        <div class="spacer"></div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+            <p class='tw_h3_5' style='margin-bottom:0px; position:relative'>Current view</p>  
+            <select id='CHAT-VIEW::prompts' class="tw_input" 
+                onclick="event.stopPropagation()" onchange="CHAT_VIEW_PromptChanged()">  
+                <option value="Chat">Chat</option>                           
+            </select>   
+            <p class='tw_h3_5' style='margin-bottom:0px; margin-top:10px; position:relative'>Model override</p>  
+            <select id='CHAT-VIEW::model-override' class="tw_input" 
+                onclick="event.stopPropagation()">                                           
+            </select> 
+            <p class='tw_h3_5' style='margin-bottom:2px; position:relative'>Fix\Links Prompts</p>   
+            <div style='display:flex; gap:10px'>        
+                <select id='CHAT-VIEW::fix-prompts' class="tw_input" style="width:400px">                             
+                </select> 
+            </div> 
+            <p class='tw_h3_5' style='margin-bottom:0px; margin-top:10px; position:relative'>Temperature override - improve step</p>  
+            <div style='display:flex; gap:6px'>            
+                <input type='range' class='form-range' id='CHAT-VIEW::temp' min="0.0" max="1.0" step="0.01" value='0.5' style='flex-grow:1'></input>  
+                <input type='number' class='tw_input' id='CHAT-VIEW::temp-label' min="0.0" max="1.0" step="0.01" value='0.5' 
+                style='width:80px; height:36px'></input>  
+            </div> 
+            <label class="tw_h3_5" style="margin:0 2 2 6;">
+                <input id="CHAT-VIEW::remove-black-listed" class="form-check form-switch" type="checkbox" style="margin-top:2px; margin-right:-10px;">
+                <span style="margin-left:16px">Don't improve, only remove AI Words</span>
+            </label>  
+            <label class="tw_h3_5" style="margin:-6 2 2 6;display:none">
+                <input id="CHAT-VIEW::self-referencing" class="checkbox" type="checkbox" style="margin-top:3px; margin-right:-10px;">
+                <span>Remove self references</span>
+            </label>  
+            <label class="tw_h3_5" style="margin:-8 2 2 6;">
+                <input id="CHAT-VIEW::highlight" class="checkbox" type="checkbox" style="margin-top:3px; margin-right:-10px;">
+                <span style="margin-left:16px">Highlight important terms</span>
+            </label>  
+            <div style="display:flex;flex-direction:row-reverse;gap:6px;margin-top:0px;">
+                <button class="tw_button-alt" style="padding-top:4px;padding-bottom:4px;max-height:30px;" onclick="CHAT_VIEW_Hide()">Close</button>
+                <div id="CHAT-VIEW::spinner" class="DASHBOARD_Loader" style="width:34px;height:34px;display:none"></div>                          
+            </div>
+        </div>        
+    </div>
+    <div class="tw_Ctrl-Group" style='display:flex;flex-direction:column;width:26%;'>  
+        <h3 class="tw_h3">Sections</h3>    
+        <div id="CHAT-VIEW::msg" style='display:flex;flex-direction:column;width:100%;'>        
+        </div>   
+    </div>  
+    <div class="tw_Ctrl-Group" style="width:54%;">
+        <h3 class="tw_h3">Messages</h3>
+        <div style="display:flex;flex-direction:row; gap:6px;padding-bottom: 30px;">
+            <div style="display:flex;flex-direction:column;width:50%;">        
+                <div style="display:flex;flex-direction:row;height:40px;margin-bottom:8px;gap:6px">
+                    <div id='CHAT-VIEW::user-tab-button' class="tw_h3_5 CHAT-VIEW_Tab-Button">User</div>
+                    <div id='CHAT-VIEW::system-tab-button' class="tw_h3_5 CHAT-VIEW_Tab-Button">System</div>
+                    <div id='CHAT-VIEW::link-tab-button' class="tw_h3_5 CHAT-VIEW_Tab-Button">Links</div>
+                </div>
+                <div style="display:flex;margin-top:-23px;padding:0 0 0 0">
+                    <div id='CHAT-VIEW::system-tab' style='display:flex;flex-direction:column;width:100%;'>                
+                        <textarea class="tw_input" style="height:calc(100% - 16px);width:100%;" rows="30" id="CHAT-VIEW::system"></textarea>
+                    </div>   
+                    <div id='CHAT-VIEW::user-tab' style='display:flex;flex-direction:column;width:100%;'>                
+                        <textarea class="tw_input" style="height:calc(100% - 16px);width:100%;" rows="30" id="CHAT-VIEW::user"></textarea>
+                    </div> 
+                    <div id='CHAT-VIEW::link-tab' style='display:flex;flex-direction:column;width:100%;'>                
+                        <textarea class="tw_input" style="height:calc(100% - 16px);width:100%;" rows="30" id="CHAT-VIEW::links"></textarea>
+                    </div>  
+                </div>    
+            </div>    
+            <div style='display:flex;flex-direction:column;width:50%;'>
+                <div class='tw_h3_5' style='margin-bottom:2px; position:relative'>Assistant</div>   
+                <textarea class="tw_input" style="height:calc(100% - 40px);width:100%;" rows="30" id="CHAT-VIEW::assistant"></textarea>
+            </div> 
+        </div>    
+    </div>   
+</div>    
+
+<script>
+function CHAT_VIEW_Hide(){
+    document.getElementById('CHAT-VIEW::root').style.display = 'none';
+}
+document.getElementById('CHAT-VIEW::user-tab-button').onclick = function() {
+    document.getElementById('CHAT-VIEW::user-tab').style.display               = 'block';
+    document.getElementById('CHAT-VIEW::system-tab').style.display             = 'none';
+    document.getElementById('CHAT-VIEW::link-tab').style.display               = 'none';
+    document.getElementById('CHAT-VIEW::user-tab-button').style.borderBottom   = "2px solid black";
+    document.getElementById('CHAT-VIEW::link-tab-button').style.borderBottom   = "none";
+    document.getElementById('CHAT-VIEW::system-tab-button').style.borderBottom = "none";
+}
+document.getElementById('CHAT-VIEW::system-tab-button').onclick = function() {
+    document.getElementById('CHAT-VIEW::user-tab').style.display               = 'none';
+    document.getElementById('CHAT-VIEW::link-tab').style.display               = 'none';
+    document.getElementById('CHAT-VIEW::system-tab').style.display             = 'block';
+    document.getElementById('CHAT-VIEW::user-tab-button').style.borderBottom   = "none";
+    document.getElementById('CHAT-VIEW::link-tab-button').style.borderBottom   = "none";
+    document.getElementById('CHAT-VIEW::system-tab-button').style.borderBottom = "2px solid black";
+}
+document.getElementById('CHAT-VIEW::link-tab-button').onclick = function() {
+    document.getElementById('CHAT-VIEW::user-tab').style.display             = 'none';
+    document.getElementById('CHAT-VIEW::system-tab').style.display           = 'none';
+    document.getElementById('CHAT-VIEW::link-tab').style.display             = 'block';
+    document.getElementById('CHAT-VIEW::user-tab-button').style.borderBottom = "none";
+    document.getElementById('CHAT-VIEW::system-tab-button').style.borderBottom = "none";
+    document.getElementById('CHAT-VIEW::link-tab-button').style.borderBottom = "2px solid black";
+}
+document.getElementById('CHAT-VIEW::user-tab-button').onclick()
+document.getElementById('CHAT-VIEW::temp').onchange = function(){
+    let val = document.getElementById('CHAT-VIEW::temp').value;
+    document.getElementById('CHAT-VIEW::temp-label').value = val;   
+} 
+document.getElementById('CHAT-VIEW::temp-label').onchange = function(){
+    let val = document.getElementById('CHAT-VIEW::temp-label').value;
+    document.getElementById('CHAT-VIEW::temp').value = val;    
+} 
+async function InitPrompts() {
+    await DASHBOARD_UpdateSettings()        
+    let select       = document.getElementById('CHAT-VIEW::prompts');
+    select.innerHTML =  '<option value="Chat">Chat</option><option value="Improve Chat">Improve Chat</option>'                  
+    for (const prompt in DASHBOARD_OptionO('Prompts')){     
+        if (prompt === 'Legacy') continue   
+        let option      = document.createElement('option');
+        option.value    = prompt;
+        option.label    = prompt;              
+        select.appendChild(option);
+        option          = document.createElement('option');            
+    }     
+    for (const prompt in DASHBOARD_OptionO('Prompts')){     
+        console.log(prompt)       
+        let option      = document.createElement('option');
+        option.value    = prompt + " - improve step";
+        option.label    = prompt + " - improve step";              
+        select.appendChild(option);
+    }  
+    let        content_model = DASHBOARD_GetModel('Content')
+    select     = document.getElementById('CHAT-VIEW::model-override');
+    let reply  = await DASHBOARD_Fetch('https://openrouter.ai/api/v1/models');            
+    for (const model of reply.data){
+        let option   = document.createElement('option');
+        option.value = model.id;
+        option.label = model.name;
+        if (model.id == content_model) option.selected = true
+        select.appendChild(option);
+    }  
+    select           = document.getElementById('CHAT-VIEW::fix-prompts')
+    select.innerHTML = ''           
+    for (const prompt in DASHBOARD_OptionO('More Prompts')['Fix content']){
+        let option      = document.createElement('option');
+        option.value    = prompt;
+        option.label    = prompt;               
+        select.appendChild(option);
+    }   
+}
+function CHAT_VIEW_PromptChanged(){    
+    document.getElementById('CHAT-VIEW::user').value      = '';
+    document.getElementById('CHAT-VIEW::system').value    = '';
+    document.getElementById('CHAT-VIEW::assistant').value = '';   
+    document.getElementById('CHAT-VIEW::msg').innerHTML   = '';  
+    if (document.getElementById('CHAT-VIEW::prompts').value == "Chat") {
+        DASHBOARD_SetOptions('CHAT-VIEW::model-override', [DASHBOARD_GetModel('Content')])
+    } else if (document.getElementById('CHAT-VIEW::prompts').value == "Improve Chat") {
+        DASHBOARD_SetOptions('CHAT-VIEW::model-override', [DASHBOARD_GetModel('Improve Content')])
+    }
+}
+function CHAT_VIEW_ShowDiag(){
+    InitPrompts();
+    let diag                = document.getElementById('CHAT-VIEW::root');
+    let klist               = document.getElementById('CHAT-VIEW::keyword-list');   
+    let msg_list            = document.getElementById('CHAT-VIEW::msg');  
+    let user                = document.getElementById('CHAT-VIEW::user');
+    let system              = document.getElementById('CHAT-VIEW::system');
+    let assistant           = document.getElementById('CHAT-VIEW::assistant');    
+    klist.innerHTML         = '';  
+    diag.style.display      = 'flex';
+    for (const name of KEYWORDS.ListKeywordsNames()){           
+        let p       = document.createElement('p');
+        p.innerHTML = name;
+        p.className = 'DASHBOARD_ClicableText'
+        p.style     = 'margin:0 0 0 0;padding:0 0 0 0;';       
+        klist.appendChild(p);
+        p.onclick = async function(){
+            await DASHBOARD_UpdateSettings()
+            let prompt = document.getElementById('CHAT-VIEW::prompts').value;            
+            if (prompt == "Chat" || prompt == "Improve Chat") {
+                user.value         = '';
+                system.value       = '';
+                assistant.value    = '';
+                //msg_list.innerHTML = `<div class='az-content-label mg-b-5' style='margin-bottom:2px;'>Sections</div><div style="height:16px"></div>`;
+                msg_list.innerHTML = '';
+                let kword  = KEYWORDS.GetKeyWord(name);
+                let __chat = prompt == "Chat" ?  kword.GetChat() : kword.GetIChat();
+                let fetch_options  = DASHBOARD_FetchOPtions();        
+                fetch_options.body = JSON.stringify({
+                    Query            : kword.GetOutline(),
+                    MergeSubsections : true      
+                });  
+                let plain           = (await DASHBOARD_Fetch('/content-creator_split-outline', fetch_options)).Reply.Plain   
+                let redo_buttons    = []        
+                let rebuild_buttons = []                       
+                for (let [index, msg] of __chat.entries()){
+                    let d       = document.createElement('div');
+                    let p       = document.createElement('div');
+                    d.style     = "display:flex;flex-direction:row;width:100%;gap:4px;";
+                    p.classList = 'DASHBOARD_ClicableText DASHBOARD_ellipsis';
+                    if (prompt === "Chat") {
+                        p.innerHTML = index == 0 ? "Initial prompt" : plain[index-1].split('\n')[0]    //"[" + index + "]";
+                    } else {
+                        p.innerHTML = plain[index].split('\n')[0]    //"[" + index + "]";
+                    }
+                    p.style = 'margin:0 0 0 0;padding:0 0 0 0;display:block;width:90%';       
+                    d.appendChild(p);
+                    
+                    let tip = /*html*/ `<ul>
+                        <li style='text-align:justify;'>Re-create or re--improve this section 
+                        <li style='text-align:justify;'>When re-creating the same propts as before as used - except if you manyally edit the user os sytem tabs
+                        <li style='text-align:justify;'>This is userfull to fix problens caused by LLMs pseudo-randomness.
+                        <li style='text-align:justify;'>Also take advantage of the temperature override as lower temperatures will make the LLM more deterministic.
+                        <li style='text-align:justify;'>When re-improving, all changes made to the creation step are considered    
+                    </ul>`;     
+                    let redobutton = document.createElement('div');    
+                    redobutton.innerHTML                   = /*html*/`
+                        <i class="fa-solid fa-rotate-right"
+                            data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="${tip}" data-bs-html="true" >
+                        </i>
+                        `;
+                    redobutton.children[0].style.color     = "lightgray";
+                    redobutton.children[0].classList       = "fa-solid fa-rotate-right fa-sm";
+                    redobutton.style.marginTop             = "12px";
+                    redo_buttons.push(redobutton)
+
+                    let rebuidbutton = document.createElement('div');    
+                    rebuidbutton.innerHTML                   = /*html*/`
+                        <i class="fa-solid fa-rotate-right"
+                            data-bs-toggle="tooltip" data-bs-container="body" data-bs-placement="right" data-bs-title="${tip}" data-bs-html="true" >
+                        </i>
+                        `;
+                    rebuidbutton.children[0].style.color     = "lightgray";
+                    rebuidbutton.children[0].classList       = "fa-solid fa-arrows-rotate fa-sm";
+                    rebuidbutton.style.marginTop             = "12px";
+                    rebuild_buttons.push(rebuidbutton)
+
+                    d.appendChild(redobutton);
+                    if (prompt === "Improve Chat") {
+                        //d.appendChild(rebuidbutton);
+                    }
+                    
+                    DASHBOARD_ActivateToolTips();
+                    if (prompt === "Chat") {
+                        redobutton.onclick = function(){
+                            if (redobutton.disabled) return;
+                            document.getElementById('CHAT-VIEW::spinner').style.display = 'flex';
+                            (async function(){
+                                try {
+                                    await DASHBOARD_UpdateSettings();
+                                    let sofar    = __chat.slice(0, index);
+                                    let new_chat = [];
+                                    for (let msg of sofar){
+                                        new_chat.push({'role' : "system",    "content" : msg.System});   
+                                        new_chat.push({'role' : "user",      "content" : msg.User});                                
+                                        new_chat.push({'role' : "assistant", "content" : msg.Assistant});
+                                    }
+                                    new_chat.push({'role' : "system", "content" : system.value});
+                                    new_chat.push({'role' : "user",   "content" : user.value});
+                                    let fetch_options  = DASHBOARD_FetchOPtions();        
+                                    fetch_options.body = JSON.stringify({
+                                        Messages         : new_chat,
+                                        Temperature      : document.getElementById('CHAT-VIEW::temp').value,
+                                        Model            : DASHBOARD_GetOptions('CHAT-VIEW::model-override')[0],
+                                    });  
+                                    let reply               = (await DASHBOARD_Fetch('/chat-route', fetch_options)).Assistant;
+                                    try {reply = reply.split('<new>')[1].split('</new>')[0]} 
+                                    catch{}                           
+                                    try {reply = reply.split('<content>')[1].split('</content>')[0]}
+                                    catch{}  
+                                    //reply =  "----" + reply;
+                                    assistant.value         = reply;
+                                    __chat[index].Assistant = reply;
+                                    kword.UpdateChatReply(index, reply);
+                                    console.log(new_chat);
+                                } catch(err) {
+                                    DASHBOARD_except(err)
+                                } finally {
+                                    document.getElementById('CHAT-VIEW::spinner').style.display = 'none';
+                                }
+                            })()
+                        }      
+                    } else if (prompt === "Improve Chat") {
+                        rebuidbutton.onclick = function(){
+                            if (rebuidbutton.disabled) return;                            
+                        }
+                        redobutton.onclick = function(){     
+                            if (redobutton.disabled) return;  
+                            document.getElementById('CHAT-VIEW::spinner').style.display = 'flex';    
+                            (async function(){      
+                                try{                                         
+                                    let this_user    = user.value
+                                    let this_system  = system.value
+                                    let this_section = kword.GetChat()[index+1].Assistant
+                                    let f_options    = DASHBOARD_FetchOPtions();
+                                    let links_str    = document.getElementById('CHAT-VIEW::links').value    
+                                    let templates    = DASHBOARD_OptionO('More Prompts')['Fix content'][document.getElementById('CHAT-VIEW::fix-prompts').value];  
+                                    if (templates.length < 8){
+                                        alert(`Prompt ${document.getElementById('CHAT-VIEW::fix-prompts').value} doesn\'t have the "links" sections`)
+                                        return
+                                    }                               
+                                    let l_user    = templates[7] //.replaceAll('{INTERNAL_LINKS}', links_str)
+                                    let l_system  = templates[6] //.replaceAll('{INTERNAL_LINKS}', links_str)
+
+                                    //console.log(this_section)
+                                    //return
+
+                                    f_options.body = JSON.stringify({
+                                        User              : user.value,
+                                        System            : system.value,   
+                                        Choices           : {
+                                            Improve           : document.getElementById('CHAT-VIEW::remove-black-listed').checked ? 'IMPROVE' : '',       
+                                            'Self Refrences'  : document.getElementById('CHAT-VIEW::self-referencing').checked ? 'HIGHLIGHT' : '',
+                                            'Highlight'       : document.getElementById('CHAT-VIEW::highlight').checked,     
+                                        }, 
+                                        Temp              : document.getElementById('CHAT-VIEW::temp').value,  
+                                        Article           : this_section,
+                                        Audience          : DASHBOARD_Option('Selected Audience'),
+                                        Outline           : kword.GetOutline(),
+                                        Model             : DASHBOARD_GetOptions('CHAT-VIEW::model-override')[0],
+                                        'IModel'          : DASHBOARD_GetModel('black-list'), 
+                                        'Model2ndPass'    : DASHBOARD_GetModel('black-list-2nd'), 
+                                        SelfReferecing    : DASHBOARD_GetModel('self-referencing'), 
+                                        Tones             : DASHBOARD_OptionA('Selected Tones'),    
+                                        Links             : links_str,
+                                        'Links Prompts'   : {System : l_user, User: l_system} ,      
+                                        'Links Model'     : DASHBOARD_GetModel('links-insertion'), 
+                                        'Search Intent'   : kword.GetIntent()                                      
+                                    })   
+                                    let reply               = await DASHBOARD_Fetch('/content_creator-improve_and_fix', f_options)
+                                    let i_section           = reply.Reply;
+                                    //i_section              += "\n" + reply.Improved
+                                    assistant.value         = i_section
+                                    __chat[index].Assistant = i_section
+                                    kword.UpdateImprovedSection(index, i_section);                                    
+                                    //console.log(f_options.body) 
+                                } catch(err) {
+                                    DASHBOARD_except(err)
+                                } finally{
+                                    document.getElementById('CHAT-VIEW::spinner').style.display = 'none';    
+                                }   
+                            })()                    
+                        }
+                    }                    
+
+                    msg_list.appendChild(d);
+                    p.onclick = function(){
+                        //console.log(msg);
+                        for (let r_button of rebuild_buttons){
+                            r_button.disabled                      = true;
+                            rebuidbutton.children[0].style.color     = "lightgray";
+                            rebuidbutton.children[0].classList       = "fa-solid fa-arrows-rotate fa-sm";
+                            r_button.children[0].style.color         = "lightgray";
+                            
+                        }
+                        for (let r_button of redo_buttons){
+                            r_button.disabled                      = true;
+                            redobutton.children[0].style.color     = "lightgray";
+                            redobutton.children[0].classList       = "fa-solid fa-rotate-right fa-sm";
+                            r_button.children[0].style.color       = "lightgray";
+                        }                        
+                        redobutton.disabled                   = false;                          
+                        redobutton.children[0].classList      = "fa-solid fa-rotate-right CHAT-VIEW_Icon-Clickable fa-sm";   
+                        redobutton.children[0].style.color    = "black";      
+                        rebuidbutton.disabled                 = false;                          
+                        rebuidbutton.children[0].classList    = "fa-solid fa-arrows-rotate CHAT-VIEW_Icon-Clickable fa-sm";   
+                        rebuidbutton.children[0].style.color  = "black";             
+                        user.value      = msg.User;
+                        system.value    = msg.System;
+                        assistant.value = msg.Assistant;
+                        if ('Links' in msg){
+                            document.getElementById('CHAT-VIEW::links').value = msg.Links  //.replaceAll('<br>', '\n');   
+                        }
+                        if (prompt === 'Chat') {
+                            assistant.onkeyup = function(){
+                                __chat[index].Assistant = assistant.value ;
+                                kword.UpdateChatReply(index, assistant.value);
+                            }                               
+                        } else if (prompt === 'Fix Chat') {
+                            assistant.onkeyup = function(){
+                                __chat[index].Assistant = assistant.value ;
+                                kword.UpdateImprovedSection(index, assistant.value);
+                            }
+                        }
+                    }
+                }
+            } else if (prompt.endsWith('- improve step')) {
+                user.value         = '';
+                system.value       = '';
+                assistant.value    = '';
+                msg_list.innerHTML = `<div class='az-content-label mg-b-5' style='margin-bottom:2px;'>Sections</div><div style="height:16px"></div>`;
+                let prompts        = DASHBOARD_OptionO('Prompts')[document.getElementById('CHAT-VIEW::prompts').value.replace(' - improve step', '')];
+                //console.log(Object.keys(prompts))
+                let k              = KEYWORDS.GetKeyWord(name);
+                let sections       = k.GetArticleSections();
+                //console.log(sections)
+                for (let section of sections) {                          
+                    let msgs    = [
+                        {'role' : "system", "content" : await CLUSTER_CONTENT_CREATOR_Expandprompt(prompts['Improve SYSTEM'], k, section, '')},
+                        {'role' : "user",   "content" : await CLUSTER_CONTENT_CREATOR_Expandprompt(prompts['Improve USER'], k, section, '')}
+                    ]
+                    let p       = document.createElement('p');
+                    p.classList = 'DASHBOARD_ClicableText DASHBOARD_ellipsis';
+                    p.innerHTML =  section.split('\n')[0]
+                    p.style     = 'margin:0 0 0 0;padding:0 0 0 0;';                             
+                    p.onclick   = async function(){ 
+                        for (let msg of msgs) {
+                            if (msg.role === 'user') {
+                                user.value = msg.content;
+                            } else if (msg.role === 'system') {
+                                system.value = msg.content;
+                            }                            
+                        }    
+                        //user.value += prompts['Section USER'];
+                        //system.value += prompts['Section SYSTEM'];
+                    }   
+                    msg_list.appendChild(p);                    
+                }   
+            } else {
+                user.value         = '';
+                system.value       = '';
+                assistant.value    = '';
+                msg_list.innerHTML = `<div class='az-content-label mg-b-5' style='margin-bottom:2px;'>Sections</div><div style="height:16px"></div>`;
+                let prompts        = DASHBOARD_OptionO('Prompts')[document.getElementById('CHAT-VIEW::prompts').value];
+                let k              = KEYWORDS.GetKeyWord(name);
+                let fetch_options  = DASHBOARD_FetchOPtions();        
+                fetch_options.body = JSON.stringify({
+                    Query            : k.GetOutline(),
+                    MergeSubsections : true      
+                });                 
+                let secs    = await DASHBOARD_Fetch('/content-creator_split-outline', fetch_options);    
+                let plain   = secs.Reply.Plain;
+                let kword   = CLUSTER_CONTENT_CREATOR.GetByName(name);
+                kword.SetSections({Reply : {Sections : secs.Reply}}, true);
+                let index   = 0;
+                while (index <= plain.length) {                    
+                    let section = JSON.parse(JSON.stringify(kword.NextSection()));
+                    let msgs    = await CLUSTER_CONTENT_CREATOR.GetMessages(kword, k, section.Plain, section.Merged, prompts);  
+                    let p       = document.createElement('p');
+                    p.classList = 'DASHBOARD_ClicableText DASHBOARD_ellipsis';
+                    p.innerHTML =  index ==  0 ? "Initial prompt" : plain[index-1].split('\n')[0]
+                    p.style     = 'margin:0 0 0 0;padding:0 0 0 0;';                             
+                    p.onclick   = async function(){ 
+                        for (let msg of msgs) {
+                            if (msg.role === 'user') {
+                                user.value = msg.content;
+                            } else if (msg.role === 'system') {
+                                system.value = msg.content;
+                            }                            
+                        }    
+                        //user.value += prompts['Section USER'];
+                        //system.value += prompts['Section SYSTEM'];
+                    }   
+                    msg_list.appendChild(p);          
+                    index ++;  
+                }   
+            }
+        }
+    }
+}
+</script>

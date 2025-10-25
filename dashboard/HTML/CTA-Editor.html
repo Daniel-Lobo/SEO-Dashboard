@@ -1,0 +1,421 @@
+<div id="CTA-EDITOR::root" class="tw_Groups-Container"
+    style='position:absolute;display:none;z-index:5;flex-direction:column;overflow:none' 
+    name='DASHBOARD::hide-me' onclick='event.stopPropagation()'>
+    <div style="display:flex;width:100%;height:100%;overflow:none;gap:6px">
+        <div class="tw_Ctrl-Group" style="width:50%">
+            <h3 class='tw_h3'>Keywords</h3>   
+            <p class='tw_h4'>Select a keyword to browse it's sections and assing CTAs to them</p>
+            <div id='CTA-EDITOR::keyword-list'
+                style='display:flex;flex-direction:column;width:100%; height:500px;overflow-y:auto;'>                
+            </div>
+        </div>      
+        <div class="tw_Ctrl-Group" style="width:50%">
+            <h3 class='tw_h3'>Sections</h3>   
+            <p class='tw_h4'>Select a keyword on the left to browse its sections and assingn CTAs to them<br>
+            Hover hte mouse over the section titles to inspect their full contents and assigned CTA</p>
+            <div id='CTA-EDITOR::sections-list'
+            style='display:flex;flex-direction:column;width:100%;height:500px;overflow-y:auto;position:relative'>                
+            </div>
+        </div>   
+    </div>    
+    <div style="display:flex;flex-direction:row-reverse;">  
+        <button style="width:200px" class="tw_button" onclick="document.getElementById('CTA-EDITOR::root').style.display='none'">Close</button>
+    </div>    
+</div>  
+  
+<div id="CTA-EDITOR::assing-CTA-dialog" class="tw_dialog-container" style="display:none;z-index:6" onclick="event.stopPropagation()">   
+    <div class="tw_Ctrl-Group tw_dialog" style="position:relative;display:flex;flex-direction:column;gap:6px;width:800px">        
+        <div class="tw_h3">Assing CTA</div>
+        <div id="CTA-EDITOR::assing-CTA-dialog-kword" class="tw_h4" style="margin-bottom: 0px;"></div>   
+        <div id="CTA-EDITOR::assing-CTA-dialog-section" class="tw_h4 DASHBOARD_ellipsis" style="margin-top: -6px;"></div>  
+        <div id="CTA-EDITOR::assing-CTA-dialog-desc-view-window" class="tw_ToolTip" 
+            style="display:none;position:absolute;top:250px;width:600px;flex-direction:column;height:400px;overflow-y:none;gap:6px">
+            <div style="overflow-y:auto;padding-right:20px;" id="CTA-EDITOR::assing-CTA-dialog-desc-view"></div>
+            <div style="flex-grow:1;"></div>
+            <div style="display:flex;flex-direction:row-reverse;">
+                <button onclick="document.getElementById('CTA-EDITOR::assing-CTA-dialog-desc-view-window').style.display = 'none'"
+                    class="tw_button-alt">Close</button>
+            </div>
+        </div>
+        <div style="display:flex;margin-top: 30px;flex-direction: column;">           
+            <div class="tw_h3_5" style="margin-bottom:6px;border:0px">Client</div>           
+            <select id='CTA-EDITOR::assing-CTA-dialog-client' class="tw_select" 
+                style="width:100%" onclick="event.stopPropagation()">                             
+            </select>         
+            <div class="tw_h3_5" style="margin-bottom:6px;border:0px;margin-top:30px">CTAs</div>
+            <div id="CTA-EDITOR::assing-CTA-dialog-services-container" class="tw_Ctrl-Group" style="height:400px;overflow-y: auto;"></div>            
+        </div>
+        <div style="display:flex;flex-direction:row-reverse;margin-top:30px;gap:6px">
+            <button onclick="document.getElementById('CTA-EDITOR::assing-CTA-dialog').style.display = 'none'" 
+                class="tw_button" style="width: 200px;" onclick="CTA_ShowNewServiceDialog()">
+                Close
+            </button>             
+        </div>      
+    </div>
+</div>
+
+
+<script>
+
+async function CTAEDITOR_ListServices(client) {       
+    let f_options  = DASHBOARD_FetchOPtions();
+    f_options.body = JSON.stringify({Client : client});
+    let services   = await DASHBOARD_Fetch('/CTAs-list-services', f_options);     
+    return services.Services;
+}  
+
+async function CTAEDITOR_ListClients(){        
+        let clients = await DASHBOARD_Fetch('CTAs-list-clients', DASHBOARD_FetchOPtions());        
+        return clients.Clients;
+    }
+
+function CTAEDITOR_EditInstructions(client, service){
+        let elements = bff(/*html*/`
+            <div class="tw_dialog-container" data-self='root' style="z-index: 6" onclick="event.stopPropagation()">
+                <div class="tw_Ctrl-Group tw_dialog" style="width: 500px;">
+                    <h3 style="font-weight: semibold; font-size: 16px; ">
+                        Edit instructions
+                    </h3> 
+                    <p class="CTA_label-lvl3">Edit the instructions of the service
+                    ${service}, client: ${client}</p>
+                    <textarea rows="20" class="tw_input" style="width:100%;height:400px" data-self='instructions'></textarea>
+                    <div style="flex-grow: 1;"></div>
+                    <div style="display: flex;flex-direction: row-reverse; margin-top:20px; gap:6px">    
+                        <button class="tw_button" style="width: 200px;" data-self='apply'>
+                            Apply
+                        </button>                    
+                        <button class="tw_button-alt" style="width: 200px;" data-self='cancel'>
+                            Close
+                        </button>
+                    <div class="DASHBOARD_Loader" style="display:none; margin-right:10px" data-self='spinner'></div>    
+                </div>
+            </div>`).AppendTo(document.body);  
+        elements.spinner.style.display = 'flex';
+        elements.root.style.display    = 'flex';    
+        elements.cancel.onclick        = function(event){            
+            elements.root.remove()
+            event.stopPropagation();
+        }; 
+        ;(async function(){ 
+            let f_options  = DASHBOARD_FetchOPtions();
+            f_options.body = JSON.stringify({Client : client, ServiceName : service});
+            try {
+                let reply = await DASHBOARD_Fetch('/CTAs-get-service-instructions', f_options);
+                if (reply.Reply != 'S_OK') {
+                    throw new Error(reply.Reply);
+                }
+                elements.instructions.value = reply.Instructions;                
+            } catch (e) {
+                console.error(e);
+                DASHBOARD_except(e)
+            } finally {
+                elements.spinner.style.display = 'none';
+            }
+        })()
+        elements.apply.onclick  = async function(event){
+            event.stopPropagation();
+            let services = await CTAEDITOR_ListServices(client);
+            if (services.indexOf(service) < 0) {
+                alert(`Service ${service} does not exist for client ${client}`);
+                return;
+            }
+            let instructions = elements.instructions.value;
+            if (instructions === '') {
+                alert('Please fill the instructions');
+                return; 
+            };            
+            (async function () {
+                elements.spinner.style.display = 'flex';
+                let options  = DASHBOARD_FetchOPtions();
+                options.body = JSON.stringify({
+                    Client       : client, 
+                    ServiceName  : service, 
+                    Instructions : instructions});
+                try {
+                    let reply = await DASHBOARD_Fetch('/CTAs-add-service-instructions', options);
+                    if (reply.Reply != 'S_OK') {
+                        throw new Error(reply.Reply);
+                    }
+                    alert(`Instructions for service ${service} of client ${client} have been applied successfully`);
+                } catch (e) {
+                    console.error(e);
+                    DASHBOARD_except(e)
+                } finally {
+                    elements.spinner.style.display = 'none';
+                    elements.root.remove();
+                }
+            })();
+        }  
+    }
+    
+function CTAEDITOR_CreateInstructions(kword, section_index){
+    let elements = bff(/*html*/`
+        <div class="tw_dialog-container" data-self='root' style="z-index: 6" onclick="event.stopPropagation()">
+            <div class="tw_Ctrl-Group tw_dialog" style="width: 500px;">
+                <h3 style="font-weight: semibold; font-size: 16px; ">
+                    Create special instructions
+                </h3> 
+                <p class="CTA_label-lvl3">Create special instructions for the section <i>${section_index}</i> of keyword <i>${kword}</i></p>
+                <textarea rows="20" class="tw_input" style="width:100%;height:400px" data-self='instructions'></textarea>
+                <div style="flex-grow: 1;"></div>
+                <div style="display: flex;flex-direction: row-reverse; margin-top:20px; gap:6px">    
+                    <button class="tw_button" style="width: 200px;" data-self='apply'>
+                        Apply
+                    </button>                    
+                    <button class="tw_button-alt" style="width: 200px;" data-self='cancel'>
+                        Close
+                    </button>
+                <div class="DASHBOARD_Loader" style="display:none; margin-right:10px" data-self='spinner'></div>    
+            </div>
+        </div>`).AppendTo(document.body);
+    elements.instructions.textContent = KEYWORDS.GetKeyWord(kword).GetCTAInstructions(section_index);    
+    elements.root.style.display       = 'flex';
+    elements.cancel.onclick           = function(event){            
+        elements.root.remove()
+        event.stopPropagation();
+    };
+    elements.apply.onclick            = async function(event){
+        event.stopPropagation();
+        let instructions = elements.instructions.value;
+        if (instructions === '') {
+            alert('Please fill the instructions');
+            return;
+        };
+        KEYWORDS.GetKeyWord(kword).ApendCTAInstructions(section_index, instructions);
+        elements.root.remove();
+    }
+}    
+
+function CTAEDITOR_Delete(event, kword, index){
+    console.log(event, kword, index)
+    let k = KEYWORDS.GetKeyWord(kword);
+    let i = index;
+    let e = event;
+    (async function() {
+        k.DeleteCTA(index);
+        e.target.parentElement.innerHTML = ''           
+    })();    
+}
+function CTAEDITOR_ShowDiag(){
+    let diag           = document.getElementById('CTA-EDITOR::root');
+    let klist          = document.getElementById('CTA-EDITOR::keyword-list');
+    let slist          = document.getElementById('CTA-EDITOR::sections-list');          
+    klist.innerHTML    = '';
+    slist.innerHTML    = '';
+    diag.style.display = 'flex';
+    for (const name of KEYWORDS.ListKeywordsNames()){
+        let          s = document.createElement('div');
+        let       icon = document.createElement('i');  
+        let          d = document.createElement('div');
+        let          p = document.createElement('div');
+        s.className    = 'spacer'
+        icon.classList = "fa-solid fa-list tw_Icon-Clickable";
+        d.className    = 'tw_List-Item-Container';
+        p.classList    = 'tw_List-Item-Label DASHBOARD_ellipsis';
+        p.innerHTML    = name;       
+        d.appendChild(p);      
+        d.appendChild(s);      
+        d.appendChild(icon);    
+        icon.onclick  = async function(){                
+            let kword = KEYWORDS.GetKeyWord(name);            
+            if (kword === null){
+                return alert(`${name} is not a keywords`)
+            }
+            console.log(kword.GetCTAs())
+            let improved_article = '';
+            for (let message of kword.GetIChat().slice(1)){
+                improved_article += '\n' + message.Assistant
+            }
+            let lvl0 = 0;
+            let lvl1 = 0;
+            let lvl2 = 0;
+            let lvl3 = 0;
+            let secs = []
+            for (let line of improved_article.split('\n')){                
+                trimed_line = line.trim().split('\n')[0].trim();
+                if (false === trimed_line.startsWith('#')) 
+                {
+                    if (secs.length === 0)
+                    continue;
+                    secs.at(-1).text += '\n' + line
+                    continue;
+                }                
+                if (trimed_line.startsWith('#####')) 
+                {
+                    lvl3 += 1;
+                }
+                else if (trimed_line.startsWith('####'))  
+                {
+                    lvl2 += 1;
+                    lvl3  = 0;
+                }
+                else if (trimed_line.startsWith('###'))   
+                {
+                    lvl1 += 1;
+                    lvl2  = 0;
+                    lvl3  = 0;
+                }
+                else if (trimed_line.startsWith('##'))  
+                {
+                    lvl0 += 1;
+                    lvl1  = 0;
+                    lvl2  = 0;
+                    lvl3  = 0;
+                } 
+                let sec = `${lvl0}.`
+                if (lvl1 > 0) sec += `${lvl1}.`
+                if (lvl2 > 0) sec += `${lvl2}.`
+                if (lvl3 > 0) sec += `${lvl3}.`
+                console.log(line)
+                secs.push({'index': sec, 'text': line, 'CTA' : kword.GetCTA(sec)})                 
+            }            
+            slist.innerHTML = '';
+            for (let [index, sec] of secs.entries()){  
+                let column       = document.createElement('div');
+                let cta_lgnd     = document.createElement('div');
+                let tip          = document.createElement('div');
+                let s            = document.createElement('div');   
+                let but          = document.createElement('i');
+                let d            = document.createElement('div');    
+                let p            = document.createElement('div');
+                let indent_count = sec.index.split('.').length - 1
+                let indent       = '&ensp;'.repeat(indent_count * 2);
+                column.style     = "display:flex;flex-direction:column"
+                column.classList = "DASHBOARD_ellipsis"
+                cta_lgnd.className = "tw_h4"     
+                s.className      = 'spacer'
+                but.className    = 'fa-solid fa-bullhorn tw_Icon-Clickable';
+                d.className      = 'tw_list-Item-Container';
+                d.style.position = 'relative'
+                p.classList      = 'tw_list-Item-Label DASHBOARD_ellipsis';
+                p.style.position    = 'relative'
+                tip.style           = index<=4 ? 'position:absolute;display:none;top:100%' : 'position:absolute;display:none;bottom:100%'     
+                tip.style.zIndex    = '6'         
+                tip.className       = 'tw_ToolTip'
+                p.innerHTML         =  indent + sec.index + ' ' + sec.text;
+                tip.innerHTML       =  sec.text;      
+                column.appendChild(p)       
+                column.appendChild(cta_lgnd)     
+                d.appendChild(tip)
+                d.appendChild(column)
+                d.appendChild(s)
+                d.appendChild(but)
+                let cta = kword.GetCTA(sec.index);
+                if (cta !== ''){                    
+                    cta_lgnd.innerHTML = /*html*/
+                    indent + `CTA:
+                    <i class="fa-solid fa-trash tw_Icon-Clickable" onclick="CTAEDITOR_Delete(event, '${kword.GetKeyWord()}', '${sec.index}')"
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Remmoe this assigment">
+                    </i>
+                    <i class="fa-solid fa-pen-to-square tw_Icon-Clickable" onclick="CTAEDITOR_EditInstructions('${cta.Client}', '${cta.ServiceName}')"
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit this service instructions">
+                    </i>
+                    <i class="fa-solid fa-plus tw_Icon-Clickable" onclick="CTAEDITOR_CreateInstructions('${kword.GetKeyWord()}', '${sec.index}')"
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Create new special instrcutions for this section. 
+                        Section instructions take priority over service instructions">
+                    </i><br>
+                    ${indent}Client: ${cta.Client}<br>${indent}Service: ${cta.ServiceName}`
+                }
+                p.onclick   = async function(){                    
+                    document.getElementById('CTA-EDITOR::full-sec').value = sec.text
+                    document.getElementById('CTA-EDITOR::cta-edit').value = sec.CTA;        
+                    document.getElementById('CTA-EDITOR::cta-edit').onkeyup = function(){
+                        let CTA = document.getElementById('CTA-EDITOR::cta-edit').value;
+                        sec.CTA = CTA;
+                        kword.AppendCTA(sec.index, CTA);
+                    }                
+                }
+                p.onmouseenter = function(event){                   
+                    tip.style.display = "flex";                                                
+                }
+                p.onmouseleave = function(){
+                    tip.style.display = "none";
+                }
+                but.onclick = function(){                    
+                    document.getElementById('CTA-EDITOR::assing-CTA-dialog').style.display     = 'flex';
+                    document.getElementById('CTA-EDITOR::assing-CTA-dialog-kword').innerHTML   = "Keyword: " + kword.GetKeyWord();
+                    document.getElementById('CTA-EDITOR::assing-CTA-dialog-section').innerHTML = "Section: " + sec.index + ' ' + sec.text;
+                    (async function(){
+                        let clients         = await DASHBOARD_Fetch('CTAs-list-clients', DASHBOARD_FetchOPtions());   
+                        let selector        = document.getElementById('CTA-EDITOR::assing-CTA-dialog-client');
+                        selector.innerHTML  = ''
+                        let last_selection  = DASHBOARD_Cookie("CTA-EDITOR::client-selection")                       
+                        for (let client of clients.Clients){
+                            let opt       = document.createElement('option');
+                            opt.value     = client;
+                            opt.innerHTML = client;
+                            selector.appendChild(opt)
+                            if (client === last_selection){                                
+                                selector.value = client
+                            }
+                        }
+                        selector.onchange = async function(){       
+                            document.cookie = "CTA-EDITOR::client-selection=" + selector.value;                    
+                            let options     = DASHBOARD_FetchOPtions();
+                            options.body    = JSON.stringify({Client : selector.value});
+                            let services    = await DASHBOARD_Fetch('CTAs-list-services', options);
+                            let container   = document.getElementById('CTA-EDITOR::assing-CTA-dialog-services-container')
+                            container.innerHTML = '';
+                            for (let service of services.Services){
+                                let          s  = document.createElement('div');
+                                let       icon  = document.createElement('i');  
+                                let      asing  = document.createElement('button');
+                                let          d  = document.createElement('div');
+                                let          p  = document.createElement('div');
+                                s.className     = 'spacer'
+                                icon.classList  = "fa-regular fa-eye tw_Icon-Clickable";
+                                asing.classList = "tw_Button-alt";
+                                asing.innerHTML = "Assign CTA";     
+                                d.className     = 'tw_List-Item-Container';
+                                p.classList     = 'tw_List-Item-Label DASHBOARD_ellipsis';
+                                p.innerHTML     = service;       
+                                d.appendChild(p);      
+                                d.appendChild(s);      
+                                d.appendChild(icon);    
+                                d.appendChild(asing);    
+                                container.appendChild(d);
+                                icon.onclick =  async function() {
+                                    let f_options   = DASHBOARD_FetchOPtions();
+                                    f_options.body  = JSON.stringify({Client : selector.value, ServiceName : service});
+                                    let description = await DASHBOARD_Fetch('/CTAs-get-service-description', f_options);                                    
+                                    let container   = document.getElementById("CTA-EDITOR::assing-CTA-dialog-desc-view-window");
+                                    let view        = document.getElementById("CTA-EDITOR::assing-CTA-dialog-desc-view");
+                                    view.innerHTML  = description.Reply;
+                                    container.style.display = "flex";
+                                }
+                                asing.onclick = function(){
+                                    kword.AppendCTA(sec.index, {Client : selector.value, ServiceName : service})
+                                    //cta_lgnd.innerHTML = indent + `CTA:<i class="fa-solid fa-trash tw_Icon-Clickable" onclick="CTAEDITOR_Delete(event, '${name}', '${sec.index}')"></i>
+                                    //<br>${indent}Client: ${selector.value}<br>${indent}Service: ${service}`
+
+                                    cta_lgnd.innerHTML = /*html*/
+                                    indent + `CTA:
+                                    <i class="fa-solid fa-trash tw_Icon-Clickable" onclick="CTAEDITOR_Delete(event, '${name}', '${sec.index}')"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Remmoe this assigment">
+                                    </i>
+                                    <i class="fa-solid fa-pen-to-square tw_Icon-Clickable" onclick="CTAEDITOR_EditInstructions('${selector.value}', '${service}')"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit this service instructions">
+                                    </i>
+                                    <i class="fa-solid fa-plus tw_Icon-Clickable" onclick="CTAEDITOR_CreateInstructions('${kword.GetKeyWord()}', '${sec.index}')"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Create new special instrcutions for this section. 
+                                        Section instructions take priority over service instructions">
+                                    </i><br>
+                                    ${indent}Client: ${selector.value}<br>${indent}Service: ${service}`
+                                    DASHBOARD_ActivateToolTips()           
+                                }
+                            }
+                        }                       
+                        selector.onchange()
+                    })()
+                }
+                slist.appendChild(d);    
+                DASHBOARD_ActivateToolTips()            
+            }
+        };
+        klist.appendChild(d);
+        let diag = document.getElementById('CTA-EDITOR::assing-CTA-dialog');        
+        diag.parentElement.removeChild(diag);
+        document.body.appendChild(diag);        
+    }
+}
+</script>

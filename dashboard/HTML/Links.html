@@ -1,0 +1,468 @@
+<style> 
+    :root {
+        --LINKS-bg-color: #f9f9f9;
+    }
+    .LINKS_base-row{
+        display          : flex;
+        flex-direction   : row;        
+        width            : 100%;
+        height           : calc(100% - 26px);     
+        gap              : 0px;
+        background-color : var(--LINKS-bg-color) ;
+        overflow         : none;   
+        padding-bottom   : 0px;
+        position         : relative;
+        gap              : 10px;
+    } 
+    .LINKS_links-list-column-container {
+        display          : flex;        
+        flex-direction   : column;       
+        overflow-y       : auto;    
+        background-color : white;  
+        left             : 700px; 
+        width            : 340px;
+        margin           : 10 10 10 10;
+        padding          : 10 6 10 10; 
+        gap              : 0px;   
+        scrollbar-color: grey var(--KEYWORDS-bg-color) ;;        
+    }
+    .LINKS_links-view-column-container {
+        display          : flex;
+        flex-direction   : column;       
+        overflow-y       : auto;    
+        background-color : var(--LINKS-bg-color) ; ;      
+        margin           : 10 10 10 10;
+        gap              : 20px;   
+        scrollbar-color: grey var(--KEYWORDS-bg-color) ;;
+    }
+    .LINKS_link-group-container{
+        display          : flex;
+        flex-direction   : column;
+        background-color : white ;  
+        padding: 6 6 6 6;  
+    }
+    .LINKS_delete-icon{
+        vertical-align : -.125em;
+        fill           : grey;
+        width          : 1.0em;
+        height         : 1.0em;         
+    }
+    .LINKS_delete-icon:hover{
+        fill           :  #6f42c1;     
+    }
+    .LINKS_section-button{
+        background-color : #6f42c1;
+        color            : white;
+        border           : none;       
+        width            : 500px;
+        height           : 34px;
+        margin-top       : -6px;
+        border-radius    :10px ;
+    }
+    .LINKS_link-header{
+        display:flex; 
+        margin-bottom:0px; 
+        height:30px; 
+        padding-bottom:4; 
+        padding-left:4px;
+        padding-top: 4px;
+        border:1px solid lightgray
+    }
+</style>
+
+<div id='LINKS::root' class='LINKS_base-row'>            
+
+    <div style='display:flex; flex-direction:column; overflow:hidden;'>
+        <div class='tw_Ctrl-Group' style="overflow-y:auto;" id='LINKS::links-view-column'>              
+        </div>         
+    </div>   
+    
+    <div class='tw_Ctrl-Group' style="overflow-y:auto;height:100%" id='LINKS::links-list-column'>   
+        <div style='display:flex'>
+            <h3 style='min-width:240px' class="tw_h3">Keywords</h3>          
+            <h3 style='min-width:80px' class="tw_h3">Links</h3>            
+        </div>    
+    </div>  
+    
+    {% include 'LinksSummary.html' %}
+    
+    <dialog id='LINKS::add-link-dialog' name='DASHBOARD::hide-me' 
+        style='left:660px; top:10px; width:900px;height:calc(100% - 20px); z-index:1; gap:0px; overflow-y:auto; flex-direction:column;'>      
+        <div style='display:flex; gap:6px'>
+            <div style='display:flex; flex-direction:column;' id='LINKS::add-link-dialog-targets-column'></div>
+            <div style='display:flex; flex-direction:column; overflow-y:auto; position:relative' id='LINKS::add-link-dialog-target-sections-column'></div>
+        </div>  
+    </dialog>
+
+    <dialog id='LINKS::change-sec-dialog' style='left:660px; top:10px; width:900px; height:calc(100% - 20px); z-index:1; gap:0px; overflow-y:hidden; flex-direction:column;'>       
+    </dialog>
+    
+</div>
+
+
+<script>
+    document.getElementById('CLUSTERCREATOR::tab-item-Links').style.color  = 'grey';
+    document.getElementById('CLUSTERCREATOR::tab-item-Links').style.cursor = 'default';
+    var LINKS = {
+        __ThresHold : 0.5,        
+        __Groups    : [],
+        KeywordNameChanged(old_name, new_name){
+            for (const group of this.__Groups){
+                group.KeywordNameChanged(old_name, new_name)
+            }
+            this.RenderLinks()
+        },
+        LinkKeyWords(){      
+            this.RenderLinks()   
+            console.log(this.__ThresHold)  
+            var kword = null;
+            for (const name of KEYWORDS.ListKeywordsNames()){
+                kword = KEYWORDS.GetKeyWord(name);
+                if (kword === null) continue;     
+                //kword.ClearLinks();           
+                for (const sim of kword.GetSimilarity()){       
+                    if (kword.IsLinkedWith(sim.Target)) {continue;}            
+                    if (parseFloat(sim.Max) > parseFloat(DASHBOARD_OptionF('Threshold'))){
+                        this.AddLink(name, sim.Target, sim.Sections[0].Section)
+                        //kword.AppendLink(sim.Target, sim.Sections[0].Section)
+                    }
+                }
+            } 
+            this.RenderLinks();   
+            this.LinkOrphans();  
+            LINKS_SUMMARY.Clear();
+            this.RenderLinks();   
+            KEYWORDS.ClearGroups();
+            KEYWORDS.GroupKeyWords();
+            CLUSTERCREATOR_SelectTab(document.getElementById(`CLUSTERCREATOR::tab-item-Links`))    
+        },
+        GetThresHold(){return this.__ThresHold},
+        SetThresHold(ThresHold) {this.__ThresHold = parseFloat(ThresHold);},
+        LinkOrphans(){
+            for (const orphan of this.__Groups){
+                if (orphan.GetLinksCount() > 0) continue;
+                let max_similarity =  0.0;
+                let link_origin    = null;
+                for (const origin of this.__Groups) {
+                    if (orphan === origin) continue;
+                    let similarity = KEYWORDS.GetKeyWord(origin.GetName()).ListSimilarityWithKeyWord(orphan.GetName());
+                    if (similarity.length == 0) continue;
+                    if (similarity[0].Similarity > max_similarity){
+                        max_similarity = similarity[0].Similarity;
+                        link_origin    = {Name : origin.GetName(), Section : similarity[0].Section};
+                    }
+                }
+                if (link_origin != null){
+                    this.AddLink(link_origin.Name, orphan.GetName(), link_origin.Section)
+                }
+            }
+        },
+        GetGroup(name){
+            for (const group of this.__Groups){
+                if (group.GetName() === name){
+                    return group;
+                }
+            }
+            return null;
+        },
+        AddLink(origin, target, section){
+            var kword = KEYWORDS.GetKeyWord(origin);
+            if (kword === null) return;    
+            let link = kword.AppendLink(target, section);
+            this.GetGroup(origin).AddLink('lightgray', link);
+            this.SummarizeLinks();            
+            //this.RenderLinks();
+        },
+        RenderLinks(){
+            for (const group of this.__Groups){
+                group.byby();
+            }
+            this.__Groups = [];
+            for (const name of KEYWORDS.ListKeywordsNames()){
+                this.__Groups.push( LINKS_links_group(name) )
+            }
+            console.log('RenderLinks',  KEYWORDS.ListKeywordsNames())
+            this.SummarizeLinks();
+        },
+        SummarizeLinks(){
+            for (const group of this.__Groups){
+                group.ResetCount();
+            }
+
+            var origin = null;
+            for (const name of KEYWORDS.ListKeywordsNames()){
+                origin = KEYWORDS.GetKeyWord(name);
+                if (origin === null) continue;  
+                let out_group = this.GetGroup(name);
+                for (const link of origin.GetLinks()){
+                    out_group.AddOutLink()
+                    let target_group = this.GetGroup(link.Target);
+                    if (target_group !== null) target_group.AddInLink()
+                }
+            }
+            for (const group of this.__Groups){
+                group.Sumarize();
+            }
+        }
+    };
+
+    function LINKS_links_group(Origin){
+        self = {
+            __Origin             : Origin,
+            __ListEntryContainer : document.createElement('div'), 
+            __ListEntry          : DASHBOARD_AziaSubtitle(Origin, 'margin-bottom:6px; width:240px; text-overflow:ellipsis; white-space:nowrap; overflow:hidden'), 
+            __ListEntrySumary    : DASHBOARD_AziaSubtitle('Placeholder', 'margin-bottom:6px; width:80px; text-overflow:ellipsis; white-space:nowrap; overflow:hidden'),
+            __ViewContainer      : document.createElement('div'),
+            __View               : null,
+            __OutLinksCount      : 0,
+            __InLinksCount       : 0,
+            __LinksColumn        : null,
+            KeywordNameChanged(old_name, new_name){
+                if (this.__Origin === old_name) {
+                    this.__Origin = new_name;
+                    this.__ViewContainer.children[0].innerHTML = new_name;
+                    return
+                }
+            },
+            byby(){
+                this.__ListEntryContainer.parentElement.removeChild(this.__ListEntryContainer)
+                this.__ViewContainer.parentElement.removeChild(this.__ViewContainer)
+            }, 
+            Sumarize(){
+                this.__ListEntrySumary.innerHTML = `${this.__OutLinksCount} Out, ${this.__InLinksCount} In`;
+            },  
+            GetLinksCount(){
+                return this.__InLinksCount;
+            },  
+            GetName(){
+                return this.__Origin;
+            },
+            ResetCount(){
+                this.__OutLinksCount = 0;
+                this.__InLinksCount = 0;
+            },
+            AddOutLink(){
+                this.__OutLinksCount += 1;
+            },
+            RemoveOutLink(){
+                this.__OutLinksCount -= 1;
+            },
+            AddInLink(){
+                this.__InLinksCount += 1;
+            },
+            RemoveInLink(){
+                this.__InLinksCount -= 1;
+            },
+            AddLink(color, link){
+                var __this     = this;
+                let link_row   = document.createElement('div');
+                link_row.style = `display:flex; gap:6px; background-color:${color};`;
+                color          = color === 'white' ? 'lightgray' : 'white'; 
+                
+                let target_label       = document.createElement('p');
+                target_label.innerHTML = link.Target; 
+                target_label.style     = 'width:300px; padding-bottom:0px; margin-bottom:2px; margin-top:2px; margin-left:2px; text-overflow:ellipsis; white-space:nowrap; overflow:hidden';
+                link_row.appendChild(target_label);                
+
+                let section_button       = document.createElement('p');
+                section_button.innerHTML = link.OriginSection; 
+                section_button.style     = 'width:300px; padding-bottom:0px; margin-bottom:2px; margin-top:2px; text-overflow:ellipsis; white-space:nowrap; overflow:hidden';
+                link_row.appendChild(section_button);               
+
+                let change_sec       = document.createElement('div');       
+                change_sec.style     = 'padding-top:6px'        
+                change_sec.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="tw_icon-clickable tw_icon-small" style="margin:0; padding:0" viewBox="0 0 512 512"><path d="M32 96l320 0V32c0-12.9 7.8-24.6 19.8-29.6s25.7-2.2 34.9 6.9l96 96c6 6 9.4 14.1 9.4 22.6s-3.4 16.6-9.4 22.6l-96 96c-9.2 9.2-22.9 11.9-34.9 6.9s-19.8-16.6-19.8-29.6V160L32 160c-17.7 0-32-14.3-32-32s14.3-32 32-32zM480 352c17.7 0 32 14.3 32 32s-14.3 32-32 32H160v64c0 12.9-7.8 24.6-19.8 29.6s-25.7 2.2-34.9-6.9l-96-96c-6-6-9.4-14.1-9.4-22.6s3.4-16.6 9.4-22.6l96-96c9.2-9.2 22.9-11.9 34.9-6.9s19.8 16.6 19.8 29.6l0 64H480z"/></svg>'               
+                change_sec.onclick   = function(event){
+                    event.stopPropagation();
+                    LINKS_Populate_Section_selectDialog(document.getElementById('LINKS::change-sec-dialog'), link.Origin, link.Target, section_button);  
+                    document.getElementById('LINKS::change-sec-dialog').style.display = 'flex';  
+                    document.getElementById('LINKS::change-sec-dialog').show()                                         
+                }
+                link_row.appendChild(change_sec);  
+
+                let deldiv = document.createElement('div'); 
+                deldiv.style     = 'padding-top:6px'                  
+                deldiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="tw_icon-clickable tw_icon-small" style="margin:0; padding:0" viewBox="0 0 448 512"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>'               
+                deldiv.onclick   = function(){
+                    LINKS_SUMMARY.RemoveLink(link);
+                    kword.DeleteLinkTo(link.Target);
+                    link_row.parentElement.removeChild(link_row);  
+                    __this.__FixColors()                      
+                    LINKS.SummarizeLinks();   
+                    KEYWORDS.GroupKeyWords();     
+                }
+                link_row.appendChild(deldiv);                  
+                this.__LinksColumn.appendChild(link_row);
+                this.__FixColors();
+                LINKS_SUMMARY.Addlink(link);
+                return color ;                     
+            },
+            __FixColors(){
+                let color = 'lightgray';
+                for (const child of this.__LinksColumn.children){
+                    child.style.backgroundColor = color;
+                    color                       = color === 'white' ? 'lightgray' : 'white'; 
+                }
+            }
+        }   
+        self.__ListEntryContainer.style = 'display:flex; box-shadow:1px solid grey';    
+        self.__ListEntryContainer.appendChild(self.__ListEntry);
+        self.__ListEntryContainer.appendChild(self.__ListEntrySumary);
+        document.getElementById('LINKS::links-list-column').appendChild(self.__ListEntryContainer);
+        self.__ListEntry.className      = 'DASHBOARD_ClicableText';
+        
+        var title                      = document.createElement('h3');
+        title.innerHTML                = `<b>${Origin}</b>`;
+        title.classname                = 'tw_h3';
+        title.style                    = 'margin-bottom:30px; padding-top:10px; border-bottom:1px solid black';
+
+        var subtitles_div              = document.createElement('div');
+        subtitles_div.className        = 'LINKS_link-header';
+        subtitles_div.innerHTML        = '<p class="tw_h3_5" style="width:310px"><b>Link to</b></p><p class="tw_h3_5"><b>From section</b></p>';
+
+        links_column                   = document.createElement('div');
+        links_column.style             = 'display:flex; gap:6px; flex-direction:column; border:1px solid lightgray; border';
+        self.__LinksColumn             = links_column;
+                
+        var kword = KEYWORDS.GetKeyWord(Origin);
+        if (kword !== null){      
+            var color = 'lightgray';            
+            for (const link of kword.GetLinks()) {
+                color = self.AddLink(color, link)                
+            }         
+        }
+
+        let add_link_but           = document.createElement('button');
+        let add_link_but_div       = document.createElement('div');
+        add_link_but_div.style     = 'display:flex; flex-direction:row-reverse; margin-top:20px; margin-bottom:4px';
+        add_link_but.classList     = 'tw_button-alt'
+        add_link_but.innerHTML     = 'Add new link'
+        add_link_but_div.appendChild(add_link_but);
+        add_link_but.onclick       = function(event){
+            event.stopPropagation();
+            LINKS_Populate_Add_Link_Dialog(Origin); 
+            document.getElementById('LINKS::add-link-dialog').style.display = 'flex'; 
+            document.getElementById('LINKS::add-link-dialog').show();            
+        }
+        
+        self.__ViewContainer.className = 'LINKS_link-group-container';
+        self.__ViewContainer.appendChild(title);
+        self.__ViewContainer.appendChild(subtitles_div);
+        self.__ViewContainer.appendChild(links_column);
+        self.__ViewContainer.appendChild(add_link_but_div);
+        document.getElementById('LINKS::links-view-column').appendChild(self.__ViewContainer);
+        self.__ListEntry.onclick = function(){add_link_but_div.scrollIntoView(false);}
+        return self;
+    }
+    function LINKS_Populate_Section_selectDialog(diag, orig_name, target_name, section_label){
+        var kword = KEYWORDS.GetKeyWord(orig_name);
+        if (kword === null){
+            return;
+        }
+        diag.innerHTML     = '';
+        var sections_div   = document.createElement('div');
+        sections_div.style = 'display:flex:flex-direction:column;overflow-y:auto'
+        diag.appendChild(sections_div);
+        for (const section of kword.ListSimilarityWithKeyWord(target_name)){
+            let div                = document.createElement('div');
+            let section_name       = document.createElement('p');
+            let section_sim        = document.createElement('p');
+            div.style              = 'display:flex; margin:0; padding:0;';           
+            section_name.className = 'DASHBOARD_ClicableText';
+            section_name.style     = 'width:560px; margin:0; padding:0; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;';            
+            section_sim.style      = 'width:40px; margin:0; padding:0; text-align:right';
+            section_name.innerHTML = section.Section;
+            if (section_label.innerHTML === section.Section){
+                section_name.innerHTML = section_name.innerHTML.bold();
+            }
+            section_sim.innerHTML  =  parseFloat(section.Similarity).toFixed(2);
+            div.appendChild(section_name);
+            div.appendChild(section_sim);
+            sections_div.appendChild(div);
+            section_name.onclick = function(){
+                LINKS_SUMMARY.LinkSectionChanged(kword.GetKeyWord(), target_name, section.Section)
+                kword.UpdateLinkSection(target_name, section.Section);
+                section_label.innerHTML = section.Section;
+                diag.close();
+                diag.style.display='none';
+                KEYWORDS.GroupKeyWords();
+            }
+        }
+        let close_div       = document.createElement('div');
+        let close_but       = document.createElement('button');
+        close_div.style     = 'display:flex; flex-direction:row-reverse;margin-top:10px;padding-bottom:2px';    
+        close_but.innerHTML = 'Close';
+        close_but.classList = 'btn btn-danger btn-rounded';
+        close_div.appendChild(close_but);
+        diag.appendChild(close_div);
+        close_but.onclick = function(){diag.close(); diag.style.display='none';};
+    }
+    function LINKS_Populate_Add_Link_Dialog(orig_name){
+        var kword = KEYWORDS.GetKeyWord(orig_name);
+        if (kword === null){
+            return;
+        }
+        document.getElementById('LINKS::add-link-dialog-targets-column').innerHTML = '';
+        var offset = 0;
+        for (const target of kword.ListPossibleTargets()){
+            let line              = document.createElement('div');
+            let target_name       = document.createElement('p');
+            let similarity        = document.createElement('p');
+            line.style            = 'display:flex'
+            target_name.className = 'DASHBOARD_ClicableText';
+            target_name.innerHTML = target.Target;
+            similarity.innerHTML  = target.Similarity.toFixed(2);
+            let color             = target.IsTarget ? 'red' : 'green'
+            target_name.style     = `color:${color}; border:1px solid ${color}; width:300px; padding-left:4px; margin: 2 0 0 0; border-radius:6px`;   
+            similarity.style      = `color:${color}; border:1px solid ${color}; width:40px;  padding-left:4px; margin: 2 0 0 0; border-radius:6px`;           
+            line.appendChild(target_name);
+            line.appendChild(similarity);
+            document.getElementById('LINKS::add-link-dialog-targets-column').appendChild(line);
+            let target_offset = offset + 0;
+            offset           += 25;            
+
+            if (false === target.IsTarget){
+                target_name.onmouseenter = function(){
+                    this.style.backgroundColor = '#eae4f2';
+                    let sections_column        = document.getElementById('LINKS::add-link-dialog-target-sections-column')
+                    sections_column.innerHTML  = '';
+                    for (const section of kword.ListSimilarityWithKeyWord(target.Target)){
+                        let section_div              = document.createElement('div');
+                        let section_name             = document.createElement('p');     
+                        let section_similarity       = document.createElement('p');     
+                        section_div.style            = 'display:flex; border:none; width:100%';                    
+                        section_name.style           = `color:black; border:1px solid black; width:100%; padding-left:4px; margin: 2 0 0 0; \
+                        border-radius:6px; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;`;                          
+                        section_name.innerHTML       = section.Section;
+                        section_similarity.style     = `color:black; border:1px solid black; width:60px; padding-left:4px; margin: 2 0 0 0; border-radius:6px; textDecoration:none`;                         
+                        section_similarity.innerHTML = parseFloat(section.Similarity).toFixed(2);
+                        section_div.appendChild(section_name); 
+                        section_div.appendChild(section_similarity); 
+                        sections_column.appendChild(section_div);
+                        section_name.onmouseenter = function(){this.style.backgroundColor = '#eae4f2';}
+                        section_name.onmouseleave = function(){this.style.backgroundColor = 'white';}
+                        section_name.onclick      = function(){
+                            console.log(orig_name);
+                            console.log(target.Target);
+                            console.log(section.Section);
+                            LINKS.AddLink(orig_name, target.Target, section.Section);
+                            KEYWORDS.GroupKeyWords();
+                        }
+                    }
+                    sections_column.style.top = `${target_offset}px`;
+                } 
+                target_name.onmouseleave = function(){
+                    this.style.backgroundColor = 'white';
+                    return;
+                    document.getElementById('LINKS::add-link-dialog-target-sections-column').innerHTML = '';
+                } 
+            }
+        }
+    }
+    function LINKS_ShowSumary(event){
+        document.getElementById('LINKS::links-list-column').style.display='flex';
+        event.stopPropagation();
+    }
+
+</script>
+

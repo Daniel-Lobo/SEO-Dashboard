@@ -1,0 +1,221 @@
+<script>
+	async function AdditionalKeywordsComponent(GetData, keepers=null) {
+		let elements = bff(/*html*/`
+			<div class="tw_dialog-container" data-self="container" data-data="{}">
+				<div class="tw_dialog tw_Groups-Container" style="width:1100px;height:650px;flex-direction:column;border-radius:8px">
+					<div style="display:flex;flex-direction:row;gap:20px;height:530;">
+						<div class="tw_Ctrl-Group" style="width:50%;height:100%">
+							<h3 class="tw_h3">Additional Keywords</h3>
+							<p class="tw_h4">...</p>
+							<div  data-self="keywords" style="height:calc(100% - 128px);;overflow-y:auto">
+							</div>
+							<p class="tw_h4" style="margin-top:18px;margin-bottom:4px">Add keyword</p>
+							<input class="tw_input" type="text" data-self="AddKeyword" 
+							placeholder="Type the keyword and hit enter" style="width:100%;margin-bottom:10px">
+						</div>
+						<div class="tw_Ctrl-Group" style="width:50%;height:100%">
+							<h3 class="tw_h3">Anchors</h3>
+							<p class="tw_h4">...</p>
+							<div  data-self="anchor" style="height:calc(100% - 280px);overflow-y:auto">
+							</div>
+							<p class="tw_h4" style="margin-top:18px;margin-bottom:4px;display:none" data-self="ResetCoreEntityLabel">
+								Set or reset core entity. Type the new core entity and hit enter</p>
+							<input class="tw_input" type="text" data-self="ResetCoreEntity" 
+							placeholder="Type the URL text and hit enter" style="width:100%;margin-bottom:10px;display:none">
+							<p class="tw_h4" style="margin-top:18px;margin-bottom:4px;display:none" data-self="ReseturlLabel">
+								Set or reset keyword URL. Type the new URL and hit enter</p>
+							<input class="tw_input" type="text" data-self="Reseturl" 
+							placeholder="Type the URL text and hit enter" style="width:100%;margin-bottom:10px;display:none">
+							<p class="tw_h4" style="margin-top:18px;margin-bottom:4px;display:none" data-self="AddAnchorLabel">Add Anchor</p>
+							<div style="display:flex;flex-direction:row;gap:10px;">
+								<input class="tw_input" type="text" data-self="AddAnchor" 
+								placeholder="Type the Anchor text and hit enter" style="width:100%;margin-bottom:10px;display:none">	
+								<button class="tw_button-alt" data-self="AddAnchorButton" style="display:none;">Generate</button>
+							</div>						
+						</div>	
+					</div>	
+					<div class="tw_Ctrl-Group" style="display:flex;flex-direction:row-reverse;gap:6px;margin-top:10px">
+						<button class="tw_button-alt" style="display:flex" data-self="Commit">
+							Commit changes
+						</button>
+						<button class="tw_button" data-self="Close">Close</button>						
+						<div class="loader" style="width:26px;height:26px;margin-top:4px;margin-right:10px;display:flex;color:black" data-self="Spinner"></div>
+					</div>	
+				</div>				
+			</div>
+		`).AppendTo(document.body);				
+		elements.container.style.display = 'flex';
+		if (GetData) {
+			elements.Data().set(await GetData());
+		}
+		elements.Spinner.style.display = "none"
+		elements.Close.onclick = () => {
+			elements.container.remove();
+		}
+		elements.AddKeyword.onkeydown = (e) => {
+			if (e.key != "Enter") {
+				return
+			}
+			let keyword = elements.AddKeyword.value;
+			elements.AppendKeyword(keyword);
+			elements.AddKeyword.value = "";
+		}
+		elements.AppendKeyword = (keyword) => {
+			console.log(keyword);
+			let data    = elements.Data();
+			let visible = keepers === null || keepers.includes(keyword) ? 'flex' : 'none';	
+			if (keyword) {
+				let kword = bff(/*html*/`
+					<div class="tw_List-Item-Container" data-self="root" style="display:${visible}">
+						<div class="tw_List-Item-Label">${keyword}</div>
+						<div style="flex-grow: 1;"></div>   				
+						<i class="fa-solid fa-trash tw_Icon-Clickable" data-self="Delete"></i>  
+						<i class="fa-solid fa-anchor tw_Icon-Clickable" data-self="Anchors"></i>
+					</div>
+				`).AppendTo(elements.keywords);
+				if (false == keyword in data) {
+					data[keyword] = {"Url" : "", "CoreEntity": "", "Anchors": []};
+					data.update();
+				}
+				if (false == "Url" in data[keyword]        ||
+					false == "CoreEntity" in data[keyword] ||
+					false == "Anchors" in data[keyword])   {
+					data[keyword] = {"Url" : "", "CoreEntity": "", "Anchors": []};
+					data.update();
+				}
+				console.log(elements.Data());
+				kword.Delete.onclick = () => {
+					DASHBOARD_OK_Cancel(`Delete keyword '${keyword}'?`, "Delete", () => {
+						let data  = elements.Data();
+						delete data[keyword];
+						kword.root.remove();
+						data.update();
+						console.log(elements.Data());
+					});						
+				}
+				kword.AddAnchor = (anchor) => {					
+					let anchor_elements = bff(/*html*/`
+						<div class="tw_List-Item-Container" data-self="root">
+							<div class="tw_List-Item-Label" data-self="name">${anchor}</div>
+							<div style="flex-grow: 1;"></div>   				
+							<i class="fa-solid fa-trash tw_Icon-Clickable" data-self="Delete"></i>  
+						</div>`).AppendTo(elements.anchor);
+					let data = elements.Data();
+					if (false === data[keyword].Anchors.includes(anchor)) {
+						data[keyword].Anchors.push(anchor);		
+						data.update();
+					}
+					
+					anchor_elements.Delete.onclick = () => {
+						DASHBOARD_OK_Cancel(`Delete anchor '${anchor}'?`, "Delete", () => {
+							let data  = elements.Data();
+							data[keyword].Anchors.splice(data[keyword].Anchors.indexOf(anchor), 1);
+							anchor_elements.root.remove();
+							data.update();
+							console.log(elements.Data());
+						});	
+					}			
+				}
+				kword.Anchors.onclick = () => {
+					console.log(keyword, elements.Data())
+					elements.ResetCoreEntityLabel.style.display = 'flex';
+					elements.ResetCoreEntity.style.display      = 'flex';
+					elements.ResetCoreEntity.value              = elements.Data()[keyword].CoreEntity;
+					elements.ResetCoreEntity.onkeydown = (e) => {
+						if (e.key != "Enter") {
+							return
+						}
+						let core_entity = elements.ResetCoreEntity.value;
+						let data = elements.Data();
+						data[keyword].CoreEntity = core_entity;
+						data.update();
+						console.log(elements.Data());
+						alert('Core entity updated');
+					}
+					elements.ReseturlLabel.style.display  = 'flex';
+					elements.Reseturl.style.display       = 'flex';
+					elements.Reseturl.value               = elements.Data()[keyword].Url;
+					elements.Reseturl.onkeydown = (e) => {
+						if (e.key != "Enter") {
+							return
+						}
+						let url = elements.Reseturl.value;
+						let data = elements.Data();
+						data[keyword].Url = url;
+						data.update();
+						console.log(elements.Data());
+						alert('URL updated');
+					}	
+					elements.AddAnchorButton.style.display = 'flex';
+					elements.AddAnchorLabel.style.display = 'flex';
+					elements.AddAnchor.style.display      = 'flex';
+					elements.AddAnchor.onkeydown = (e) => {
+						if (e.key != "Enter") {
+							return
+						}
+						let anchor = elements.AddAnchor.value;
+						let data = elements.Data();
+						if (data[keyword].Anchors.includes(anchor)){
+							alert(`Anchor '${anchor}' already exists`);
+							return;
+						}						
+						kword.AddAnchor(anchor);
+						elements.AddAnchor.value = "";
+					}
+					elements.anchor.innerHTML = "";
+					for (let anchor of elements.Data()[keyword].Anchors){
+						kword.AddAnchor(anchor);
+					}				
+					elements.AddAnchorButton.onclick = () => {
+						alert('Not implemented yet');
+					}	
+					elements.AddAnchorButton.onclick = async() => {
+						let data = elements.Data();
+						if (data[keyword].CoreEntity === ""){
+							alert('Core entity is not set');
+							return;
+						}
+						console.log(keyword, data[keyword].CoreEntity, data[keyword].Anchors);
+						//return;
+						try {
+							await DASHBOARD_UpdateSettings()
+							elements.Spinner.style.display = "flex"
+							let fetch_options  = DASHBOARD_FetchOPtions()  
+							let options        = {
+								Keyword    : keyword, 
+								CoreEntity : data[keyword].CoreEntity,
+								Anchors    : data[keyword].Anchors, 
+								Model      : DASHBOARD_GetModel('anchors')
+							}
+							fetch_options.body = JSON.stringify({Request : [options]});    
+							var reply          = await DASHBOARD_Fetch('/cluster_creator-anchors', fetch_options);
+							reply              = reply.Reply[0];    
+							console.log(reply.Anchors);               
+							for (let anchor of reply.Anchors){
+								kword.AddAnchor(anchor);
+							}                 
+							CLUSTERCREATOR_msg('', 'Done generating anchors');   
+						} catch (error) {
+							DASHBOARD_except(error);
+						}
+						finally {
+							elements.Spinner.style.display = "none"
+						}
+					}
+				}
+			}			
+		}
+		let datacopy = JSON.parse(JSON.stringify(elements.Data()));
+		console.log(datacopy);
+		for (let [keyword, value] of Object.entries(datacopy)){
+			console.log(keyword);
+			elements.AppendKeyword(keyword);
+		}
+		//let data  = elements.Data();
+		//data.test = 'test';
+		//console.log(elements.Data());
+		//data.update();
+		//console.log(elements.Data());
+		return elements;	
+	}
+</script>

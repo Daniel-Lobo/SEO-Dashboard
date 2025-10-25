@@ -1,0 +1,20 @@
+{% extends 'dashboard.html' %}
+
+{% block breadcrumbs %}  
+<div style='display:flex; flex-direction: column; width:100%; margin-right:20px; margin-bottom:-16px;'>
+    <div style='display:flex; margin-bottom:20px; text-transform: uppercase;'> 
+        <span>SEO Tools</span>
+        <span>Content creator</span>   
+    </div>        
+    <h1 class='az-content-title'>Content Creator</h1>
+    <progress id='CONTENTCREATOR-PAGE::progress' value='50' max='100' style='height:6px;width:100%;background-color:white;visibility:hidden'></progress>
+</div>  
+{% endblock %}  
+
+{% block tool_content %} 
+    {% if acess_flag_article_gen %} 
+        {% include 'ContentCreator.html' %}
+    {% else %}
+        <h1 class='az-content-title DASHBOARD_Noaccess'>You don't have access to this tool</h1>
+    {% endif %}
+{% endblock %}

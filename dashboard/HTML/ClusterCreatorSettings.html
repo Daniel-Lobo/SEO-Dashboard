@@ -1,0 +1,338 @@
+<style>
+    .CLUSTERCREATOR-SETTINGS_root{
+        display       : flex;
+        flex-direction: column;     
+        width         : 100%;   
+        margin-top    : 20px
+    }
+    .CLUSTERCREATOR-SETTINGS_title{
+        text-justify: left;
+    }
+</style>
+
+<div id='CLUSTERCREATOR-SETTINGS::root' class='CLUSTERCREATOR-SETTINGS_root'>    
+    <div style='display:flex; width:100%; gap:20px; margin-bottom:26px; margin-top:-6px;'>
+        <div style='display:flex;flex-direction:column; width:50%; position:relative'>
+            <div class='az-content-label mg-b-5'>Tones</div>
+            <p class='mg-b-20'>Select one or two</p>     
+            <select id='CLUSTERCREATOR-SETTINGS::tones-container' class="form-control" size='18' multiple="multiple" onChange='CLUSTERCREATOR_SETTINGS.ToneChanged()'>
+                <template id='CLUSTERCREATOR-SETTINGS::tone-template'>                                
+                    <option value="..."  onmouseenter='CLUSTERCREATOR_SETTINGS.ShowToneTip(this)' 
+                    onmouseleave="document.getElementById('CLUSTERCREATOR-SETTINGS::tone-tip').style.display = 'none'">Whatever</option>
+                </template>                  
+            </select>  
+            <div id='CLUSTERCREATOR-SETTINGS::tone-tip' style='position:absolute; top:400px; display:none; background-color:#6f42c1ff; color:white; width:600px;
+            padding:20 20 20 20; word-wrap: normal; z-index:1'>               
+            </div>    
+            <div class='az-content-label mg-b-5' style='margin-top:40px; display:none'>Model</div>
+            <p class='mg-b-20' style='display:none'>AI model used for all tasks but create outlines</p> 
+            <select id='CLUSTERCREATOR-SETTINGS::model' style='display:none' class="form-control">                                                         
+            </select>  
+
+            <div class='az-content-label mg-b-5' style='margin-top:40px;'>Models</div>
+            <div style='display:flex; gap:6px; margin-bottom:6px; margin-bottom:6px; width:100%'>
+                <div style='display:flex; flex-direction:column; width:50%'>
+                    <p class='mg-b-20' style='margin-bottom:0px;'>Outline generation</p> 
+                    <select id='CLUSTERCREATOR-SETTINGS::model-outline-generation' class="form-control">                                                         
+                    </select> 
+                </div>
+                <div style='display:flex; flex-direction:column; width:50%'>
+                    <p class='mg-b-20' style='margin-bottom:0px;'>Outline cleaning</p> 
+                    <select id='CLUSTERCREATOR-SETTINGS::model-outline-cleaning' class="form-control">                                                         
+                    </select> 
+                </div>                       
+            </div>
+            <div style='display:flex; gap:6px; margin-bottom:6px; width:100%'>
+                <div style='display:flex; flex-direction:column; width:50%'>
+                    <p class='mg-b-20' style='margin-bottom:0px;'>Entity generation</p> 
+                    <select id='CLUSTERCREATOR-SETTINGS::model-entities' class="form-control">                                                         
+                    </select> 
+                </div>
+                <div style='display:flex; flex-direction:column; width:50%'>
+                    <p class='mg-b-20' style='margin-bottom:0px;'>Anchors generation</p> 
+                    <select id='CLUSTERCREATOR-SETTINGS::model-anchors' class="form-control">                                                         
+                    </select> 
+                </div>                       
+            </div>   
+            <div style='display:flex; gap:6px; margin-bottom:6px; width:100%'>
+                <div style='display:flex; flex-direction:column; width:50%'>
+                    <p class='mg-b-20' style='margin-bottom:0px;'>Seach intent generation</p> 
+                    <select id='CLUSTERCREATOR-SETTINGS::model-search-intent' class="form-control">                                                         
+                    </select> 
+                </div>
+                <div style='display:flex; flex-direction:column; width:50%'>
+                    <p class='mg-b-20' style='margin-bottom:0px;'>Content generation</p> 
+                    <select id='CLUSTERCREATOR-SETTINGS::model-content' class="form-control">                                                         
+                    </select> 
+                </div>                       
+            </div>                         
+        </div> 
+        <div style='display:flex;flex-direction:column; width:50%; position:relative'>
+            <div class='az-content-label mg-b-5 CLUSTERCREATOR-SETTINGS'>Audiences</div>
+            <p class='mg-b-20'>Select one</p>         
+            <select id='CLUSTERCREATOR-SETTINGS::audiences-container' class="form-control" size='18' multiple="multiple" onChange='CLUSTERCREATOR_SETTINGS.AudienceChanged()'>
+                <template id='CLUSTERCREATOR-SETTINGS::audience-template'>                                
+                    <option value="..." onmouseenter='CLUSTERCREATOR_SETTINGS.ShowAudienceTip(this)' 
+                    onmouseleave="document.getElementById('CLUSTERCREATOR-SETTINGS::audience-tip').style.display = 'none'">Whatever</option>
+                </template>                  
+            </select> 
+            <div id='CLUSTERCREATOR-SETTINGS::audience-tip' style='position:absolute; top:230px; display:none; background-color:#6f42c1ff; color:white; width:600px;
+            padding:20 20 20 20; word-wrap: normal; z-index:1'>               
+            </div>
+            <div class='az-content-label mg-b-5 OUTLINEGEN_Title' style='margin-top:40px'>Misc settings</div>
+            <p class='mg-b-20 OUTLINEGEN_Title'>Miscellaneous settings</p> 
+            <div style='display:flex;flex-direction:column;border:1px solid lightgrey;'>
+                <label class="ckbox DASHBOARD_CheckboxLabel" style="margin:6 6 6 6;">
+                    <input id="CLUSTERCREATOR-SETTINGS::trailing-backslash" class="checkbox" type="checkbox" style="margin-top:1px; margin-right:-10px;">
+                    <span>Export urls with a trailing slash</span>
+                </label>
+                <label class="ckbox DASHBOARD_CheckboxLabel" style="margin:6 6 6 6;">
+                    <input id="CLUSTERCREATOR-SETTINGS::overwrite-content" class="checkbox" type="checkbox" style="margin-top:1px; margin-right:-10px;">
+                    <span>Overwrite fields that already have data - entities, anchors, facts, competitor's URLs, competitor's outlines and outlines</span>
+                </label>
+            </div> 
+            <div class='az-content-label mg-b-5' style='margin-top:40px'>Threshold</div>
+            <p class='mg-b-20'>Similarity threshold for auto assigning links</p> 
+            <div style='display:flex; width:100%; gap:20px'>            
+                <input type='range' class='form-range' id='CLUSTERCREATOR-SETTINGS.threshold' min="0.1" max="1.0" step="0.01" value='0.5' style='flex-grow:1'></input>  
+                <input type='number' class='form-control' id='CLUSTERCREATOR-SETTINGS.threshold-label' min="0.1" max="1.0" step="0.01" value='0.5' 
+                style='width:80px; height:30px'></input>  
+            </div>       
+        </div>         
+    </div>            
+</div>
+
+<script>
+    document.getElementById('CLUSTERCREATOR-SETTINGS.threshold').value       = LINKS.GetThresHold();
+    document.getElementById('CLUSTERCREATOR-SETTINGS.threshold-label').value = LINKS.GetThresHold();
+    document.getElementById('CLUSTERCREATOR-SETTINGS.threshold').onchange = function(){
+        let val = document.getElementById('CLUSTERCREATOR-SETTINGS.threshold').value;
+        document.getElementById('CLUSTERCREATOR-SETTINGS.threshold-label').value = val;
+        LINKS.SetThresHold(val);
+    } 
+    document.getElementById('CLUSTERCREATOR-SETTINGS.threshold-label').onchange = function(){
+        let val = document.getElementById('CLUSTERCREATOR-SETTINGS.threshold-label').value;
+        document.getElementById('CLUSTERCREATOR-SETTINGS.threshold').value = val;
+        LINKS.SetThresHold(val);
+    }   
+    CLUSTERCREATOR_SETTINGS = {   
+        __Models : ['outline-generation', 'outline-cleaning', 'entities', 'anchors', 'search-intent', 'content'],      
+        __GetModelSelectors(){
+            let ids     = [];
+            let widgets = [];
+            for (const sufix of this.__Models){
+                let id = 'CLUSTERCREATOR-SETTINGS::model-' + sufix;
+                ids.push(id);
+                widgets.push(document.getElementById(id));
+            }
+            return {IDs : ids, Widgets : widgets};
+        },
+        GetModelFor(tasks){            
+            return DASHBOARD_GetModel(tasks)
+            if (['outline-generation', 'outline-cleaning', 'search-intent', 'content'].includes(tasks.replaceAll(' ', '-').toLowerCase())){
+                return DASHBOARD_GetModel(tasks)
+            }
+            let _id      = 'CLUSTERCREATOR-SETTINGS::model-' + tasks.replaceAll(' ', '-').toLowerCase();
+            let selector = document.getElementById(_id);
+            return selector.options[selector.selectedIndex].value;
+        },
+        async InitWidgets(){
+            this.__Descriptions     = {};
+            this.__TonesIdsList     = [];
+            this.__AudiencesIdsList = [];;
+            var src       = document.getElementById('CLUSTERCREATOR-SETTINGS::tone-template');
+            var container = document.getElementById('CLUSTERCREATOR-SETTINGS::tones-container');
+
+            var fetch_options = DASHBOARD_FetchOPtions()              
+            var tones         = await DASHBOARD_Fetch('/outlinegen-get-tones', fetch_options);  
+            this.__Tones      = tones;           
+            for (const tone of tones.Tones) {
+                let clone                   = src.content.cloneNode(true);    
+                clone.children[0].id        = `CLUSTERCREATOR-SETTINGS::tone-${tone.Tone.replace(" ", "-")}`;
+                clone.children[0].innerHTML = tone.Tone;
+                clone.children[0].value     = tone.Tone;
+                this.__TonesIdsList.push(clone.children[0].id)
+                container.appendChild(clone);
+                this.__Descriptions[tone.Tone] = tone.Caption;
+            }                
+            var src       = document.getElementById('CLUSTERCREATOR-SETTINGS::audience-template');
+            var container = document.getElementById('CLUSTERCREATOR-SETTINGS::audiences-container');
+            for (const audience of tones.Audiences) {
+                let clone                   = src.content.cloneNode(true);  
+                clone.children[0].id        = `CLUSTERCREATOR-SETTINGS::audience-${audience.Audience.replace(" ", "-")}`; 
+                clone.children[0].innerHTML = audience.Audience;         
+                clone.children[0].value     = audience.Audience;
+                this.__AudiencesIdsList.push(clone.children[0].id )
+                container.appendChild(clone);
+            }              
+            var reply  = await DASHBOARD_Fetch('https://openrouter.ai/api/v1/models');              
+            let select = document.getElementById('CLUSTERCREATOR-SETTINGS::model')
+            for (const model of reply.data){
+                let option   = document.createElement('option');
+                option.value = model.id;
+                option.label = model.name;
+                select.appendChild(option);
+            }  
+            for (const selector of this.__GetModelSelectors().Widgets){
+                for (const model of reply.data){
+                    let option   = document.createElement('option');
+                    option.value = model.id;
+                    option.label = model.name;
+                    selector.appendChild(option);
+                }  
+            }            
+        },
+        GetURLTerminator(){
+            return DASHBOARD_OptionB('Backslash')  ? '/' : '';
+            return document.getElementById('CLUSTERCREATOR-SETTINGS::trailing-backslash').checked ? '/' : ''
+        },
+        OverWrite(){
+            return DASHBOARD_OptionB('Overwrite Content')
+            return document.getElementById('CLUSTERCREATOR-SETTINGS::overwrite-content').checked;
+        },
+        ToJson(){
+            let models    = {};
+            let selectors = this.__GetModelSelectors();
+            for (let i=0; i<selectors.IDs.length; i++){
+                let widget = selectors.Widgets[i];
+                let id     = selectors.IDs[i].replace('CLUSTERCREATOR-SETTINGS::model-', '');
+                models[id] = widget.options[widget.selectedIndex].value;
+            }
+            return {Tones : this.GetTones(), Audience : this.GetAudience(), Model: 
+                document.getElementById('CLUSTERCREATOR-SETTINGS::model').value,
+                'URL Trailing Backslash' : document.getElementById('CLUSTERCREATOR-SETTINGS::trailing-backslash').checked,
+                'Overwrite content'      : document.getElementById('CLUSTERCREATOR-SETTINGS::overwrite-content').checked,
+                'Links ThresHold'        : document.getElementById('CLUSTERCREATOR-SETTINGS.threshold').value,
+                'Models'                 : models
+            };
+        },
+        FromJson(cfg){
+            if (false === ('Preferences' in cfg))       return;
+            if (false === ('Tones' in cfg.Preferences)) return;
+
+            var slct = document.getElementById('CLUSTERCREATOR-SETTINGS::tones-container') ;                
+            for (const option of slct.options) {
+                if (cfg.Preferences.Tones.includes(option.innerHTML))
+                option.selected = true;
+            } 
+            slct = document.getElementById('CLUSTERCREATOR-SETTINGS::audiences-container') ;   
+            for (const option of slct.options) {
+                if (cfg.Preferences.Audience == option.innerHTML){
+                    option.selected = true;
+                    break;
+                }
+            }  
+            if (true === ('Model' in cfg.Preferences)) {                
+                let model_slct = document.getElementById('CLUSTERCREATOR-SETTINGS::model')
+                for (const option of model_slct.options) {
+                if (option.value === cfg.Preferences.Model) {
+                    option.selected = true
+                    }
+                }     
+            }    
+            if (true === ('Models' in cfg.Preferences)) {  
+                let selectors = this.__GetModelSelectors();              
+                for (let i=0; i<selectors.IDs.length; i++){
+                    let model_slct = selectors.Widgets[i];
+                    let id         = selectors.IDs[i].replace('CLUSTERCREATOR-SETTINGS::model-', '');;
+                    for (const option of model_slct.options) {
+                        if (option.value === cfg.Preferences.Models[id]) {
+                            option.selected = true
+                        }
+                    }    
+                } 
+            }    
+            if (true === ('URL Trailing Backslash' in cfg.Preferences))  {
+                document.getElementById('CLUSTERCREATOR-SETTINGS::trailing-backslash').checked = cfg.Preferences['URL Trailing Backslash'];
+            }  
+            if (true === ('Overwrite content' in cfg.Preferences))  {
+                document.getElementById('CLUSTERCREATOR-SETTINGS::overwrite-content').checked = cfg.Preferences['Overwrite content'];
+            }  
+            if (true === ('Links ThresHold' in cfg.Preferences))  {
+                document.getElementById('CLUSTERCREATOR-SETTINGS.threshold').value       = cfg.Preferences['Links ThresHold'];
+                document.getElementById('CLUSTERCREATOR-SETTINGS.threshold-label').value = cfg.Preferences['Links ThresHold'];
+                LINKS.SetThresHold(cfg.Preferences['Links ThresHold'])
+            }     
+        },
+        GetToneDescriptions(){   
+            return DASHBOARD_GetToneDescriptions()         
+            desc = {}          
+            for (const tone of this.GetTones()){                
+                desc[tone] = this.__Descriptions[tone];                
+            }
+            return desc
+        },
+        GetTones(){
+            return DASHBOARD_OptionA('Selected Tones')
+            var tones = []
+            var slct  = document.getElementById('CLUSTERCREATOR-SETTINGS::tones-container') ;                
+            for (const option of slct.options) {
+                if (option.selected) {
+                    tones.push(option.value)
+                }
+            }
+            return tones
+        },
+        GetAudience(){      
+            return DASHBOARD_Option('Selected Audience')      
+            var slct  = document.getElementById('CLUSTERCREATOR-SETTINGS::audiences-container') ;                
+            for (const option of slct.options) {
+                if (option.selected) {
+                    return option.value
+                }
+            }
+            return ''
+        },
+        ToneChanged(){     
+            var slct = document.getElementById('CLUSTERCREATOR-SETTINGS::tones-container') ;
+            count    = 0;     
+            for (option of slct.options) {
+                if (option.selected) {
+                    count += 1
+                    if (count > 2){
+                        option.selected = false;
+                        alert('Select only two')
+                        return;
+                    }
+                }
+            }            
+        },
+        AudienceChanged(src){            
+            var slct = document.getElementById('CLUSTERCREATOR-SETTINGS::audiences-container') ;
+            count    = 0;     
+            for (option of slct.options) {
+                if (option.selected) {
+                    count += 1
+                    if (count > 1){
+                        option.selected = false;
+                        alert('Select only one')
+                        return;
+                    }
+                }
+            }   
+        },
+        ShowToneTip(src){
+            var key = src.id.replace('CLUSTERCREATOR-SETTINGS::tone-', '').replace('-', ' ')           
+            var tip = '';
+            for (tone of this.__Tones.Tones){
+                if (tone.Tone === key)
+                tip = `<b>${key}:</b><br>${tone.Caption}`;
+            }            
+            document.getElementById('CLUSTERCREATOR-SETTINGS::tone-tip').innerHTML     = tip;
+            document.getElementById('CLUSTERCREATOR-SETTINGS::tone-tip').style.display = 'block'
+        } ,   
+        ShowAudienceTip(src){
+            var key = src.id.replace('CLUSTERCREATOR-SETTINGS::audience-', '').replace('-', ' ')           
+            var tip = '';
+            for (audience of this.__Tones.Audiences){
+                if (audience.Audience === key)
+                tip = `<b>${key}:</b><br>${audience.Caption}`;
+            }                
+            document.getElementById('CLUSTERCREATOR-SETTINGS::audience-tip').innerHTML     = tip;
+            document.getElementById('CLUSTERCREATOR-SETTINGS::audience-tip').style.display = 'block'
+        }     
+    }
+    CLUSTERCREATOR_SETTINGS.InitWidgets();
+</script>
+
+

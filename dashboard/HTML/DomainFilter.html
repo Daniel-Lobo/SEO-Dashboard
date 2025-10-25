@@ -1,0 +1,127 @@
+{% extends 'dashboard.html' %}
+
+{% block breadcrumbs %}  
+<div style='display:flex; flex-direction: column; width:100%; height:100%; margin-right:20px;'>
+    <div style='display:flex; margin-bottom:20px; text-transform: uppercase;'> 
+        <span>SEO Tools</span>
+        <span>Domain Filter</span>   
+    </div>        
+    <h1 class='az-content-title'>Domain Filter</h1>    
+</div>  
+{% endblock %}
+
+{% block tool_content %} 
+<style>      
+</style>
+
+
+<div style='display:flex; flex-direction: column; width:100%;'>
+    <textarea  id='DOMAIN-FILTER::domains' placeholder='Domain filter' style='width:100%; height:100%' class='form-control'></textarea>
+    <div style='display:flex; flex-direction: row-reverse; width:100%; margin-top:10px; gap:10px'>
+        <button id='DOMAIN-FILTER::overwrite' class='btn btn-danger btn-rounded'>Overwrite</button>
+        <button id='DOMAIN-FILTER::save' class='btn btn-az-secondary btn-rounded'>Save</button>
+        <button id='DOMAIN-FILTER::load' class='btn btn-az-secondary btn-rounded'>Load</button>
+        <button id='DOMAIN-FILTER::copy' class='btn btn-az-secondary btn-rounded'>Copy</button>  
+        <button id='DOMAIN-FILTER::filter' class='btn btn-az-secondary btn-rounded'>Filter</button>       
+    </div>  
+</div>  
+
+<script>  
+var DOMAIN_FILTER = {
+    Key : 'e070e1e7-6e19-49d7-985c-69755dac4cb9'   // data will be saved on the clsuters table, so we decorate the key to avoid colisions
+}
+function DomainFIlter_GetDomain(url){
+    try {
+        let host = new URL(url).hostname;
+        return host == '' ? url : host
+    } catch {
+        return url
+    }
+}
+document.getElementById('DOMAIN-FILTER::filter').onclick = async function(){
+    let domains_s = ''
+    let domains   = []
+    for (const line of document.getElementById('DOMAIN-FILTER::domains').value.split('\n')){       
+        let domain = DomainFIlter_GetDomain(line) ;
+        if (false === domains.includes(domain)) {
+            domains_s += domain + '\n';       
+            domains.push(domain);
+        }
+    }
+    document.getElementById('DOMAIN-FILTER::domains').value = domains_s;    
+}
+document.getElementById('DOMAIN-FILTER::load').onclick = async function(){
+    let fetch_options  = DASHBOARD_FetchOPtions();
+    fetch_options.body = JSON.stringify({Request : {Name : DOMAIN_FILTER.Key}});
+    let reply          = await DASHBOARD_Fetch('cluster_creator-load', fetch_options);    
+    if ('err' in reply){        
+        alert(`Error ${reply.err} loading domains`);
+        return;
+    }
+    if (!('Reply' in reply)){
+        alert(`Unespect error loading domains`);
+    }
+    console.log(reply)
+    let r = reply;
+    try {
+        if ('err' in r.Reply) {
+            if (r.Reply.err === `Cluster ${DOMAIN_FILTER.Key} not found`) {
+                alert('No domains yet');
+                return 'No domains yet';
+            }
+            alert(`Error ${reply.err} loading domains`);
+            return;
+        }    
+    } catch {}; 
+    let domains = ''
+    let dlist   = JSON.parse(reply.Reply) 
+    for (const d of dlist) {
+        if (d == '') continue;
+        domains += d + '\n';
+    }
+    document.getElementById('DOMAIN-FILTER::domains').value = domains;
+}
+document.getElementById('DOMAIN-FILTER::overwrite').onclick = async function(){
+    let domains   = []
+    let domains_s = ''
+    for (const line of document.getElementById('DOMAIN-FILTER::domains').value.split('\n')){
+        let domain = DomainFIlter_GetDomain(line)
+        if (false == (domains.includes(domain))) {
+            domains.push(domain);
+            domains_s += domain +'\n';
+        }
+    }
+    document.getElementById('DOMAIN-FILTER::domains').value = domains_s;
+    let fetch_options  = DASHBOARD_FetchOPtions();
+    fetch_options.body = JSON.stringify({Request : {Name : DOMAIN_FILTER.Key, Data:domains}});
+    await DASHBOARD_Fetch('cluster_creator-save', fetch_options);    
+}
+document.getElementById('DOMAIN-FILTER::save').onclick = async function(){    
+    let new_domains = [] 
+    for (const line of document.getElementById('DOMAIN-FILTER::domains').value.split('\n'))   {
+        new_domains.push(DomainFIlter_GetDomain(line))
+    } 
+    console.log(new_domains)    
+    if (await document.getElementById('DOMAIN-FILTER::load').onclick() == 'No domains yet')
+    return document.getElementById('DOMAIN-FILTER::overwrite').onclick();
+    
+    let old_domains = document.getElementById('DOMAIN-FILTER::domains').value.split('\n')   
+    console.log(old_domains) 
+    for (const candidate of new_domains){
+        if (false == old_domains.includes(candidate)){
+            old_domains.push(candidate);
+        }
+    }
+    console.log(old_domains) 
+    let fetch_options  = DASHBOARD_FetchOPtions();
+    fetch_options.body = JSON.stringify({Request : {Name : DOMAIN_FILTER.Key, Data:old_domains}});
+    await DASHBOARD_Fetch('cluster_creator-save', fetch_options);   
+    await document.getElementById('DOMAIN-FILTER::load').onclick();
+}
+document.getElementById('DOMAIN-FILTER::copy').onclick = function(){
+    navigator.clipboard.writeText(document.getElementById('DOMAIN-FILTER::domains').value);
+    alert("Data copyed to clipboard")
+}
+</script>
+{% endblock %}
+

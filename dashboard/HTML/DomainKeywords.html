@@ -1,0 +1,330 @@
+
+<div class="ADDITIONAL-KEYWORDS_root tw_Ctrl-Group" id="DOMAINKEYWORS::root" style="display:none">
+	<button class="tw_button-alt" style="display:flex" onclick="DOMAINKEYWORS_Commit(this)">Commit changes
+		<span class="loader" style='width:24px;height:24px;margin-top:-2px;margin-right:4px;color:black;display:none'></span>
+	</button>
+	<div class='tw_h4' style='margin-left:10px;text-align: justify;margin-bottom:20px;margin-right: 10px;'>
+		Any anchors you modify here are available to be assigned as links right away,
+		but they wont be listed again if you leave the page. If you want to make them permanent, click the <i>Commit changes</i> button
+	</div>
+	<div id="DOMAINKEYWOR::list-container" style="display:flex;flex-direction: column;overflow-y: auto;">
+	</div>
+</div>	
+<script>
+	console.log("Domain keywords 'module' loaded")
+	async function DOMAINKEYWORS_Commit(src){
+		try {
+			src.children[0].style.display = "flex";
+			let clusters = {}
+			for (cluster of DOMAIN_KEYWORS.GetClusters()){
+				clusters[cluster] = []
+			}
+			for (let [kword, anchor] of Object.entries(DOMAIN_KEYWORS.GetAllAnchors())){
+				console.log(anchor.Cluster)
+				clusters[anchor.Cluster].push({
+					Keyword : kword, 
+					Anchors : DOMAIN_KEYWORS.UserSelecction(kword)
+				});
+			}
+			console.log(clusters)
+			let options  = DASHBOARD_FetchOPtions();
+			options.body = JSON.stringify({Clusters : clusters});
+			url   	     = `/client_owned_clusters_edit-cluster-anchors?Client=${KEYWORDS.GetClient()}&Domain=${KEYWORDS.GetDomain()}`;
+			reply        = await DASHBOARD_Fetch(url, options);
+			console.log(reply)
+		} catch (error) {
+			DASHBOARD_except(error)
+		} finally {
+			src.children[0].style.display = "none";
+		}
+	}
+	var DOMAIN_KEYWORS = {
+		__Anchors    : {},
+		__AllAnchors : {},
+		reset(kwords){
+			let container       = document.getElementById("DOMAINKEYWOR::list-container");
+			container.innerHTML = "";
+			this.__Anchors      = {};
+			this.__AllAnchors   = {};
+			for (let kword of kwords){
+				let addanchor_input = DASHBOARD_AziaForm('input', 'Type the anchor text and hit enter', 'border:none; border-bottom:1px solid lightgray; height:30px;');
+				let entity_label                       = document.createElement('div');
+				let entity_input                       = DASHBOARD_AziaForm('input', 'Core entity', 'border:none; border-bottom:1px solid lightgray; height:30px;');   
+				let kword_div                          = document.createElement("div");
+				let kword_name                         = document.createElement("div");
+				let anchors_list_label                 = document.createElement("p");
+				let anchors_list                       = DASHBOARD_Multichoice(kword.Anchors);
+				let anchors_input_label                = document.createElement("p");
+				let button_container                   = document.createElement("div");				
+				entity_label.innerHTML                 = "Core entity";
+				entity_label.className 			       = "tw_h4";
+				button_container.style                 = 'display:flex;flex-direction:row-reverse;gap:4px';
+				kword_div.style                        = 'display:flex; gap:2px; flex-direction:column;margin-bottom:16px; padding-left:4px;padding-right:12px;';
+				kword_name.innerHTML                   = "<b>" + kword.Keyword + "</b>";
+				kword_name.className                   = "tw_h3_5 DASHBOARD_ellipsis";
+				kword_name.style.borderTop             = "1px solid black";
+				anchors_list_label.innerHTML           = "Anchors";
+				anchors_list_label.className           = "tw_h4";	
+				anchors_list_label.style.marginBottom  = "0px";	
+				anchors_input_label.innerHTML          = "Anchors";
+				anchors_input_label.className          = "tw_h4";	
+				anchors_input_label.style.marginBottom = "0px";			
+				kword_div.appendChild(kword_name);
+				kword_div.appendChild(anchors_list_label);
+				kword_div.appendChild(anchors_list.Container());
+				kword_div.appendChild(anchors_input_label);
+				kword_div.appendChild(addanchor_input);
+				kword_div.appendChild(entity_label);
+				kword_div.appendChild(entity_input);
+				kword_div.appendChild(button_container);
+				container.appendChild(kword_div);
+				addanchor_input.onkeypress = function(event) {					
+					if (event.key === 'Enter'){ 					                               
+						anchors_list.AddOption(addanchor_input.value)
+						addanchor_input.value = '';						
+					} 
+				}				
+				button_container.innerHTML += /*html*/`					
+					<svg xmlns="http://www.w3.org/2000/svg" class="tw_Icon-Clickable tw_icon-medium-large" viewBox="0 0 576 512">
+						<path d="M320 96a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zm21.1 80C367 158.8 384 129.4 384 96c0-53-43-96-96-96s-96 43-96 96c0 33.4 17 62.8 42.9 80H224c-17.7 0-32 14.3-32 32s14.3 32 32 32h32V448H208c-53 0-96-43-96-96v-6.1l7 7c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9L97 263c-9.4-9.4-24.6-9.4-33.9 0L7 319c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l7-7V352c0 88.4 71.6 160 160 160h80 80c88.4 0 160-71.6 160-160v-6.1l7 7c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-56-56c-9.4-9.4-24.6-9.4-33.9 0l-56 56c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l7-7V352c0 53-43 96-96 96H320V240h32c17.7 0 32-14.3 32-32s-14.3-32-32-32H341.1z"/>
+					</svg>
+					`	
+				Array.from(button_container.children).at(-1).onclick = async function(){
+					let entity = entity_input.value;
+					if (entity == ""){
+						alert("Please provide a core entity")
+						return
+					}
+					await DASHBOARD_UpdateSettings()
+					CLUSTERCREATOR_msg(`Generating anchors for domain keyword ${kword.Keyword}`, 'Please wait...');
+					let fetch_options  = DASHBOARD_FetchOPtions()  
+					let options        = {Keyword : kword.Keyword, CoreEntity : entity, Anchors : anchors_list.Selection(), Model : DASHBOARD_GetModel('anchors')}
+					fetch_options.body = JSON.stringify({Request : [options]});    
+					let reply          = await DASHBOARD_Fetch('/cluster_creator-anchors', fetch_options);
+					reply              = reply.Reply[0];                   
+					for (new_anchor of reply.Anchors){
+						anchors_list.AddOption(new_anchor)
+					}                 
+					CLUSTERCREATOR_msg('', 'Done generating anchors');   
+				}
+				this.__AllAnchors[kword.Keyword] = {'Anchors' : kword.Anchors, 'Index' : 0, "Cluster" : kword.Cluster, "Selector" : anchors_list};				
+			}
+		},
+		GetAllAnchors(){
+			return this.__AllAnchors;
+		},
+		GetClusters(){		
+			console.log(this.__AllAnchors)	
+			return [...new Set(Object.values(this.__AllAnchors).map(anchor => anchor.Cluster))];
+		},
+		SelectAnchors(clusters){
+			this.__Anchors = {}
+			for (kword in this.__AllAnchors){
+				if (clusters.includes(this.__AllAnchors[kword].Cluster)){
+					this.__Anchors[kword] = this.__AllAnchors[kword];
+				}
+			}
+		},
+		UserSelecction(kword){
+			return this.__AllAnchors[kword].Selector.Selection();
+		},
+		NextAnchorForKeyword(kword){	
+			this.ResetAnchorsForKeyword(kword)
+			if (false === (kword in this.__Anchors)) return `${kword} is not a domain keyword`;			
+			this.__Anchors[kword].Index += 1;
+			if (this.__Anchors[kword].Index > this.__Anchors[kword].Anchors.length-1){
+				this.__Anchors[kword].Index = 0;
+			}
+			return this.__Anchors[kword].Anchors[this.__Anchors[kword].Index];
+		},
+		ListKeywords(){
+			return Object.keys(this.__Anchors);
+		},
+		IsDomainKeyword(kword){
+			return  Object.keys(this.__Anchors).includes(kword);
+		},
+		GetAnchorsForKeyword(kword){
+			this.ResetAnchorsForKeyword(kword)
+			if (false === (kword in this.__Anchors)) return `${kword} is not a domain keyword`;
+			return this.__Anchors[kword].Anchors  
+		},
+		ResetAnchorsForKeyword(kword){
+			if (this.__Anchors[kword].Anchors.join() === this.UserSelecction(kword).join())
+			return
+			this.__AllAnchors[kword].Anchors = this.UserSelecction(kword);
+			if (this.IsDomainKeyword(kword)){
+				this.__Anchors[kword].Anchors = this.UserSelecction(kword);
+				this.__Anchors[kword].Index   = 0;
+			}
+		}
+	};  
+	function DOMAINKEYWORS_SwitchTabs(sender){
+		ADDITIONAL_KEYWORDS_V2.Edit();
+		return;
+
+
+		let domain_but     = document.getElementById("KEYWORDS::select-domain-keywords-tab");
+		let additional_but = document.getElementById("KEYWORDS::select-additional-keywords-tab")
+		let domain_div     = document.getElementById("DOMAINKEYWORS::root")
+		let additional_div = document.getElementById("ADDITIONAL-KEYWORDS::root")
+		if (sender.innerHTML == "Additional keywords"){
+			domain_but.className         = "tw_tabs-button"
+			domain_div.style.display     = "none"
+			additional_div.style.display = "flex"
+			additional_but.className     = "tw_tabs-button-selected"
+		} else {
+			additional_but.className     = "tw_tabs-button"
+			additional_div.style.display = "none"
+			domain_div.style.display     = "flex"
+			domain_but.className         = "tw_tabs-button-selected"			
+		}
+	}
+
+	var DOMAIN_OWNED_KEYWORS = {
+		async Reset(){
+			if (KEYWORDS.GetDomain() === '') {
+				this.__kwords = {}
+				return;
+			}
+			try {
+				let links = await DASHBOARD_Fetch(`domain-settings-get-additional-links?Domain=${KEYWORDS.GetDomain()}`, DASHBOARD_FetchOPtions())
+				console.log("links", links);
+				this.__kwords = links.AdditionalLinks;
+				//this.__kwords = []
+				console.log(this.__kwords instanceof Array)
+				if (this.__kwords instanceof Array){ 
+					this.__kwords = {}
+				}
+				for (kword in this.__kwords){
+					this.__kwords[kword].AnchorIndex = 0
+				}
+			} catch (error) {
+				DASHBOARD_except(error);
+			}	
+		},
+		GetFullList(){
+			return Object.keys(this.__kwords);
+		},
+		async Edit(){
+			await this.Reset();
+			if (KEYWORDS.GetDomain() === '') {
+				alert("JSON Clusters don't have Domain owned additional keywords")
+				return
+			}
+			let elements = await AdditionalKeywordsComponent(async() => {
+				return this.__kwords
+			})
+			console.log(elements)
+			elements.Commit.onclick = async function(){
+				try {
+					this.__kwords = elements.Data();
+					for (kword in this.__kwords){
+						this.__kwords[kword].AnchorIndex = 0
+					}
+					elements.Spinner.style.display = 'flex';
+					console.log(this.__kwords);
+					let options  = DASHBOARD_FetchOPtions();
+					options.body = JSON.stringify({
+						Links : this.__kwords,
+						Domain: KEYWORDS.GetDomain()
+					});
+					let result = await DASHBOARD_Fetch('/domain-settings-save-additional-links', options);
+					console.log(result);
+					if (result.Err != 'S_OK'){
+						throw new Error("Error saving additional links: " + result.Err);
+					}
+				} catch (error) {
+					DASHBOARD_except(error);
+				} finally {
+					elements.Spinner.style.display = 'none';
+				}			
+			}
+		}
+	}
+	Object.setPrototypeOf(DOMAIN_OWNED_KEYWORS, ADDITIONAL_KEYWORDS_V2)
+
+	var DOMAIN_KEYWORS_V2 = {		/*SIBLINGS*/
+		Set(data){
+			let _this = Object.getPrototypeOf(this);;;
+			_this.__kwords = {};
+			for (kword of data){
+				let url = kword.Url;
+				url += 'true' === String(kword.DontAppendKword).toLowerCase() || true === kword.DontAppendKword ? 
+				CLUSTERCREATOR_SETTINGS.GetURLTerminator() :
+				"/" + ADITIONAL_KEYWORD_FormatKeywordForUrl(kword.Keyword) + CLUSTERCREATOR_SETTINGS.GetURLTerminator();
+				_this.__kwords[kword.Keyword] = {
+					"Keyword"         : kword.Keyword,
+					"Anchors"         : kword.Anchors,
+					"Url"             : url,
+					"CoreEntity"      : kword['CoreEntity'],
+					"Cluster"         : kword.Cluster,
+					"Domains"         : kword.Domains,
+					"AnchorIndex"     : 0,
+					"DontAppendKword" : kword["DontAppendKword"]
+				}
+			}
+		},
+		async Edit(){
+			if (KEYWORDS.GetDomain() === '') {
+				alert("JSON Clusters don't have Siblings additional keywords")
+				return
+			}
+			if (this.ListKeywords().length === 0){
+				alert("No sibling's keywords to edit. Sibling's keywords are only loaded after link creation")
+				return
+			}
+			let _this = Object.getPrototypeOf(this);;
+            let elements = await AdditionalKeywordsComponent(async() => {
+                console.log("========================================", _this.__kwords)
+                return _this.__kwords
+            }, this.__keep)
+            //console.log(elements, _this)
+            elements.container.style.zIndex = 5;
+			elements.AddKeyword.disabled = true
+			elements.ResetCoreEntity.disabled = true
+			elements.Reseturl.disabled = true
+						
+            elements.Commit.onclick = async () => {      
+				try {
+					elements.Spinner.style.display = "flex";
+					let data = JSON.parse(JSON.stringify(elements.Data()));
+					//console.log(data, _this)
+					for (let kword of Object.keys(data)){
+						_this.__kwords[kword]["Url"]             = data[kword].Url; 
+						_this.__kwords[kword]["Anchors"]         = data[kword].Anchors
+						_this.__kwords[kword]["CoreEntity"]      = data[kword].CoreEntity; 
+						_this.__kwords[kword]["AnchorIndex"]     = 0
+						_this.__kwords[kword]["DontAppendKword"] = data[kword].DontAppendKword
+					}
+					let clusters = {}
+					for (let [name, kword] of Object.entries(_this.__kwords)){
+						if (false === (kword.Cluster in clusters)){
+							clusters[kword.Cluster] = [];
+						}
+						clusters[kword.Cluster].push({
+							Keyword : name,
+							Anchors : kword.Anchors,						
+						})						
+					}
+					console.log(clusters)
+					let options  = DASHBOARD_FetchOPtions();
+						options.body = JSON.stringify({Clusters : clusters});
+						let reply	 = await DASHBOARD_Fetch(
+							`/client_owned_clusters_edit-cluster-anchors?Client=${KEYWORDS.GetClient()}&Domain=${KEYWORDS.GetDomain()}`, 
+							options
+						);
+					alert("Updated")
+				}  
+				catch (error) {
+					DASHBOARD_except(error)
+				}  		
+				finally {	
+					elements.Spinner.style.display = "none";
+				}
+            }
+        },
+	}
+	Object.setPrototypeOf(DOMAIN_KEYWORS_V2, ADDITIONAL_KEYWORDS_V2)
+	console.log(DOMAIN_KEYWORS_V2)
+	DOMAIN_KEYWORS = DOMAIN_KEYWORS_V2
+</script>

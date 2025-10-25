@@ -1,0 +1,60 @@
+<style>      
+.row{
+    display        : flex;
+    flex-direction : row;
+    gap            : 10px;
+    font-family    : Helvetica, Arial, sans-serif;
+} 
+.column{
+    display        : flex;
+    flex-direction : column;
+} 
+a:link {
+    color      : blue;      
+    cursor     : pointer;
+}
+a:visited {
+    color      : blue;      
+}
+button{
+    background-color: #0072b5;
+    color           : white;
+    border          : none;
+    border-radius   : 2px ;
+    font-family     : Helvetica, Arial, sans-serif;
+}
+button:hover{
+    cursor : pointer;
+}
+</style>  
+<meta charset="UTF-8"></meta>
+<div class='row' style='margin: 30px; gap: 30px;'>
+
+    <div class='column'>
+        <p>Select a file</p>
+        <div class='column' style='background-color: lightgray; padding: 10px; max-height: 200px; overflow-y: auto;'>
+            file 1<br />
+            file 2<br />
+            file 3<br />
+            file 4<br />
+            file 5<br />
+            file 6<br />
+        </div>
+    </div>    
+
+    <div class='column' style='gap: 4px'>
+        <div style='flex-grow: 1'></div>
+        <div>Create new cluster file</div>
+        <div class='row' style='background-color: lightgray; padding: 10px;'>
+            <button>&#x27F8;</button>
+            <input placeholder='new cluster name'></input>
+        </div> 
+        <div class='row'>
+            <div style='flex-grow: 1'></div>
+            <button style='height: 24px;'>Cancel</button>         
+        </div> 
+    </div>       
+</div>  
+
+
+

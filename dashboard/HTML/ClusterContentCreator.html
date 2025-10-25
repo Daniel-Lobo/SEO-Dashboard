@@ -1,0 +1,1427 @@
+<style>   
+.CLUSTER-CONTENT-CREATOR_root{
+    position         : absolute;
+    z-index          : 3;
+    bottom           : 0;
+    height           : 100%;   
+    width            : 100%;    
+    display          : none;
+    flex-direction   : column;
+    overflow-y       : hidden;
+    gap              : 0px;
+    overflow: auto;
+}
+.CLUSTER-CONTENT-CREATOR_list{
+    display          : flex;
+    flex-direction   : column;     
+    margin-bottom    : 0px;    
+}
+.CLUSTER-CONTENT-CREATOR_whatever{
+    display       : flex; 
+    height        : calc(100% - 180px); 
+    margin-bottom : 10px;
+    gap           : 6px;
+}    
+.CLUSTER-CONTENT-CREATOR_List-Item-Container{
+    border-bottom         : 1px solid lightgray;    
+    padding               : 16px 0px 10px 0px;    
+    font-family           : "Inter", sans-serif;
+    font-feature-settings : "cv11";
+    gap                   : 6px;    
+}
+.CLUSTER-CONTENT-CREATOR_List-Item{   
+    padding               : 16px 0px 10px 0px;    
+    font-family           : "Inter", sans-serif;
+    font-feature-settings : "cv11";  
+}  
+</style>   
+
+<div id='CLUSTER-CONTENT-CREATOR::blacklist-view' class='CLUSTER-CONTENT-CREATOR_root' style='z-index:4; flex-direction:row;' name='DASHBOARD::hide-me'>
+    <div id='CLUSTER-CONTENT-CREATOR::blacklist-list' style='display:flex;flex-direction:column;height:100%;width:20%;overflow:auto'>        
+    </div>
+    <div style='display:flex;flex-direction:column;width:80%;overflow:auto'>    
+        <table id='CLUSTER-CONTENT-CREATOR::blacklist-table' style='overflow:auto;'>
+            <tr style='font-weight:bold;'>
+                <td style='width:auto; resize:horizontal; overflow:auto'> <div style='resize:both;'>Original</div></td>                
+                <td style='width:auto; resize:horizontal; overflow:auto'> <div style='resize:both;'>Improved</div></td>
+                <td style='width:auto; resize:horizontal; overflow:auto'> <div style='resize:both;'>Fixed</div></td>  
+                <td style='width:auto; resize:horizontal; overflow:auto'> <div style='resize:both;'>Found words</div></td>                               
+              </tr>
+        </table>    
+    </div>
+</div>
+
+{% include 'SpecialInstructionsEditor.html' %}      
+{% include 'ChatView.html' %}    
+{% include 'CTA-Editor.html' %}
+{% include 'ClusterCreatorUsersDomains.html' %}
+
+<div id='CLUSTER-CONTENT-CREATOR::root' class='CLUSTER-CONTENT-CREATOR_root tw_Groups-Container' name='DASHBOARD::hide-me'>
+    <div id="CLUSTER-CONTENT-CREATOR::black-list-exclusions" class='tw_dialog-container' onclick="event.stopPropagation()" style="z-index:3">
+        <div class="tw_dialog tw_Ctrl-Group" style="width:600px">
+            <h3 class='tw_h3'>Black list exclusions</h3>
+            <textarea rows="20" class='tw_input' style='resize:none;width:100%;height:400px' onclick="event.stopPropagation()"></textarea>
+            <div style='display:flex;flex-direction: row-reverse; margin-top: 20px; gap:6px'>
+                <button class='tw_button' style='width:100px' 
+                    onclick="CLUSTER_CONTENT_CREATOR_SaveExclusions()">Save</button>
+                <button class='tw_button-alt' style='width:100px' 
+                    onclick="CLUSTER_CONTENT_CREATOR_CloseExclusionsDiag()">Close</button>
+            </div>
+        </div>     
+    </div>   
+
+    <div class='CLUSTER-CONTENT-CREATOR_whatever'>
+        <div class='CLUSTER-CONTENT-CREATOR_list tw_Ctrl-Group' style='height:100%; width:50%; overflow-y:auto; '>
+            <table id='CLUSTER-CONTENT-CREATOR::table'>
+                <tr id='CLUSTER-CONTENT-CREATOR::table-head'>
+                    <th class="tw_h3" style='width:20px'></th>
+                    <th class="tw_h3" style='width:300px;overflow:ellipsis'>Keyword</th>
+                    <th class="tw_h3" style='width:70px'>Outline</th>
+                    <th class="tw_h3" style='width:110px'>Search intent</th>
+                    <th class="tw_h3" style='width:60px'>Facts</th>
+                    <th class="tw_h3" style='width:70px'>Article</th>
+                    <th class="tw_h3" style='width:70px'>Undo</th>
+                    <th class="tw_h3">Progress</th>
+                </tr>
+            </table>            
+        </div>
+        <div class='CLUSTER-CONTENT-CREATOR_list tw_Ctrl-Group' style='height:100%;width:50%;flex-grow:1;gap:6px'>
+            <div style='display:flex'>
+                <h3 class="tw_h3">Article</h3>     
+                <p id='CLUSTER-CONTENT-CREATOR::article-name' class="tw_h4" style='margin-top:0px;margin-left:12px'>Article name</p>     
+            </div>  
+            <textarea id='CLUSTER-CONTENT-CREATOR::article' class='form-control' style='height:100%;width:100%; flex-grow:1'></textarea>
+            <div style='display:flex;flex-direction:row-reverse;flex-grow:0;margin:0 0 0 0;height:40px'>
+                <button id='CLUSTER-CONTENT-CREATOR::copy-article' class='tw_button' style='margin:0 0 0 0'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class='DASHBOARD_icon-medium' style='fill:white'>
+                        <path d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>   
+    </div>    
+    <div class="tw_Ctrl-Group" style='display:flex;gap:26px'>
+        <div style='display:flex;flex-direction:column;'>
+            <div style="margin:0 0 0 0; padding-left:2px; margin-bottom:0px; display:flex;gap:6px">
+                <input id='CLUSTER-CONTENT-CREATOR::check-all' type="checkbox" style="margin:0 0 0 0" onchange="CLUSTER_CONTENT_CREATOR.CheckAll(this)"></input>
+                <div class="tw_h3_5" style='padding-top:1px;'>Check all</div>
+            </div>
+            <div style="margin:0 0 0 0; padding-left:2px; margin-bottom:20px; display:flex;gap:6px">
+                <input id='CLUSTER-CONTENT-CREATOR::stop-after-intro' type="checkbox" style="margin:0 0 0 0"></input>
+                <div class="tw_h3_5" style='padding-top:1px;'>Stop after Introduction</div>
+            </div>
+        </div>
+        <div style='display:flex;flex-direction:column;'>
+            <div style="margin:0 0 0 0; padding-left:2px; margin-bottom:0px; display:flex;gap:6px">
+                <input id='CLUSTER-CONTENT-CREATOR::dont-improve' type="checkbox" style="margin:0 0 0 0"></input>
+                <div class="tw_h3_5" style='padding-top:1px;'>Don't improve, only fix</div>
+            </div>
+            <div style="margin:0 0 0 0; padding-left:2px; margin-bottom:20px; display:flex;gap:6px">
+                <input id='CLUSTER-CONTENT-CREATOR::highlight-after-improve' type="checkbox" style="margin:0 0 0 0"></input>
+                <div class="tw_h3_5" style='padding-top:1px;'>Highlight important terms</div>
+            </div>
+        </div>
+        <div style='display:flex;flex-direction:column;'>
+            <div style='display:flex;'>
+                <div class="tw_h3_5" style="width:110px">Check group</div>
+                <div id="CLUSTER-CONTENT-CREATOR::group-select-slots" style="display:flex;">...</div>
+            </div>
+            <div style='display:flex;margin-top:2px;'>
+                <div class="tw_h3_5" style="width:110px">Uncheck group</div>
+                <div id="CLUSTER-CONTENT-CREATOR::group-unselect-slots" style="display:flex;">...</div>
+            </div>    
+        </div>
+        <div style='display:flex; gap:6px'>
+            <div style=display:flex;flex-direction:column>
+                <h3 class="tw_h3" style='margin-bottom:2px; position:relative'>Prompts</h3>   
+                <div style='display:flex; gap:10px'>        
+                    <select id='CLUSTER-CONTENT-CREATOR::prompt' class="tw_input" style="width:400px">        
+                        <option value='Legacy' label='Legacy'></option>         
+                        <option value='Default' label='Default' selected="true"></option>                                   
+                    </select> 
+                </div> 
+            </div>
+            <div style=display:flex;flex-direction:column>
+                <h3 class="tw_h3" style='margin-bottom:2px; position:relative'>Fix Prompts</h3>   
+                <div style='display:flex; gap:10px'>        
+                    <select id='CLUSTER-CONTENT-CREATOR::fix-prompts' class="tw_input" style="width:400px">                             
+                    </select> 
+                </div> 
+            </div>     
+        </div>       
+    </div>    
+    <div class='az-content-label mg-b-5' style='display:none; margin-bottom:2px; position:relative'>Model</div>    
+    <div style='display:flex; gap:10px'>        
+        <select id='CLUSTER-CONTENT-CREATOR::model' class="form-control select2-no-search select2-hidden-accessible" style="width:400px; display:none;">            
+            <option value='openai/gpt-4-turbo-preview' label='OpenAI: GPT-4 Turbo (preview)'></option>                          
+        </select> 
+    </div>        
+    <label class="ckbox DASHBOARD_CheckboxLabel" style="margin:6 6 6 6;display:none">
+        <input id='CLUSTER-CONTENT-CREATOR::merge-subsections' class="checkbox" type="checkbox" checked="" style="margin-top:2px; margin-right:-10px;">
+        <span>Merge subsections with parent section</span>
+    </label>
+    <div class="tw_Ctrl-Group" style='display:flex;flex-direction:row-reverse;gap:6px;margin-top:10px;'>               
+        <button id='CLUSTER-CONTENT-CREATOR::create_c-article' class='tw_button' style='display:flex;' onclick='CLUSTER_CONTENT_CREATOR.GenerateCustom()'>        
+            <div id='CLUSTER-CONTENT-CREATOR::create_c-article-label'>Create articles</div>             
+            <span id='CLUSTER-CONTENT-CREATOR::spinner_c' class="loader" 
+                style="width:26px;height:26px;margin-top:-2px;margin-left:6px;display:none;color:black"></span>                    
+        </button>   
+        <button id='CLUSTER-CONTENT-CREATOR::improve-article' class='tw_button' style='display:flex;' onclick='CLUSTER_CONTENT_CREATOR.Improve()'>        
+            <div id='CLUSTER-CONTENT-CREATOR::improve-article-label'>Improve articles</div>             
+            <span id='CLUSTER-CONTENT-CREATOR::improve-spinner' class="loader" 
+                style="width:26px;height:26px;margin-top:-2px;margin-left:6px;display:none;color:black"></span>                       
+        </button> 
+        <button id='CLUSTER-CONTENT-CREATOR::gen-cta' class='tw_button' style='display:flex;' onclick='CLUSTER_CONTENT_CREATOR.GenerateCTAs()'>        
+            <div id='CLUSTER-CONTENT-CREATOR::gen-cta-label'>Generate CTAs</div> 
+            <span id='CLUSTER-CONTENT-CREATOR::gen-cta-spinner' class="loader" 
+                style="width:26px;height:26px;margin-top:-2px;margin-left:6px;display:none"></span>          
+        </button> 
+        <!--<button id='CLUSTER-CONTENT-CREATOR::test' class='btn btn-az-secondary btn-rounded' style='display:flex;' onclick='CLUSTER_CONTENT_CREATOR.Test()'>        
+            <div id='CLUSTER-CONTENT-CREATOR::test-label'>Black List Test</div> 
+            <div id='CLUSTER-CONTENT-CREATOR::test-spinner' class='DASHBOARD_Loader' style='width:26px; height:26px; margin-top:-4px;'></div>             
+        </button>         
+        <button class='btn btn-az-secondary btn-rounded' onclick='CLUSTER_CONTENT_CREATOR_LoadTest()'>Load Test Results</button>-->
+        <button class='tw_button-alt' style='display:flex;' onclick='CLUSTER_CONTENT_CREATOR_Zip()'>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class='tw_button-icon'>
+                <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class='tw_button-icon'>
+                <path d="M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16h48c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16h48v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm48 112c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H128c-8.8 0-16 7.2-16 16zm0 64c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H128c-8.8 0-16 7.2-16 16zm-6.3 71.8L82.1 335.9c-1.4 5.4-2.1 10.9-2.1 16.4c0 35.2 28.8 63.7 64 63.7s64-28.5 64-63.7c0-5.5-.7-11.1-2.1-16.4l-23.5-88.2c-3.7-14-16.4-23.8-30.9-23.8H136.6c-14.5 0-27.2 9.7-30.9 23.8zM128 336h32c8.8 0 16 7.2 16 16s-7.2 16-16 16H128c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/>
+            </svg>
+        </button>
+        <button class='tw_button-alt' style='display:flex;' onclick='CLUSTER_CONTENT_CREATOR_Zip(true)'>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class='tw_button-icon'>
+                <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class='tw_button-icon'>
+                <path d="M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16h48c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16h48v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm48 112c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H128c-8.8 0-16 7.2-16 16zm0 64c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H128c-8.8 0-16 7.2-16 16zm-6.3 71.8L82.1 335.9c-1.4 5.4-2.1 10.9-2.1 16.4c0 35.2 28.8 63.7 64 63.7s64-28.5 64-63.7c0-5.5-.7-11.1-2.1-16.4l-23.5-88.2c-3.7-14-16.4-23.8-30.9-23.8H136.6c-14.5 0-27.2 9.7-30.9 23.8zM128 336h32c8.8 0 16 7.2 16 16s-7.2 16-16 16H128c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class='tw_button-icon'>
+                <path d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"/>
+            </svg>
+        </button>
+        <button class='tw_button-alt' style='display:flex;' onclick='CTAEDITOR_ShowDiag()'>Edit CTAs</button>
+        <button class='tw_button-alt' style='display:flex;' onclick='CLUSTER_CONTENT_CREATOR_EditExclusions()'>Edit exclusions</button>
+        <button class='tw_button-alt' style='display:flex;' onclick='SPECIAL_INSTRUCTIONS_EDITOR_ShowDiag()'>Edit special intructions</button>
+        <button class='tw_button-alt' style='display:flex;' onclick='CHAT_VIEW_ShowDiag()'>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class='tw_icon-medium'>
+                <path d="M256 0c53 0 96 43 96 96l0 3.6c0 15.7-12.7 28.4-28.4 28.4l-135.1 0c-15.7 0-28.4-12.7-28.4-28.4l0-3.6c0-53 43-96 96-96zM41.4 105.4c12.5-12.5 32.8-12.5 45.3 0l64 64c.7 .7 1.3 1.4 1.9 2.1c14.2-7.3 30.4-11.4 47.5-11.4l112 0c17.1 0 33.2 4.1 47.5 11.4c.6-.7 1.2-1.4 1.9-2.1l64-64c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-64 64c-.7 .7-1.4 1.3-2.1 1.9c6.2 12 10.1 25.3 11.1 39.5l64.3 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c0 24.6-5.5 47.8-15.4 68.6c2.2 1.3 4.2 2.9 6 4.8l64 64c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0l-63.1-63.1c-24.5 21.8-55.8 36.2-90.3 39.6L272 240c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 239.2c-34.5-3.4-65.8-17.8-90.3-39.6L86.6 502.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l64-64c1.9-1.9 3.9-3.4 6-4.8C101.5 367.8 96 344.6 96 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64.3 0c1.1-14.1 5-27.5 11.1-39.5c-.7-.6-1.4-1.2-2.1-1.9l-64-64c-12.5-12.5-12.5-32.8 0-45.3z"/>
+            </svg>
+        </button>
+    </div>
+</div> 
+
+<script>    
+    document.getElementById('CLUSTER-CONTENT-CREATOR::copy-article').onclick = function(){
+        //navigator.clipboard.writeText(document.getElementById('CLUSTER-CONTENT-CREATOR::article').value.replaceAll('\n', '<br>'));
+        navigator.clipboard.writeText(
+            document.getElementById('CLUSTER-CONTENT-CREATOR::article').value.replaceAll('\u2022', String.fromCharCode(0x2d))
+        );
+    }
+    function CLUSTER_CONTENT_CREATOR_EditExclusions(){
+        console.log("---")
+        let exclusions_diag           = document.getElementById('CLUSTER-CONTENT-CREATOR::black-list-exclusions');
+        exclusions_diag.parentElement.removeChild(exclusions_diag);
+        document.body.appendChild(exclusions_diag);
+        exclusions_diag.style.display = exclusions_diag.style.display != 'flex' ? 'flex' : 'none';
+        let exclusions = '';
+        for (const ex of KEYWORDS.GetBlackListExclusions()){
+            //console.log(ex)
+            if (ex === '') continue;
+            exclusions += ex + '\n';
+        } 
+        exclusions = exclusions.slice(0, -1);
+        exclusions_diag.getElementsByTagName('textarea')[0].value = exclusions;
+    }
+    function CLUSTER_CONTENT_CREATOR_CloseExclusionsDiag(){
+        let exclusions_diag           = document.getElementById('CLUSTER-CONTENT-CREATOR::black-list-exclusions');
+        exclusions_diag.style.display = 'none';
+    }
+    function CLUSTER_CONTENT_CREATOR_SaveExclusions(){
+        let exclusions_diag           = document.getElementById('CLUSTER-CONTENT-CREATOR::black-list-exclusions');
+        let exclusions                = exclusions_diag.getElementsByTagName('textarea')[0].value.split('\n');
+        KEYWORDS.SetBlackListExclusions(exclusions);
+        exclusions_diag.style.display = 'none';
+    }
+
+    async function CLUSTER_CONTENT_CREATOR_Zip(tags = false) {
+        let fetch_options  = DASHBOARD_FetchOPtions();           
+        let Query          = {Articles : []}
+        for (const name of KEYWORDS.ListKeywordsNames()){
+            let k = KEYWORDS.GetKeyWord(name);
+            if (k.GetArticleWithCTAs() === '') continue;
+            let valid_name = name  
+            for (const char of '<>:\"\\|?*/')
+                valid_name = valid_name.replaceAll(char, '');    
+            let article = k.GetArticleWithCTAs();
+            if (tags === true) article = article.replaceAll('\u2022', String.fromCharCode(0x2d));
+            Query.Articles.push({
+                Name    : valid_name,
+                Content : k.GetTitlesAndMetaDesctiptions() + "\n\n**Permalink:** " + await k.GetPemalink() + "\n\n" + article
+            })
+        } 
+        fetch_options.body = JSON.stringify({Query : Query}); 
+        fetch('cluster_creator-zip-artciles', fetch_options).then(async(response)  => {
+            if (response.status == 200){
+                let blob   = await response.blob();
+                const a    = document.createElement('a');            
+                a.href     = URL.createObjectURL(blob);
+                a.download = 'Articles.zip';                     
+                a.click();
+            }
+        })
+    }
+    function CLUSTER_CONTENT_CREATOR_IsLegacyPrompt(){
+        return document.getElementById('CLUSTER-CONTENT-CREATOR::prompt').value === 'Legacy' ? true : false
+    }
+    var CLUSTER_CONTENT_CREATOR = {
+        __BlackList   : [],
+        __CurrentName : null,
+        __Kwords      : [],
+        __Coroutines  : 0,
+        __StopSignal  : false,  
+        SetBlackListetWords(words){this.__BlackList = words},          
+        Stop(){
+            this.__StopSignal = true;
+            document.getElementById('CLUSTER-CONTENT-CREATOR::create-article-label').innerHTML = 'Canceling'
+        },
+        ShoudStop(){return this.__StopSignal;},
+        clear() {
+            this.__Kwords = [];
+        },
+        SelectGroup(Group, state){
+            for (let k of this.__Kwords){
+                let kword = KEYWORDS.GetKeyWord(k.Name);
+                if (kword === null){
+                    alert("CLUSTER_CONTENT_CREATOR::SelectGroup() found null keyword");
+                    continue;
+                }
+                if (kword.GetGroups().includes(Group)) k.Checkbox.checked = state;
+            }
+        },
+        GetByName(name){
+            for (let k of this.__Kwords){
+                if (k.Name === name) return k;
+            }
+            return null;                
+        },
+        append(name, checkbox, progress, article_icon, undo){
+            this.__Kwords.push({
+                Name            : name,
+                Checkbox        : checkbox,
+                Progress        : progress,
+                __Undo          : undo,
+                __ArticleIcon   : article_icon,
+                __SectionIndex  : 0,
+                __Sections      : {Tagged : [], Trimed : [], Plain : [], Merged : []},
+                __Chat          : [],  
+                ImproveFinished(){     
+                    let name     = this.Name              
+                    let kword    = KEYWORDS.GetKeyWord(name); 
+                    let article  = kword.GetArticle();       
+                    let sections = kword.GetArticleSections();
+                    this.__Undo.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DASHBOARD_icon-small" style='fill:black'>
+                        <path d="M48.5 224H40c-13.3 0-24-10.7-24-24V72c0-9.7 5.8-18.5 14.8-22.2s19.3-1.7 26.2 5.2L98.6 96.6c87.6-86.5 228.7-86.2 315.8 1c87.5 87.5 87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3c-62.2-62.2-162.7-62.5-225.3-1L185 183c6.9 6.9 8.9 17.2 5.2 26.2s-12.5 14.8-22.2 14.8H48.5z"/>
+                    </svg>`   
+                    this.__Undo.onclick = function(){                        
+                        kword.SetArticle(article, sections)
+                        this.innerHTML  =`
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DASHBOARD_icon-small-disabled">
+                            <path d="M48.5 224H40c-13.3 0-24-10.7-24-24V72c0-9.7 5.8-18.5 14.8-22.2s19.3-1.7 26.2 5.2L98.6 96.6c87.6-86.5 228.7-86.2 315.8 1c87.5 87.5 87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3c-62.2-62.2-162.7-62.5-225.3-1L185 183c6.9 6.9 8.9 17.2 5.2 26.2s-12.5 14.8-22.2 14.8H48.5z"/>
+                        </svg>`
+                        this.onclick = function(){};
+                        CLUSTER_CONTENT_CREATOR_ArticleNameClicked(name);
+                    }                
+                },                
+                async FixAndImprove(){                                   
+                    let improved_sections  = (await this.Improve(KEYWORDS.GetKeyWord(this.Name).GetArticleSections(), true)).Sections;                    
+                    let improved_completed = 0
+                    let completed          = 0
+                    let improved_promisses = []
+                    let promisses          = []  
+                    let kword              = KEYWORDS.GetKeyWord(this.Name)     
+                    this.__SectionIndex    = -1 
+                    let prompt             = DASHBOARD_OptionO('Prompts')[document.getElementById('CLUSTER-CONTENT-CREATOR::prompt').value];                      
+                    for (let [index, section] of kword.GetArticleSections().entries()){                                                        
+                        let improved_section  = improved_sections[index];
+                        let options           = DASHBOARD_FetchOPtions();
+                        let improved_options  = DASHBOARD_FetchOPtions();
+                        let outline_section   = this.NextSection()                        
+                        options.body = JSON.stringify({                            
+                            Section  : section,                            
+                            Model    : DASHBOARD_GetModel('black-list'),  
+                            Tones    : DASHBOARD_OptionA('Selected Tones')[0]                          
+                        })
+                        improved_options.body = JSON.stringify({                            
+                            Section  : improved_section,                            
+                            Model    : DASHBOARD_GetModel('black-list'), 
+                            Tones    : DASHBOARD_OptionA('Selected Tones')[0]                                 
+                        })
+                        completed          += 1
+                        improved_completed += 1
+                        promisses.push({    
+                            Section  : section,                        
+                            Promisse : this.GetSectionType(true) === 'Initial' ? null : fetch('content_creator-remove_blacklisted_words', options),
+                            Options  : options,
+                            Complete : false, 
+                            Reply    : '',    
+                            Summary  : ''                        
+                        })
+                        improved_promisses.push({    
+                            Section  : improved_section,                        
+                            Promisse : this.GetSectionType(true) === 'Initial' ? null : fetch('content_creator-remove_blacklisted_words', improved_options),
+                            Options  : improved_options,
+                            Complete : false, 
+                            Reply    : '',    
+                            Summary  : ''                            
+                        })
+                        if (document.getElementById('CLUSTER-CONTENT-CREATOR::stop-after-intro').checked === true &&
+                        this.GetSectionType(true) === 'Intro') break;                            
+                    }                      
+                    while (completed > 0 || improved_completed > 0) {                       
+                        for (let promisse of promisses){
+                            if (promisse.Complete === true) continue;
+                            let reply = promisse.Promisse === null ? {Reply : '', Summary : ''} : await (await promisse.Promisse).json();
+                            if (reply.Reply.startsWith('Error calling Open Router API:')){
+                                promisse.Promisse = fetch('content_creator-remove_blacklisted_words', promisse.Options);
+                                continue;
+                            }                            
+                            promisse.Complete = true;
+                            promisse.Reply    = reply.Reply  
+                            promisse.Summary  = reply.Summary                                                        
+                            completed -= 1;
+                        } 
+                        for (let promisse of improved_promisses){
+                            if (promisse.Complete === true) continue;
+                            let reply = promisse.Promisse === null ? {Reply : '', Summary : ''} : await (await promisse.Promisse).json();
+                            if (reply.Reply.startsWith('Error calling Open Router API:')){
+                                promisse.Promisse = fetch('content_creator-remove_blacklisted_words', promisse.Options);
+                                continue;
+                            }                            
+                            promisse.Complete  = true;
+                            promisse.Reply     = reply.Reply   
+                            promisse.Summary   = reply.Summary                                                            
+                            improved_completed -= 1;
+                        } 
+                        await new Promise(r => setTimeout(r, 1000));
+                    }                     
+                    let orig               = ''
+                    let fixed              = ''
+                    let improved_and_fixed = ''
+                    let improved           = ''
+                    let fixed_sections     = []
+                    for (let promisse of promisses){  
+                        fixed_sections.push(promisse.Reply)                      
+                        fixed += promisse.Reply + '\n'
+                        orig  += promisse.Section  + '\n'
+                    }  
+                    for (let promisse of improved_promisses){                                             
+                        improved_and_fixed += promisse.Reply + '\n'
+                        improved           += promisse.Section  + '\n'
+                    }  
+                    let f_and_i            = await this.Improve(fixed_sections, true)               
+                    let fixed_and_improved = f_and_i.Article;
+                    let result = []
+                    for (let [index, promisse] of promisses.entries()){   
+                        result.push({
+                            Original                     : promisse.Section,
+                            Improved                     : improved_promisses[index].Section,
+                            Fixed                        : promisse.Reply,
+                            'Fixed Summary'              : promisse.Summary,
+                            'Fixed and Improved'         : f_and_i.Sections[index],
+                            'Improved and Fixed'         : improved_promisses[index].Reply,
+                            'Improved and Fixed Summary' : improved_promisses[index].Summary
+                        })
+                    }  
+                    const a    = document.createElement('a');
+                    const blob = new Blob([`Original:\n${orig}\Improved:\n${improved}\nFixed:\n${fixed}Fixed and Improved:\n${fixed_and_improved}\nImproved and Fixed:\n${improved_and_fixed}`]);
+                    a.href     = URL.createObjectURL(blob);
+                    a.download = 'Chat.txt';                     
+                    a.click();
+                    return result;
+                },  
+                async GetImproveRequestData(sections){                    
+                    let requests        = []  
+                    let kword           = KEYWORDS.GetKeyWord(this.Name)     
+                    this.__SectionIndex = -1 
+                    let prompt          = DASHBOARD_OptionO('Prompts')[document.getElementById('CLUSTER-CONTENT-CREATOR::prompt').value];     
+                    let templates       = DASHBOARD_OptionO('More Prompts')['Fix content'][document.getElementById('CLUSTER-CONTENT-CREATOR::fix-prompts').value]; 
+                    let new_sections    = []                 
+                    for (const [index, section] of sections.entries()){                                                               
+                        let options         = DASHBOARD_FetchOPtions();
+                        let outline_section = this.NextSection()                        
+                        let user            = this.GetSectionType(true) === 'Intro' ? prompt[`Improve Intro USER`]   : prompt[`Improve USER`]
+                        let system          = this.GetSectionType(true) === 'Intro' ? prompt[`Improve Intro SYSTEM`] : prompt[`Improve SYSTEM`]  
+                        let links_str       =  CLUSTER_CONTENT_CREATOR_ExpandLinks(await CLUSTER_CONTENT_CREATOR_GetLinks(outline_section, this.Name, index))
+                        let links_prompts   = {}
+                        if (templates.length >= 8){
+                            links_prompts = {
+                                System : templates[6],
+                                User   : templates[7]        
+                            } 
+                        }
+                        if (document.getElementById('CLUSTER-CONTENT-CREATOR::stop-after-intro').checked === true &&
+                        this.GetSectionType() === 'Intro') break;
+                        requests.push({
+                            User            : await CLUSTER_CONTENT_CREATOR_Expandprompt(user, kword, section, ''),
+                            System          : await CLUSTER_CONTENT_CREATOR_Expandprompt(system, kword, section, ''),
+                            Article         : section,
+                            Audience        : DASHBOARD_Option('Selected Audience'),
+                            Outline         : kword.GetOutline(),
+                            Model           : DASHBOARD_GetModel('Improve Content'),
+                            IModel          : DASHBOARD_GetModel('black-list'), 
+                            HModel          : DASHBOARD_GetModel('highlight'),
+                            Model2ndPass    : DASHBOARD_GetModel('black-list-2nd'), 
+                            SelfReferecing  : DASHBOARD_GetModel('self-referencing'), 
+                            Tones           : DASHBOARD_OptionA('Selected Tones'),
+                            Links           : CLUSTER_CONTENT_CREATOR_ExpandLinks(await CLUSTER_CONTENT_CREATOR_GetLinks(outline_section, this.Name, index)),  
+                            'Links Prompts' : links_prompts,
+                            'Links Model'   : DASHBOARD_GetModel('links-insertion'),
+                            'Search Intent' : kword.GetIntent()
+                        })
+                    }
+                    return requests;                    
+                },    
+                async ImproveRequestReturned(replies){
+                    let article      = ''
+                    let new_sections = []
+                    if (replies.length > 0){
+                        split = replies[0].Reply.split('\n')
+                        if (split.length > 0){
+                            if (split[0].endsWith(':')) {
+                                replies[0].Reply.replace(split[0], '')                                
+                            }
+                        }
+                    }
+                    let chat = []
+                    for (let reply of replies){           
+                        chat.push({
+                            System    : reply.System,
+                            User      : reply.User,
+                            Assistant : reply.Reply, 
+                            Links     : reply.Links                           
+                        })             
+                        new_sections.push(reply.Reply)                        
+                        article += reply.Reply + '\n'
+                    }                       
+                    this.ImproveFinished();
+                    KEYWORDS.GetKeyWord(this.Name).SetArticle(article, new_sections);
+                    KEYWORDS.GetKeyWord(this.Name).UpdateIChat(chat);
+                    CLUSTER_CONTENT_CREATOR_ArticleNameClicked(this.Name);
+                },                
+                async GetTitlesAndMeta(){
+                    let k              = KEYWORDS.GetKeyWord(this.Name);
+                    let fetch_options  = DASHBOARD_FetchOPtions();            
+                    fetch_options.body = JSON.stringify({
+                        Keyword          : this.Name,
+                        Outline          : k.GetOutline(),
+                        'Search Intent'  : k.GetIntent()     
+                    }); 
+                    return (await DASHBOARD_Fetch('content-creator_titles-and-meta', fetch_options)).Reply
+                },                
+                async GetCTARequestData(){
+                    let __thisGetCTAInstructions = async function(client, service_name){
+                                                let instructions = ''
+                        let f_options    = DASHBOARD_FetchOPtions();
+                        f_options.body   = JSON.stringify({Client : client, ServiceName : service_name});
+                        try {
+                            let reply = await DASHBOARD_Fetch('/CTAs-get-service-instructions', f_options);
+                            console.log(reply);
+                            if (reply.Reply != 'S_OK') {
+                                throw new Error(reply.Reply);
+                            }      
+                            instructions = reply.Instructions;                  
+                        } catch (e) {
+                            console.error(e);
+                            instructions = `Error fetching instructions for ${client} - ${service_name}: ${e.message}`;
+                        } 
+                        console.log(`Instructions for ${client} - ${service_name}:`, instructions);
+                        return instructions 
+                    }
+                    let f_options = DASHBOARD_FetchOPtions();
+                    let kword     = KEYWORDS.GetKeyWord(this.Name)         
+                    let key       = this.Name       
+                    let sections  = kword.GetImprovedSectionsWithCTAS()    
+                    for (let [index, section] of sections.entries())
+                    {                 
+                        let section_intructions = kword.GetCTAInstructions(index);   
+                        if (section_intructions === ''){
+                            section_intructions = await __thisGetCTAInstructions(section.CTA.Client, section.CTA.ServiceName);
+                        }   
+                        f_options.body = JSON.stringify({
+                            Client      : section.CTA.Client, 
+                            ServiceName : section.CTA.ServiceName,
+                            Index       : section.CTA.index,                            
+                        });                       
+                        let description = await DASHBOARD_Fetch('/CTAs-get-service-description', f_options); 
+                        sections[index].ServiceDescription  = description.Reply;  
+                        sections[index].Keyword             = this.Name
+                        sections[index].ServiceInstructions = section_intructions
+                    }   
+                    console.log('CTA Request Data:', sections);
+                    return sections
+                },
+                CurrSection(){
+                    return {
+                        Tagged  : this.__Sections.Tagged[this.__SectionIndex], 
+                        Trimed  : this.__Sections.Trimed[this.__SectionIndex], 
+                        Plain   : this.__Sections.Plain[this.__SectionIndex],
+                        Merged  : this.__Sections.Merged[this.__SectionIndex]                       
+                    }
+                },
+                GetSectionType(legacy_promtp=false){
+                    if (CLUSTER_CONTENT_CREATOR_IsLegacyPrompt() || legacy_promtp==true){
+                        return this.__SectionIndex === 0 ? 'Intro' : this.__SectionIndex === this.__Sections.Tagged.length-2 ? 'FAQ' : 
+                        this.__SectionIndex === this.__Sections.Tagged.length-1 ? 'Conclusion' : 'Section'
+                    }
+                    return this.__SectionIndex === 0 ? 'Initial' : this.__SectionIndex === 1 ? 'Intro' :
+                    this.__SectionIndex === this.__Sections.Tagged.length-2 ? 'FAQ' : 
+                    this.__SectionIndex === this.__Sections.Tagged.length-1 ? 'Conclusion' : 'Section'
+                },
+                NextSection(){
+                    this.__SectionIndex += 1;                   
+                    if (this.__SectionIndex >= this.__Sections.Tagged.length) {
+                        this.Progress.value = 100;
+                        return null; 
+                    }   
+                    this.Progress.value = (this.__SectionIndex-1)/this.__Sections.Tagged.length*100;                
+                    return {
+                        Tagged : this.__Sections.Tagged[this.__SectionIndex], 
+                        Trimed : this.__Sections.Trimed[this.__SectionIndex], 
+                        Plain  : this.__Sections.Plain[this.__SectionIndex],
+                        Merged : this.__Sections.Merged[this.__SectionIndex]
+                    }
+                },
+                PlainSections(){
+                    return this.__Sections.Plain;
+                },
+                SetSections(json, full=false){
+                    this.__Undo.innerHTML  =`
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DASHBOARD_icon-small-disabled">
+                        <path d="M48.5 224H40c-13.3 0-24-10.7-24-24V72c0-9.7 5.8-18.5 14.8-22.2s19.3-1.7 26.2 5.2L98.6 96.6c87.6-86.5 228.7-86.2 315.8 1c87.5 87.5 87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3c-62.2-62.2-162.7-62.5-225.3-1L185 183c6.9 6.9 8.9 17.2 5.2 26.2s-12.5 14.8-22.2 14.8H48.5z"/>
+                    </svg>`
+                    this.__Undo.onclick = function(){};
+
+                    this.__Chat         = []
+                    this.__Sections     = full===false ? {Tagged : [], Trimed : [], Plain : [], Merged : []} : 
+                    {Tagged : ['InitialData'], Trimed : ['InitialData'], Plain : ['InitialData'], Merged : ['InitialData']}
+                    this.__SectionIndex = -1;
+                    for (let i=0; i<json.Reply.Sections.Tagged.length; i++) {
+                        //if (json.Reply.Sections.Tagged[i].startsWith('Introduction-Tag') && full===false) continue;
+                        this.__Sections.Tagged.push(json.Reply.Sections.Tagged[i]);
+                        this.__Sections.Plain.push(json.Reply.Sections.Plain[i]);
+                        this.__Sections.Trimed.push(json.Reply.Sections.Trimed[i]);
+                        this.__Sections.Merged.push(json.Reply.Sections.Merged[i])
+                    }
+                },
+                UpdateChat(json){
+                    this.__Chat = json.Reply.Chat;
+                },
+                UppendToChat(json){
+                    json.content = CLUSTER_CONTENT_CREATOR_FixFaqFormat(json.content);
+                    if (json != null) this.__Chat.push(json);
+                },
+                Chat(){
+                    return this.__Chat
+                }
+            })
+        },
+        CheckAll(checkbox){
+            for (const k of this.__Kwords){
+                let check = k.Checkbox;
+                if (check.disabled) continue;
+                check.checked = checkbox.checked;
+            }
+        },
+        FiniShedLoading(){
+            if (this.__Kwords.length == 0) return
+            CLUSTER_CONTENT_CREATOR_ArticleNameClicked(this.__Kwords[0].Name);
+        },        
+        async __GetMessages(k, kword, section, full_section)  {            
+            let prompt   = DASHBOARD_OptionO('Prompts')[document.getElementById('CLUSTER-CONTENT-CREATOR::prompt').value];            
+            let user     = prompt[`${k.GetSectionType()} USER`]
+            let system   = prompt[`${k.GetSectionType()} SYSTEM`]
+            user         = await CLUSTER_CONTENT_CREATOR_Expandprompt(user, kword, section, full_section)
+            system       = await CLUSTER_CONTENT_CREATOR_Expandprompt(system, kword, section, full_section)
+            return [{role : 'system', content : system}, {role : 'user', content : user}]
+        }, 
+        async GetMessages(k, kword, section, full_section, prompt)  {                      
+            let user     = prompt[`${k.GetSectionType()} USER`]
+            let system   = prompt[`${k.GetSectionType()} SYSTEM`]
+            user         = await CLUSTER_CONTENT_CREATOR_Expandprompt(user, kword, section, full_section)
+            system       = await CLUSTER_CONTENT_CREATOR_Expandprompt(system, kword, section, full_section)
+            return [{role : 'system', content : system}, {role : 'user', content : user}]
+        }, 
+        async __GenerateCustom(kword, json){                   
+            let fetch_options  = DASHBOARD_FetchOPtions();
+            let k              = KEYWORDS.GetKeyWord(kword.Name);
+            if (json === null){                
+                fetch_options.body = JSON.stringify({
+                    Query            : k.GetOutline(),
+                    MergeSubsections : true      
+                });                
+                secs = await DASHBOARD_Fetch('/content-creator_split-outline', fetch_options);                                      
+                kword.SetSections({Reply : {Sections : secs.Reply}},  CLUSTER_CONTENT_CREATOR_IsLegacyPrompt() ? false : true);
+            }
+            let api_error = false
+            let section   = ''                      
+            if (json !== null && json.Reply.content.startsWith('Error calling Open Router API:')) {
+                console.log('::__GenerateCustom api error')
+                return CLUSTER_CONTENT_CREATOR_End(kword.Chat(), kword, true)
+                section   = kword.CurrSection()
+                api_error = true
+            }
+            else section = kword.NextSection()
+            if ((kword.GetSectionType() === 'Section') && (document.getElementById('CLUSTER-CONTENT-CREATOR::stop-after-intro').checked)){          
+                if (api_error == false) kword.UppendToChat(json.Reply);               
+                return CLUSTER_CONTENT_CREATOR_End(kword.Chat(), kword, true)
+            }
+            if (section === null || CLUSTER_CONTENT_CREATOR.ShoudStop()) {    
+                if (api_error == false) kword.UppendToChat(json.Reply);                              
+                return CLUSTER_CONTENT_CREATOR_End(kword.Chat(), kword, true)
+            } 
+            if (api_error === false) {
+                if (json !== null) kword.UppendToChat(json.Reply);                   
+                let msg = await this.__GetMessages(kword, k, section.Plain, section.Merged)                 
+                kword.UppendToChat(msg[0]);  
+                kword.UppendToChat(msg[1]);  
+            }    
+            let Query = {
+                Messages : kword.Chat(),
+                Section  : section.Plain, 
+                Type     : kword.GetSectionType(),
+                Model    : DASHBOARD_GetModel('Content'),
+                Keyword  : kword.Name,
+                BlackListExclusions : document.getElementById('CLUSTER-CONTENT-CREATOR::black-list-exclusions')
+            }                          
+            fetch_options.body = JSON.stringify({Query : Query});             
+            let _this = this;
+            async function keepPooling(kword, pooled_data){                                                   
+                if (pooled_data.Err === "S_OK" && pooled_data.Data.Status === 'Finished'){                               
+                    return await _this.__GenerateCustom(kword, pooled_data.Data)
+                }                
+                let pool_id = `PooledContentCreator_${kword.Name.replaceAll(' ', '_')}`
+                fetch(`/pool?id=${pool_id}&CleanUP=true`, fetch_options).then(response => {
+                if (response.status == 200){
+                    response.json().then(pool => keepPooling(kword, pool))
+                    }  else {
+                        console.log('::__GenerateCustom failed to create pool')
+                    }
+                })               
+            }               
+            let pool_id = `PooledContentCreator_${kword.Name.replaceAll(' ', '_')}`           
+            fetch('/content_creator-create-polled', fetch_options);            
+            fetch(`/pool?id=${pool_id}&CleanUP=true`, fetch_options).then(response => {
+            if (response.status == 200){
+                response.json().then(pool => keepPooling(kword, pool))
+                } else {
+                    console.log('::__GenerateCustom failed to create pool')
+                }
+            })              
+        },
+        async GenerateCustom(){
+            await DASHBOARD_UpdateSettings()
+            if (false === CLUSTER_CONTENT_CREATOR_CheckSectionFacts()){
+                alert("Section facts are enbled, but the selected promtpt doesn't have a facts section")
+                return
+            }
+            //return
+            if (CLUSTERCREATOR_SETTINGS.GetTones().length == 0){
+                alert("Select at least one tone")
+                return;
+            }
+            if (CLUSTERCREATOR_SETTINGS.GetAudience() === ''){
+                alert("Select a audience")
+                return;
+            }   
+            console.log('Generation will start with tones: ', DASHBOARD_OptionA('Selected Tones'))
+            console.log('full tones: ', DASHBOARD_GetToneDescriptions())
+            console.log('audience: ', DASHBOARD_Option('Selected Audience'))
+            console.log('audience desc: ', DASHBOARD_AudienceDescription(DASHBOARD_Option('Selected Audience')))           
+            await fetch('pool-remove-by-broad-id?id=PooledContentCreator', DASHBOARD_FetchOPtions());
+            this.__Coroutines = 0            
+            for (const k of this.__Kwords){               
+                if (k.Checkbox.checked === false) continue;
+                this.__GenerateCustom(k, null);
+                this.__Coroutines += 1;
+            }
+            if (this.__Coroutines > 0){
+                this.__StopSignal = false
+                document.getElementById('CLUSTER-CONTENT-CREATOR::create_c-article').classList       = 'tw_button-alt'
+                document.getElementById('CLUSTER-CONTENT-CREATOR::create_c-article-label').innerHTML = 'Cancel'
+                document.getElementById('CLUSTER-CONTENT-CREATOR::spinner_c').style.display          = 'flex'
+                document.getElementById('CLUSTER-CONTENT-CREATOR::create_c-article').onclick         = function(){CLUSTER_CONTENT_CREATOR.Stop();}
+            }        
+        },
+        CoroutineFinished(k){
+            this.__Coroutines -= 1;
+            CLUSTER_CONTENT_CREATOR_ArticleNameClicked(k.Name);      
+            k.__ArticleIcon.innerHTML = 
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-yes-small"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>'
+            if (this.__Coroutines > 0) return;
+            document.getElementById('CLUSTER-CONTENT-CREATOR::create_c-article').classList       = 'tw_button'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::create_c-article-label').innerHTML = 'Create articles'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::spinner_c').style.display          = 'none'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::create_c-article').onclick         = function(){CLUSTER_CONTENT_CREATOR.GenerateCustom();}                
+        },
+        async Test(){      
+            await DASHBOARD_UpdateSettings()
+            let prompt = DASHBOARD_OptionO('Prompts')[document.getElementById('CLUSTER-CONTENT-CREATOR::prompt').value];  
+            if (false === 'Improve SYSTEM' in prompt) {
+                return alert("Prompt doesn't have a improve section")               
+            }
+            if (false === 'Improve USER' in prompt) {
+                return alert("Prompt doesn't have a improve section")
+            }
+            if (false === 'Improve Intro SYSTEM' in prompt) {
+                return alert("Prompt doesn't have a improve section")               
+            }
+            if (false === 'Improve Intro USER' in prompt) {
+                return alert("Prompt doesn't have a improve section")
+            }
+            if (prompt['Improve SYSTEM'] === '' || prompt['Improve USER'] === '' || prompt['Improve Intro USER'] === '' || prompt['Improve Intro SYSTEM'] === '') {
+                return alert("Prompt doesn't have a improve section")
+            }    
+            document.getElementById('CLUSTER-CONTENT-CREATOR::test').classList               = 'btn btn-danger btn-rounded'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::test-label').innerHTML         = 'Working'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::test-spinner').style.display   = 'flex'  
+            let promisses = []     
+            for (const k of this.__Kwords){  
+                if (k.Checkbox.checked === false) continue;
+                promisses.push({
+                    Promisse : k.FixAndImprove(),
+                    Name     : k.Name
+                })
+            } 
+            let results = {} 
+            for (let promisse of promisses){                
+                results[promisse.Name] = await promisse.Promisse
+            }            
+            CLUSTER_CONTENT_CREATOR_DisplayBlackList(results);
+            document.getElementById('CLUSTER-CONTENT-CREATOR::test').classList               = 'btn btn-az-secondary btn-rounded'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::test-label').innerHTML         = 'black list test'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::test-spinner').style.display   = 'none'           
+            return 0;          
+        },        
+        async Improve(){
+            await CLUSTER_CONTENT_CREATOR_SyncBlackList()
+            await DASHBOARD_UpdateSettings()            
+            let prompt = DASHBOARD_OptionO('Prompts')[document.getElementById('CLUSTER-CONTENT-CREATOR::prompt').value];  
+            if (false === 'Improve SYSTEM' in prompt) {
+                return alert("Prompt doesn't have a improve section")               
+            }
+            if (false === 'Improve USER' in prompt) {
+                return alert("Prompt doesn't have a improve section")
+            }
+            if (false === 'Improve Intro SYSTEM' in prompt) {
+                return alert("Prompt doesn't have a improve section")               
+            }
+            if (false === 'Improve Intro USER' in prompt) {
+                return alert("Prompt doesn't have a improve section")
+            }
+            if (prompt['Improve SYSTEM'] === '' || prompt['Improve USER'] === '' || prompt['Improve Intro USER'] === '' || prompt['Improve Intro SYSTEM'] === '') {
+                return alert("Prompt doesn't have a improve section")
+            }
+            document.getElementById('CLUSTER-CONTENT-CREATOR::improve-article').classList       = 'tw_button-alt'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::improve-article-label').innerHTML = 'Improving articles'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::improve-spinner').style.display   = 'flex'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::improve-article').onclick         = function(){
+                alert('Please wait for the co-routines to complete')
+            }
+
+            let request_data = [] 
+            let reply_data   = {}    
+            for (const k of this.__Kwords){  
+                if (k.Checkbox.checked === false) continue;
+                reply_data[k.Name] = []
+                for (const request of await k.GetImproveRequestData(KEYWORDS.GetKeyWord(k.Name).GetArticleSections())) {
+                    request_data.push({
+                        Data : request,
+                        Name : k.Name
+                    })
+                }
+            }
+            /*
+            const a    = document.createElement('a');
+            const blob = new Blob([JSON.stringify({'Requests' : request_data}, null, '\t')]);
+            a.href     = URL.createObjectURL(blob);
+            a.download = 'Black-List-Log.json';                     
+            a.click();    
+            document.getElementById('CLUSTER-CONTENT-CREATOR::improve-article').classList       = 'btn btn-az-secondary btn-rounded'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::improve-article-label').innerHTML = 'Improve articles'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::improve-spinner').style.display   = ''  
+            document.getElementById('CLUSTER-CONTENT-CREATOR::improve-article').onclick         =  function(){CLUSTER_CONTENT_CREATOR.Improve();}  
+            //CLUSTER_CONTENT_CREATOR_DisplayBlackList(results)
+            return 0;
+            */
+
+            let templates     = DASHBOARD_OptionO('More Prompts')['Fix content'][document.getElementById('CLUSTER-CONTENT-CREATOR::fix-prompts').value];            
+            let template_vars = {
+                TONES    : DASHBOARD_OptionA('Selected Tones'),
+                AUDIENCE : DASHBOARD_Option('Selected Audience')                
+            }
+            let prompts   = {
+                'AI Words - System'         : DASHBOARD_ExpandPrompt(template_vars, templates[0]),
+                'AI Words - User'           : DASHBOARD_ExpandPrompt(template_vars, templates[1]),
+                'Self referencing - System' : DASHBOARD_ExpandPrompt(template_vars, templates[2]),
+                'Self referencing - User'   : DASHBOARD_ExpandPrompt(template_vars, templates[3]),
+                'Bold words - System'       : DASHBOARD_ExpandPrompt(template_vars, templates[4]),
+                'Bold words - User'         : DASHBOARD_ExpandPrompt(template_vars, templates[5]),
+            }     
+            let choices  = {
+                Improve   : document.getElementById('CLUSTER-CONTENT-CREATOR::dont-improve').checked === true ? '' : 'IMPROVE',  
+                Highlight : document.getElementById('CLUSTER-CONTENT-CREATOR::highlight-after-improve').checked === true ? 'HIGHLIGHT' : ''    
+            }            
+            let options  = DASHBOARD_FetchOPtions();
+            options.body = JSON.stringify({Requests : request_data, Prompts : prompts, Choices : choices, 
+                BlackListExclusions : document.getElementById('CLUSTER-CONTENT-CREATOR::black-list-exclusions')})
+            let replies  = (await DASHBOARD_Fetch('content_creator-improve_and_fix_all', options)).Replies;            
+            for (let [index, request] of request_data.entries()){
+                //let raw_reply   = replies[index].Improved  //processwing the wrong field
+                let raw_reply   = replies[index].Reply
+                let final_reply = raw_reply.replaceAll('\r', '\n')
+                final_reply     = final_reply.replaceAll('.\n', '.\n\n')
+                final_reply     = final_reply.replaceAll('\n#', '\n\n#')
+                while (final_reply.includes('\n\n\n'))
+                    final_reply = final_reply.replaceAll('\n\n\n', '\n\n')
+                replies[index].Improved = final_reply
+                replies[index].Links    = request.Data.Links
+                reply_data[request.Name].push(replies[index])                
+            }
+            for (let k of this.__Kwords){      
+                if (reply_data[k.Name] === undefined) continue
+                k.ImproveRequestReturned(reply_data[k.Name])
+            }
+
+            document.getElementById('CLUSTER-CONTENT-CREATOR::improve-article').classList       = 'tw_button'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::improve-article-label').innerHTML = 'Improve articles'
+            document.getElementById('CLUSTER-CONTENT-CREATOR::improve-spinner').style.display   = 'none'  
+            document.getElementById('CLUSTER-CONTENT-CREATOR::improve-article').onclick         =  function(){CLUSTER_CONTENT_CREATOR.Improve();}  
+            //CLUSTER_CONTENT_CREATOR_DisplayBlackList(results)
+            return 0;
+        },
+        GenerateCTAs(){
+            document.getElementById('CLUSTER-CONTENT-CREATOR::gen-cta-spinner').style.display = 'flex';
+            document.getElementById('CLUSTER-CONTENT-CREATOR::gen-cta').onclick               = function(){
+                return alert("Please wait until teh current operation is completed");
+            };            
+            (async function(_this){
+                try
+                {
+                    await CLUSTER_CONTENT_CREATOR_SyncBlackList()
+                    await DASHBOARD_UpdateSettings()      
+
+                    let model     = DASHBOARD_GetModel('CTAS')
+                    let templates = DASHBOARD_OptionO('More Prompts')['Fix content'][document.getElementById('CLUSTER-CONTENT-CREATOR::fix-prompts').value]; 
+                    if (templates.length < 10 || templates[8] === undefined || templates[9] === undefined || 
+                        templates[8] === "undefined" || templates[9] === "undefined") {
+                        document.getElementById('CLUSTER-CONTENT-CREATOR::gen-cta-spinner').style.display = 'none';
+                        document.getElementById('CLUSTER-CONTENT-CREATOR::gen-cta').onclick               = function(){CLUSTER_CONTENT_CREATOR.GenerateCTAs()};
+                        return alert(`The selected prompt is missing the CTAs prompts`);
+                    }
+                    let promisses = []      
+                    let requests  = []
+                    for (const k of _this.__Kwords)
+                    {  
+                        if (k.Checkbox.checked === false) 
+                        {
+                            continue;
+                        }
+                        let promisse = k.GetCTARequestData()                
+                        promisses.push(promisse)
+                    }
+                    for (promisse of promisses)
+                    {
+                        let k_word_requests = await promisse;
+                        if (k_word_requests.length === 0) 
+                        {
+                            continue
+                        }
+                        for (k_wrod_request of k_word_requests)
+                        {
+                            requests.push(k_wrod_request);
+                        }
+                    }
+                    if (requests.length === 0)
+                    {      
+                        document.getElementById('CLUSTER-CONTENT-CREATOR::gen-cta-spinner').style.display = 'none';
+                        document.getElementById('CLUSTER-CONTENT-CREATOR::gen-cta').onclick               = function(){CLUSTER_CONTENT_CREATOR.GenerateCTAs()}; 
+                        return alert(`No selected keywords or no CTAs on any of the selected keywords.`);                 
+                    }
+                    let f_options  = DASHBOARD_FetchOPtions();
+                    f_options.body = JSON.stringify({
+                        Model    : model,
+                        System   : templates[8],
+                        User     : templates[9],
+                        Sections : requests
+                    })
+                    //console.log(f_options.body)
+                    let replies = (await DASHBOARD_Fetch('content-creator-gen-ctas', f_options)).Replies;
+                    for (let reply of replies)
+                    {
+                        console.log(reply)
+                        let kword = KEYWORDS.GetKeyWord(reply.Keyword);
+                        let cta   = reply.Assistant;
+                        let index = reply.Index
+                        kword.ApendAICTA(index, cta);
+                        CLUSTER_CONTENT_CREATOR_ArticleNameClicked(reply.Keyword)
+                        document.getElementById('CLUSTER-CONTENT-CREATOR::gen-cta-spinner').style.display = 'none';
+                        document.getElementById('CLUSTER-CONTENT-CREATOR::gen-cta').onclick               = function(){CLUSTER_CONTENT_CREATOR.GenerateCTAs()};
+                    }
+                }
+                catch (error)
+                {
+                    DASHBOARD_except(error)
+                    document.getElementById('CLUSTER-CONTENT-CREATOR::gen-cta-spinner').style.display = 'none';
+                    document.getElementById('CLUSTER-CONTENT-CREATOR::gen-cta').onclick               = function(){CLUSTER_CONTENT_CREATOR.GenerateCTAs()};
+                }                
+            })(this);             
+        }        
+    }
+    function CLUSTER_CONTENT_CREATOR_LoadTest(){
+        DASHBOARD_Load(function(result){
+            //console.log(result)
+            CLUSTER_CONTENT_CREATOR_DisplayBlackList(JSON.parse(result)['Black List Log'])
+        })
+        document.getElementById('CLUSTER-CONTENT-CREATOR::root').style.display = 'flex';
+    }
+    function CLUSTER_CONTENT_CREATOR_FormatTableCellText(original, fixed, fixes){
+        for (let fix of fixes){            
+            original = original.replace(fix.Original, `<span style='background-color:LightGreen'>${fix.Original}</span>`.replace())
+            fixed    = fixed.replace(fix.Fixed, `<span style='background-color:LightGreen'>${fix.Fixed}</span>`)
+        }
+        return [original, fixed]
+    }
+    function CLUSTER_CONTENT_CREATOR_HeighlightBlackListedTerm(original, fixes){
+        for (let fix of fixes){
+            for (let removal of fix.Removals)
+                original = original.replace(removal, `<span style='background-color:LightGreen'>${removal}</span>`.replace())           
+        }
+        return original
+    }
+    function CLUSTER_CONTENT_CREATOR_FormatTableCellTextB(text, removals){
+        for (let removal of removals){            
+            text = text.toLowerCase().replaceAll(removal.toLowerCase(), `<span style='background-color:LightGreen'>${removal}</span>`.replace())            
+        }
+        return text
+    }
+    function CLUSTER_CONTENT_CREATOR_DisplayBlackList(data){                    
+        document.getElementById('CLUSTER-CONTENT-CREATOR::blacklist-view').style.display = 'flex';
+        document.getElementById('CLUSTER-CONTENT-CREATOR::blacklist-view').onclick = function(evnt){evnt.stopPropagation()}
+        let list       = document.getElementById('CLUSTER-CONTENT-CREATOR::blacklist-list');
+        let table      = document.getElementById('CLUSTER-CONTENT-CREATOR::blacklist-table');
+        let rows       = Array.from(table.children).slice(1);
+        for (const row of rows){row.parentElement.removeChild(row);}
+        list.innerHTML = '';        
+        for (const kword of data){            
+            let name       = document.createElement('p');
+            name.innerHTML = kword.Name;
+            name.className = 'DASHBOARD_ClicableText';
+            list.appendChild(name)
+            name.onclick = function(){                                   
+                for (const row of Array.from(table.children).slice(1)){row.parentElement.removeChild(row);}
+                let row_data = kword.Results
+                let color    = 'white'
+                //<td style='width:auto;overflow:auto;resize:horizontal;'><div style='resize:both;padding:10 10 10 10'>${datum['Fixed']}</div></td>
+                //<td style='width:auto;overflow:auto;resize:horizontal;'><div style='resize:both;padding:10 10 10 10'>${datum['Improved']}</div></td>
+                for (const datum of row_data) {
+                    let orig  = CLUSTER_CONTENT_CREATOR_FormatTableCellTextB(datum.Original, datum.Removals)
+                    let imp   = CLUSTER_CONTENT_CREATOR_FormatTableCellTextB(datum.Improved, datum.Removals)
+                    let fxd   = CLUSTER_CONTENT_CREATOR_FormatTableCellTextB(datum.Reply, datum.Removals)
+                    //let fxd_nd_improved =  CLUSTER_CONTENT_CREATOR_HeighlightBlackListedTerm(datum['Fixed and Improved'], datum['Fixed Summary'])
+                    color        = color == 'white' ? '#eeeeee' : 'white'
+                    let new_row  = `
+                    <tr style='font-weight:lighter;background-color:${color}'>
+                        <td style='width:auto;overflow:auto;resize:horizontal;'><div style='resize:both;padding:10 10 10 10'>${orig}</div></td>                        
+                        <td style='width:auto;overflow:auto;resize:horizontal;'><div style='resize:both;padding:10 10 10 10'>${imp}</div></td>                        
+                        <td style='width:auto;overflow:auto;resize:horizontal;'><div style='resize:both;padding:10 10 10 10'>${fxd}</div></td>  
+                        <td style='width:auto;overflow:auto;resize:horizontal;'><div style='resize:both;padding:10 10 10 10'>${datum.Removals}</div></td>                         
+                    </tr>`
+                    table.innerHTML += new_row;
+                }
+            }
+        }
+        for (const child of list.children){
+            child.click();
+            break;
+        }
+        let but          = document.createElement('button');
+        let save         = document.createElement('button');
+        but.classList    = 'btn btn-az-secondary btn-rounded'
+        but.innerHTML    = 'Close'
+        save.classList   = 'btn btn-az-secondary btn-rounded'
+        save.innerHTML   = 'Save'
+        save.style       = 'margin-top:10px'
+        let spacer       = document.createElement('div');
+        spacer.className = 'spacer'
+        but.onclick      = function(){document.getElementById('CLUSTER-CONTENT-CREATOR::blacklist-view').style.display = 'none'}    
+        save.onclick     = function(){
+            const a    = document.createElement('a');
+            const blob = new Blob([JSON.stringify({'Black List Log' : data}, null, '\t')]);
+            a.href     = URL.createObjectURL(blob);
+            a.download = 'Black-List-Log.json';                     
+            a.click();    
+        }  
+        list.appendChild(spacer);
+        list.appendChild(but);    
+        list.appendChild(save);        
+    };
+    async function CLUSTER_CONTENT_CREATOR_SyncBlackList(){
+        let options = DASHBOARD_FetchOPtions();
+        let list    = await DASHBOARD_Fetch('content_creator-get_blacklisted_words?list=Articles', options);   
+        CLUSTER_CONTENT_CREATOR.SetBlackListetWords(list.Reply)    
+    };
+    async function CLUSTER_CONTENT_CREATOR_Expandprompt(template, k, section='', full_section=''){      
+        let use_facts    = DASHBOARD_OptionB('Use Section Facts');     
+        let kword        = k.GetKeyWord();
+        let Outline      = k.GetOutline();
+        let Intent       = k.GetIntent();
+        let Facts        = use_facts ? k.GetFacts() : '';
+        let prompt       = template
+        let FullTones    = ''
+        let Tones        = ''   
+        let Links        = await CLUSTER_CONTENT_CREATOR_GetLinks(section, kword);        
+        let links_str    = ''
+        for (let i=0; i<Links.length; i++){
+            let sec    =  Links[i]['Section'];
+            let anchor =  Links[i]['Anchor'];
+            let url    =  Links[i]['TargetURL'];
+            links_str += `Link #${i+1}:\nTarget URL: ${url}\nAnchor text: ${anchor}\nSection: ${sec}\n`
+        }   
+        //console.log(kword, section, links_str, Links.length)
+        let descriptions = DASHBOARD_GetToneDescriptions();   
+        let index        = 0;    
+        for (let [tone, description] of Object.entries(descriptions)){
+            Tones     += tone + ', ';
+            FullTones += index > 0 ? '\n\n' + tone + ': ' + description : tone + ': ' + description;
+            index ++;
+        } 
+        let select_aud = DASHBOARD_Option('Selected Audience')
+        let aud_desc   = select_aud + ":\n" + DASHBOARD_AudienceDescription(select_aud);   
+        let special_instructions = k.GetSectionSpecialInstructions(section)
+        special_instructions    += '\n' + k.GetCommonSpecialInstructions();
+        special_instructions    += '\n\n' + await CLUSTER_CONTENT_CREATOR_GenerateFactsForSection(kword, section);
+        Tones  = Tones.substring(0, Tones.length-2) + ' ';
+        prompt = prompt.replaceAll("</p>", '');
+        prompt = prompt.replaceAll('{KEYWORD}', kword);
+        prompt = prompt.replaceAll('{OUTLINE}', Outline);
+        prompt = prompt.replaceAll('{INTENT}', Intent);
+        prompt = prompt.replaceAll('{TONES}', Tones);
+        prompt = prompt.replaceAll('{TONES_FULL}', FullTones);
+        prompt = prompt.replaceAll('{AUDIENCE}', select_aud);
+        prompt = prompt.replaceAll('{AUDIENCE_FULL}', aud_desc);
+        prompt = prompt.replaceAll('{FACTS}', Facts);
+        prompt = prompt.replaceAll('{SECTION}', section);
+        prompt = prompt.replaceAll('{CONTENT}', section);
+        prompt = prompt.replaceAll('{FULL_SECTION}', full_section);
+        prompt = prompt.replaceAll('{INTERNAL_LINKS}', links_str.replaceAll('<br>', '\n'));
+        prompt = prompt.replaceAll('{INSTRUCTIONS}', special_instructions.replaceAll('\n') === '' ? '' : '<special instructions>\nSpecial Instructions:\n' + special_instructions + "\n</special instructions>");       
+        prompt = prompt.replaceAll('{BLACK_LIST}', DASHBOARD_OptionA('Black Listed Terms').toString()); 
+        prompt = prompt.replaceAll('{DATE}', new Date().toDateString().split(' ').slice(1, 4).toString().replace(',', ' ').replace(',', ', '));
+        prompt = prompt.replaceAll('{COUNTRY}', {'US' : 'Unied States', 'UK' : 'United Kigdom', 'AU' : 'Australia', 'CA' : 'Canada', 
+        'NL' : 'Netherlands'}[document.getElementById('OUTLINEGEN::Country').value]);
+        
+        if (DASHBOARD_OptionA('Selected Tones').length >= 2){
+            while (prompt.includes('{@NTONES==2}') && prompt.includes('{NTONES==2}') 
+                && prompt.indexOf('{NTONES==2}') < prompt.indexOf('{@NTONES==2}')){
+                prompt = prompt.replace('{NTONES==2}', '').replace('{@NTONES==2}', '');
+            } 
+            while (prompt.includes('{@NTONES==1}') && prompt.includes('{NTONES==1}') 
+                && prompt.indexOf('{NTONES==1}') < prompt.indexOf('{@NTONES==1}')){
+                prompt = prompt.split('{NTONES==1}', 1)[0] + prompt.split('{@NTONES==1}', 1)[1];
+            }
+        } else if (DASHBOARD_OptionA('Selected Tones').length === 1){            
+            while (prompt.includes('{@NTONES==2}') && prompt.includes('{NTONES==2}') 
+                && prompt.indexOf('{NTONES==2}') < prompt.indexOf('{@NTONES==2}')){
+                prompt = prompt.split('{NTONES==2}', 1)[0] + prompt.split('{@NTONES==2}', 1)[1];
+            }             
+            while (prompt.includes('{@NTONES==1}') && prompt.includes('{NTONES==1}') 
+                && prompt.indexOf('{NTONES==1}') < prompt.indexOf('{@NTONES==1}')){
+                prompt = prompt.replace('{NTONES==1}', '').replace('{@NTONES==1}', '');
+            }
+        }
+
+        if (Links.length === 1){
+            while (prompt.includes('{@NLINKS==1}') && prompt.includes('{NLINKS==1}') 
+                && prompt.indexOf('{NLINKS==1}') < prompt.indexOf('{@NLINKS==1}')){
+                prompt = prompt.replace('{NLINKS==1}', '').replace('{@NLINKS==1}', '');
+            }
+            while (prompt.includes('{@NLINKS==2+}') && prompt.includes('{NLINKS==2+}') 
+                && prompt.indexOf('{NLINKS==2+}') < prompt.indexOf('{@NLINKS==2+}')){
+                prompt = DASHBOARD_SpliceString(prompt, 'NLINKS==2+')
+            }
+        } else if (Links.length >= 2){
+            while (prompt.includes('{@NLINKS==1}') && prompt.includes('{NLINKS==1}') 
+                && prompt.indexOf('{NLINKS==1}') < prompt.indexOf('{@NLINKS==1}')){
+                prompt = DASHBOARD_SpliceString(prompt, 'NLINKS==1')
+            }
+            while (prompt.includes('{@NLINKS==2+}') && prompt.includes('{NLINKS==2+}') 
+                && prompt.indexOf('{NLINKS==2+}') < prompt.indexOf('{@NLINKS==2+}')){
+                prompt = prompt.replace('{NLINKS==2+}', '').replace('{@NLINKS==2+}', '');
+            }
+        } else if (Links.length === 0){
+            while (prompt.includes('{@NLINKS==1}') && prompt.includes('{NLINKS==1}') 
+                && prompt.indexOf('{NLINKS==1}') < prompt.indexOf('{@NLINKS==1}')){
+                prompt = DASHBOARD_SpliceString(prompt, 'NLINKS==1')
+            }
+            while (prompt.includes('{@NLINKS==2+}') && prompt.includes('{NLINKS==2+}') 
+                && prompt.indexOf('{NLINKS==2+}') < prompt.indexOf('{@NLINKS==2+}')){
+                prompt = DASHBOARD_SpliceString(prompt, 'NLINKS==2+')
+            }
+        }
+        let _1stline = prompt.split('\n')[0];
+        if (_1stline.toLowerCase().includes('frequently asked questions') || _1stline.includes('FAQ')){
+            prompt = prompt.replaceAll(/^-/gm, '- ');
+        }        
+        let __index  = 1
+        while (prompt.includes('{N}')){
+            prompt = prompt.replace('{N}', __index)
+            __index ++;
+        }        
+        //console.log(prompt) 
+        return prompt;
+    }    
+    document.getElementById('CLUSTER-CONTENT-CREATOR::root').onclick = function(event){event.stopPropagation();}
+    async function CLUSTER_CONTENT_CREATOR_PopulateModels(){   
+        await  DASHBOARD_UpdateSettings();    
+        try
+        {   
+            var reply        = await DASHBOARD_Fetch('https://openrouter.ai/api/v1/models');           
+            let select       = document.getElementById('CLUSTER-CONTENT-CREATOR::model');
+            select.innerHTML = ''
+            for (const model of reply.data){
+                let option   = document.createElement('option');
+                option.value = model.id;
+                option.label = model.name;
+                select.appendChild(option);
+            }
+        } catch (error) 
+        {
+            //DASHBOARD_except(error)
+            console.log(error)
+        }
+        select           = document.getElementById('CLUSTER-CONTENT-CREATOR::prompt')
+        let last_prompt  = DASHBOARD_GetOption('Last Prompt');
+        select.innerHTML = ''       
+        for (const prompt in DASHBOARD_OptionO('Prompts')){
+            let option      = document.createElement('option');
+            option.value    = prompt;
+            option.label    = prompt;           
+            if (option.value === last_prompt) option.selected = true;
+            select.appendChild(option);
+        }
+        select           = document.getElementById('CLUSTER-CONTENT-CREATOR::fix-prompts')
+        select.innerHTML = ''            
+        for (const prompt in DASHBOARD_OptionO('More Prompts')['Fix content']){
+            let option      = document.createElement('option');
+            option.value    = prompt;
+            option.label    = prompt;                
+            if (option.value === last_prompt) option.selected = true;
+            select.appendChild(option);
+        }
+    }
+    function CLUSTER_CONTENT_CREATOR_ArticleNameClicked(name){      
+        let Kword = KEYWORDS.GetKeyWord(name);  if (Kword == null) return;
+        document.getElementById('CLUSTER-CONTENT-CREATOR::article-name').innerHTML = name;
+        document.getElementById('CLUSTER-CONTENT-CREATOR::article').value          = Kword.GetArticleWithCTAs();
+    }
+    function CLUSTER_CONTENT_CREATOR_ListKwords(){      
+        CLUSTER_CONTENT_CREATOR_PopulateModels()  
+        document.getElementById('CLUSTER-CONTENT-CREATOR::root').style.display = 'flex';
+        let table       = document.getElementById('CLUSTER-CONTENT-CREATOR::table')
+        let head        = table.children[0].cloneNode(true);
+        table.innerHTML = ''
+        table.appendChild(head)
+        CLUSTER_CONTENT_CREATOR.clear();
+        for (const name of KEYWORDS.ListKeywordsNames()){
+            let Kword  = KEYWORDS.GetKeyWord(name);
+            if (Kword == null) continue;
+            let header = document.getElementById('CLUSTER-CONTENT-CREATOR::table-head');
+            let clone  = header.cloneNode(true);   
+            clone.classList = "CLUSTER-CONTENT-CREATOR_List-Item-Container"               
+            if (Kword.GetOutline() !== ''){
+                clone.children[2].className = 'CLUSTER-CONTENT-CREATOR_List-Item'
+                clone.children[2].innerHTML =
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-yes-small"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>'
+            } else {
+                clone.children[2].className = 'CLUSTER-CONTENT-CREATOR_List-Item'
+                clone.children[2].innerHTML =
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class="DASHBOARD_icon-no-small"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>'
+            }
+            if (Kword.GetIntent() !== ''){
+                clone.children[3].className = 'CLUSTER-CONTENT-CREATOR_List-Item'
+                clone.children[3].innerHTML =
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-yes-small"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>'
+            } else {
+                clone.children[3].className = 'CLUSTER-CONTENT-CREATOR_List-Item'
+                clone.children[3].innerHTML =
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class="DASHBOARD_icon-no-small"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>'
+            }
+            if (Kword.GetFacts() !== ''){
+                clone.children[4].className = 'CLUSTER-CONTENT-CREATOR_List-Item'
+                clone.children[4].innerHTML =
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-yes-small"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>'
+            } else {
+                clone.children[4].className = 'CLUSTER-CONTENT-CREATOR_List-Item'
+                clone.children[4].innerHTML =
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class="DASHBOARD_icon-no-small"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>'
+            }
+            if (Kword.GetArticle() !== ''){
+                clone.children[5].className = 'CLUSTER-CONTENT-CREATOR_List-Item'
+                clone.children[5].innerHTML =
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-yes-small"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>'
+            } else {
+                clone.children[5].className = 'CLUSTER-CONTENT-CREATOR_List-Item'
+                clone.children[5].innerHTML =
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class="DASHBOARD_icon-no-small"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>'
+            }
+            clone.children[6].className = 'CLUSTER-CONTENT-CREATOR_List-Item'
+            clone.children[6].innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DASHBOARD_icon-small-disabled">
+                <path d="M48.5 224H40c-13.3 0-24-10.7-24-24V72c0-9.7 5.8-18.5 14.8-22.2s19.3-1.7 26.2 5.2L98.6 96.6c87.6-86.5 228.7-86.2 315.8 1c87.5 87.5 87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3c-62.2-62.2-162.7-62.5-225.3-1L185 183c6.9 6.9 8.9 17.2 5.2 26.2s-12.5 14.8-22.2 14.8H48.5z"/>
+            </svg>`
+            let disabled = Kword.GetOutline() === '' || Kword.GetIntent() === '' || Kword.GetFacts() === '' ? 'disabled' : ''
+            let checked  = disabled === 'disabled' ? '' : 'checked'
+            checked      = Kword.GetArticle() === '' ? checked : ''
+            clone.children[1].classList         = 'DASHBOARD_ClicableText DASHBOARD_ellipsis';
+            clone.children[1].style             = 'font-weight:normal;padding-right:10px;font-size:14px;max-width:200px';
+            clone.children[1].innerHTML         = name;
+            clone.children[7].innerHTML         = "<progress value='0' max='100' style='height:6px;width:100%;background-color:white;'></progress>"
+            clone.children[0].innerHTML         = `<input class="tw_checkbox" type='checkbox' ${disabled} ${checked} style=background-color:black></input>`;
+            clone.children[1].onclick           = function(){CLUSTER_CONTENT_CREATOR_ArticleNameClicked(name)};
+            CLUSTER_CONTENT_CREATOR.append(name, clone.children[0].children[0], clone.children[7].children[0], clone.children[5], clone.children[6]);           
+            document.getElementById('CLUSTER-CONTENT-CREATOR::table').appendChild(clone);                   
+        }   
+        document.getElementById('CLUSTER-CONTENT-CREATOR::group-select-slots').innerHTML   = ''
+        document.getElementById('CLUSTER-CONTENT-CREATOR::group-unselect-slots').innerHTML = ''
+        let max_group = KEYWORDS.GetMaxGroupIndex();  
+        if (max_group > 0)  {
+            for (let index = 1; index <= max_group; index++){
+                let select_group   = document.createElement('div');
+                let unselect_group = document.createElement('div');
+                select_group.innerHTML          = `<u>${index}</u>`;
+                select_group.className          = 'DASHBOARD_ClicableText';
+                select_group.style.marginLeft   = "6px"
+                unselect_group.innerHTML        = `<u>${index}</u>`;
+                unselect_group.className        = 'DASHBOARD_ClicableText';
+                unselect_group.style.marginLeft = "6px"
+                select_group.onclick            = function(){CLUSTER_CONTENT_CREATOR.SelectGroup(index, true)};
+                unselect_group.onclick          = function(){CLUSTER_CONTENT_CREATOR.SelectGroup(index, false)};
+                document.getElementById('CLUSTER-CONTENT-CREATOR::group-select-slots').appendChild(select_group);
+                document.getElementById('CLUSTER-CONTENT-CREATOR::group-unselect-slots').appendChild(unselect_group);
+            }            
+        }
+        CLUSTER_CONTENT_CREATOR.FiniShedLoading();
+    }
+    async function CLUSTER_CONTENT_CREATOR_End(chat, k, exclude_intro=false) {        
+        let Kword            = KEYWORDS.GetKeyWord(k.Name); if (Kword == null) return;  
+        let article          = '' //await k.GetTitlesAndMeta()
+        let article_sections = []        
+        let index = 0
+        for (const msg of chat) {
+            if (msg.role == 'assistant') {
+                if (index > 0 || CLUSTER_CONTENT_CREATOR_IsLegacyPrompt()) {
+                    article += msg.content + '\n';    
+                    article_sections.push(msg.content)        
+                }
+                // {% if acess_flag_dbug %} 
+                //else {
+                    //article += msg.content + '\n';  
+                //}
+                // {% endif %}   
+                index += 1
+            } 
+        }     
+        k.ImproveFinished();  
+        Kword.SetArticle(article);
+        Kword.SetArticleSections(article_sections);
+        Kword.UpdateChat(chat);
+        CLUSTER_CONTENT_CREATOR.CoroutineFinished(k);        
+        const a    = document.createElement('a');
+        const blob = new Blob([JSON.stringify({'Chat' : chat}, null, '\t')]);
+        a.href     = URL.createObjectURL(blob);
+        a.download = 'Chat.json';                     
+        //a.click();
+    }
+    function CLUSTER_CONTENT_CREATOR_ExpandLinks(Links){
+        let links_str  = ''
+        for (let i=0; i<Links.length; i++){
+            let sec    =  Links[i]['Section'];
+            let anchor =  Links[i]['Anchor'];
+            let url    =  Links[i]['TargetURL'];
+            links_str += `Link${i+1}:\nTarget URL: ${url}\nAnchor text: ${anchor}\nSection: ${sec}\n`
+        }   
+        return links_str 
+    }
+    async function CLUSTER_CONTENT_CREATOR_GetLinks(section, name, section_index='') {
+        if (document.getElementById('CLUSTER-CONTENT-CREATOR::merge-subsections').checked == false) return [];
+        let Kword          = KEYWORDS.GetKeyWord(name); if (Kword === null) return []; 
+        let links          = []        
+        let section_number = 's'
+        try {
+            section_number = section.replaceAll('#', '').trim().split('.')[0]
+        } catch{}
+        if (section_index != '') section_number = section_index;
+        for (const link of Kword.GetLinks()){     
+            let link_number = 'l';
+            try {
+                link_number = link.OriginSection.split('.')[0]
+            } catch{}       
+            if (link_number == section_number) {
+                let target_url = ''
+                let target  = KEYWORDS.GetKeyWord(link.Target);
+                if (target != null) {
+                    target_url = target.SYNC_GetPemalink();
+                } else target_url = ADDITIONAL_KEYWORDS.KeyWordURL(link.Target);
+                console.log(target_url)
+                console.log(link)
+                links.push({
+                    TargetURL : target_url,
+                    Anchor    : link.Anchor.replaceAll('<br>', ''),
+                    Section   : link.OriginSection
+                })
+            }
+        }    
+        console.log(links)    
+        return links
+    }   
+    function CLUSTER_CONTENT_CREATOR_FixFaqFormat(faq){
+        let _1stline = faq.split('\n')[0];
+        if (_1stline.toLowerCase().includes('frequently asked questions') || _1stline.includes('FAQ')){
+            faq = faq.replaceAll(/^-/gm, '- ');
+        }     
+        return faq;   
+    } 
+    function CLUSTER_CONTENT_CREATOR_CheckSectionFacts(){
+        /* caller must sync settings */
+        let use_facts = DASHBOARD_OptionB('Use Section Facts');    
+        if (use_facts === false) return true;    
+        let prompt  = document.getElementById('CLUSTER-CONTENT-CREATOR::prompt').value;
+        let prompts = DASHBOARD_OptionO('Prompts')[prompt];
+        let sys     = prompts['Section Facts SYSTEM'];
+        let user    = prompts['Section Facts USER'];
+        if (!sys || !user || sys === '' || user === '') return false;
+        console.log(sys, user, use_facts)
+        return [sys, user]
+    }
+    async function CLUSTER_CONTENT_CREATOR_GenerateFactsForSection(keyword, section){
+        let prompts = CLUSTER_CONTENT_CREATOR_CheckSectionFacts();
+        if (prompts === false || prompts === true) return '';
+        let [sys, user] = prompts;
+        let options = DASHBOARD_FetchOPtions();
+        options.body = JSON.stringify({
+            Model    : DASHBOARD_GetModel('section-facts'),
+            Sys      : sys,
+            User     : user,
+            Section  : section,
+            Keyword  : keyword
+        })
+        let facts = ''
+        let reply = await DASHBOARD_Fetch('/content_creator-gen-section-facts', options);
+        console.log("FACTS", DASHBOARD_GetModel('section-facts'), reply)
+        if (reply.Err != 'S_OK') facts = reply.Err;
+        else facts = reply.Reply
+        return "Facts to include in content:\n" + facts
+    }
+</script>

@@ -1,0 +1,740 @@
+<style>
+    .CONTENTCREATOR_target-url{
+        color           :blue;
+        cursor          : pointer;
+        text-decoration : underline
+    }    
+</style>   
+<div style='width:600px; display:flex; flex-direction:column; gap:4px'>
+    <div class='az-content-label mg-b-5' style='margin-bottom:2px; position:relative'>Keyword</div>    
+    <div style='display:flex; gap:10px'>
+        <input id='CONTENTCREATOR::keyword' type='text' class='form-control' placeholder='Keyword' style='order:1px solid lightgray;'></input> 
+        <select id='CONTENTCREATOR::model' style='display:none' class="form-control select2-no-search select2-hidden-accessible">            
+            <option value='openai/gpt-4-turbo-preview' label='OpenAI: GPT-4 Turbo (preview)'></option>                          
+        </select> 
+    </div>    
+    <div style='height:10px'></div>
+
+    <div class='az-content-label mg-b-5' style='margin-bottom:2px; position:relative'>Links</div>
+    <div id='CONTENTCREATOR::links-list' style='display:flex; flex-direction: column; overflow-y:auto; height:584px; border:1px solid lightgray;'></div>
+    <div id='CONTENTCREATOR::add-link-dialog' style='position:absolute; z-index:1; border:2px solid #6f42c1ff; display:none; flex-direction: column;
+        background-color:#eae4f2; padding:10 10 10 10; width:600px; gap:10px' name='DASHBOARD::hide-me'>
+        <div class='az-content-label mg-b-5;' style='margin-bottom:20px'>Add link</div>
+        <input id='CONTENTCREATOR::target-url' type='text' class='form-control' placeholder='target url' style='border:none; border-bottom:1px solid lightgray;'></input>        
+        <input id='CONTENTCREATOR::anchor-text' type='text' class='form-control' placeholder='anchor text' style='border:none; border-bottom:1px solid lightgray;'></input>
+        <div style='padding:0 0 0 0;margin:20 0 -10 0'><b>Section:</b></div>
+        <select id='CONTENTCREATOR::section_slelect' class="form-control select2-no-search select2-hidden-accessible">                            
+        </select> 
+        <div style='display:flex;flex-direction:row-reverse;'>
+            <button id='CONTENTCREATOR::add-link-dialog-button' class='btn btn-az-secondary btn-rounded'>Add</button>
+        </div>
+    </div>
+    <label class="ckbox DASHBOARD_CheckboxLabel" style='margin:6 6 6 6;display:none'>
+        <input id='CONTENTCREATOR::merge-subsections' class="checkbox" type="checkbox" checked style='margin-top:2px; margin-right:-10px;'>
+        <span>Merge subsections with parent section</span>
+    </label>
+    <label class="ckbox DASHBOARD_CheckboxLabel" style='margin:6 6 6 6;display:none'>
+        <input id='CONTENTCREATOR::html-tags' class="checkbox" type="checkbox" style='margin-top:2px; margin-right:-10px;'>
+        <span>Optimized prompts for Claude models</span>
+    </label>
+    <button id='CONTENTCREATOR::add-link-button' class='btn btn-az-secondary btn-rounded'>Add link</button>    
+    <button id='CONTENTCREATOR::create-article' class='btn btn-az-secondary btn-rounded' style='display:flex;padding-left:42%;'>        
+        <div id='CONTENTCREATOR::create-article-label'>Create article</div> 
+        <div id='CONTENTCREATOR::spinner' class='DASHBOARD_Loader' style='width:26px; height:26px; margin-top:-4px;'></div>             
+    </button>    
+</div>  
+
+<div style='display:flex; flex-direction:row; gap:10px'> 
+    <div style='display:flex; flex-direction:column'>
+        <div style='display:flex; flex-direction:column;'>
+            <div class='az-content-label mg-b-5' style='margin-bottom:6px; margin-top:0px'>Article outline</div>
+            <textarea id='CONTENTCREATOR::outline' class='form-control' style='width:490px; height:176px; margin-bottom:20px;' rows='7'>Article outline</textarea>
+        </div>       
+        <div style='display:flex; flex-direction:column;'>
+            <div class='az-content-label mg-b-5' style='margin-bottom:6px;'>Search intent</div>
+            <textarea id='CONTENTCREATOR::search-intent' class='form-control' style='width:490px; height:176px; margin-bottom:20px;' rows='7'>Search intent</textarea>
+        </div>
+        <div style='display:flex; flex-direction:column;'>
+            <div class='az-content-label mg-b-5' style='margin-bottom:6px;'>Facts</div>
+            <textarea id='CONTENTCREATOR::facts' class='form-control' style='width:490px; height:176px;' rows='7'>Facts</textarea>
+        </div>
+        <div class='az-content-label mg-b-5' style='margin-bottom:2px; position:relative; margin-top:10px;margin-bottom:2px;'>Prompt</div>   
+        <select id='CONTENTCREATOR::prompt' class="form-control select2-no-search select2-hidden-accessible" style="width:490px">        
+            <option value='Legacy' label='Legacy'></option>         
+            <option value='Default' label='Default' selected="true"></option>                                   
+        </select> 
+    </div> 
+    <div style='display:flex; flex-direction:column'>
+        <div style='display:flex; flex-direction:column; position:relative'>
+            <select style='width:490px; margin-bottom:16px;display:none' id='CONTENTCREATOR::audiences-container' class="form-control" size='9' multiple="multiple" onChange='CONTENTCREATOR.AudienceChanged()'>
+                <template id='CONTENTCREATOR::audience-template'>                                
+                    <option value="..." onmouseenter='CONTENTCREATOR.ShowAudienceTip(this)' 
+                    onmouseleave="document.getElementById('CONTENTCREATOR::audience-tip').style.display = 'none'">Whatever</option>
+                </template>                  
+            </select> 
+            <div id='CONTENTCREATOR::audience-tip' style='position:absolute; top:220px; display:none; background-color:#6f42c1ff; color:white; width:500px;
+            padding:20 20 20 20; word-wrap: normal; z-index:1'>               
+            </div>    
+        </div>      
+        <div style='width:20px'></div>
+        <div style='display:flex; flex-direction:column; position:relative'>            
+            <select style='width:490px; margin-bottom:16px;display:none' id='CONTENTCREATOR::tones-container' class="form-control" size='9' multiple="multiple" onChange='CONTENTCREATOR.ToneChanged()'>
+                <template id='CONTENTCREATOR::tone-template'>                                
+                    <option value="..."  onmouseenter='CONTENTCREATOR.ShowToneTip(this)' 
+                    onmouseleave="document.getElementById('CONTENTCREATOR::tone-tip').style.display = 'none'">Whatever</option>
+                </template>                  
+            </select>  
+            <div id='CONTENTCREATOR::tone-tip' style='position:absolute; top:220px; display:none; background-color:#6f42c1ff; color:white; width:500px;
+            padding:20 20 20 20; word-wrap: normal; z-index:1'>               
+            </div> 
+            
+            <div style='display:flex; flex-direction:column;'>
+                <div class='az-content-label mg-b-5'>Article</div>                
+                <textarea id='CONTENTCREATOR::ai-article' class='form-control' style='width:490px; height:746px' rows='16' placeholder='AI generated article'></textarea>
+            </div>
+        </div>     
+    </div>
+</div>  
+  
+
+<script>   
+function CONTENTCREATOR_IsLegacyPrompt(){
+    return document.getElementById('CONTENTCREATOR::prompt').value === 'Legacy' ? true : false
+}
+CONTENTCREATOR = {
+        async InitWidgets(){
+            this.__StopSignal       = false;
+            this.__SectionIndex     = 0,
+            this.__Sections         = {Tagged : [], Trimed : [], Plain : [], Merged : []},
+            this.__Chat             = [],
+            this.__Prompts          = {Default : {}, Legacy : {}}
+            this.__Model            = ''
+            this.__StopSignaled     = false;
+            this.__Chat             = {}
+            this.__SectionIndex     = 0;
+            this.__Links            = [];            
+            this.__TonesIdsList     = [];
+            this.__AudiencesIdsList = [];
+            var src       = document.getElementById('CONTENTCREATOR::tone-template');
+            var container = document.getElementById('CONTENTCREATOR::tones-container');
+
+            var fetch_options = DASHBOARD_FetchOPtions()              
+            var tones         = await DASHBOARD_Fetch('/outlinegen-get-tones', fetch_options);  
+            this.__Tones      = tones;
+            for (const tone of tones.Tones) {
+                let clone                   = src.content.cloneNode(true);    
+                clone.children[0].id        = `CONTENTCREATOR::tone-${tone.Tone.replace(" ", "-")}`;
+                clone.children[0].innerHTML = tone.Tone;
+                clone.children[0].value     = tone.Tone;
+                this.__TonesIdsList.push(clone.children[0].id)
+                container.appendChild(clone);
+            }
+            var src       = document.getElementById('CONTENTCREATOR::audience-template');
+            var container = document.getElementById('CONTENTCREATOR::audiences-container');
+            for (const audience of tones.Audiences) {
+                let clone                   = src.content.cloneNode(true);  
+                clone.children[0].id        = `CONTENTCREATOR::audience-${audience.Audience.replace(" ", "-")}`; 
+                clone.children[0].innerHTML = audience.Audience;         
+                clone.children[0].value     = audience.Audience;
+                this.__AudiencesIdsList.push(clone.children[0].id )
+                container.appendChild(clone);
+            }       
+            let prompts = await DASHBOARD_Fetch('/content-creator_default-prompt', fetch_options);
+            console.log(prompts)
+            let secs    = ['Initial SYSTEM','Initial USER','Intro SYSTEM','Intro USER','Section SYSTEM','Section USER','FAQ SYSTEM','FAQ USER','Conclusion SYSTEM','Conclusion USER']
+            for (let i=0; i<prompts.Reply.length; i++) {
+                this.__Prompts.Default[secs[i]] = prompts.Reply[i];
+            }
+            secs = ['Intro SYSTEM','Intro USER','Section SYSTEM','Section USER','FAQ SYSTEM','FAQ USER','Conclusion SYSTEM','Conclusion USER']
+            for (let i=0; i<prompts.Legacy.length; i++) {
+                this.__Prompts.Legacy[secs[i]] = prompts.Legacy[i];
+            }
+        },
+        GetTones(){
+            return DASHBOARD_GetOption('Selected Tones')     
+            var tones = []
+            var slct  = document.getElementById('CONTENTCREATOR::tones-container') ;                
+            for (const option of slct.options) {
+                if (option.selected) {
+                    tones.push(option.value)
+                }
+            }
+            return tones
+        },
+        GetAudience(){     
+            return DASHBOARD_GetOption('Selected Audience').length > 0 ? DASHBOARD_GetOption('Selected Audience')[0] : ''         
+            var slct  = document.getElementById('CONTENTCREATOR::audiences-container') ;                
+            for (const option of slct.options) {
+                if (option.selected) {
+                    return option.value
+                }
+            }
+            return ''
+        },
+        ToneChanged(){     
+            var slct = document.getElementById('CONTENTCREATOR::tones-container') ;
+            count    = 0;     
+            for (option of slct.options) {
+                if (option.selected) {
+                    count += 1
+                    if (count > 2){
+                        option.selected = false;
+                        alert('Select only two')
+                        return;
+                    }
+                }
+            }            
+        },
+        AudienceChanged(src){            
+            var slct = document.getElementById('CONTENTCREATOR::audiences-container') ;
+            count    = 0;     
+            for (option of slct.options) {
+                if (option.selected) {
+                    count += 1
+                    if (count > 1){
+                        option.selected = false;
+                        alert('Select only one')
+                        return;
+                    }
+                }
+            }   
+        },
+        ShowToneTip(src){
+            var key = src.id.replace('CONTENTCREATOR::tone-', '').replace('-', ' ')           
+            var tip = '';
+            for (tone of this.__Tones.Tones){
+                if (tone.Tone === key)
+                tip = `<b>${key}:</b><br>${tone.Caption}`;
+            }            
+            document.getElementById('CONTENTCREATOR::tone-tip').innerHTML     = tip;
+            document.getElementById('CONTENTCREATOR::tone-tip').style.display = 'block'
+        } ,   
+        ShowAudienceTip(src){
+            var key = src.id.replace('CONTENTCREATOR::audience-', '').replace('-', ' ')           
+            var tip = '';
+            for (audience of this.__Tones.Audiences){
+                if (audience.Audience === key)
+                tip = `<b>${key}:</b><br>${audience.Caption}`;
+            }                
+            document.getElementById('CONTENTCREATOR::audience-tip').innerHTML     = tip;
+            document.getElementById('CONTENTCREATOR::audience-tip').style.display = 'block'
+        },   
+        Clear(){
+            this.__Links    = [];           
+            document.getElementById('CONTENTCREATOR::links-list').innerHTML = '';
+        },       
+        AppendLink(url, anchor, section){
+            this.__Links.push({
+                TargetURL : url,
+                Anchor    : anchor,
+                Section   : section
+            })
+        },
+        RemoveLink(url, anchor, section){
+            let new_links = [];
+            for (const link of this.__Links) {
+                if (url === link.TargetURL && anchor === link.Anchor && section === link.Section){
+                    continue
+                }
+                new_links.push(link);
+            }
+            this.__Links = new_links;
+        },
+        GetLinksForSection(section){
+            let links = []            
+            if (document.getElementById('CONTENTCREATOR::merge-subsections').checked) return this.__Links;
+            for (const link of this.__Links){
+                if (link.Section === section || (link.Section.includes(section) && merge)){
+                    links.push(link)
+                }
+            }
+            return links;
+        },
+        SaveChat(){            
+            const a    = document.createElement('a');
+            const blob = new Blob([JSON.stringify({'Chat' : this.__Chat}, null, '\t')]);
+            a.href     = URL.createObjectURL(blob);
+            a.download = 'Chat.json';                     
+            a.click();
+        },
+        SingnalStop(){
+            this.__StopSignaled = true;
+            document.getElementById('CONTENTCREATOR::create-article-label').innerHTML = 'Stoping after last request returns';  
+        },
+        End(){
+            this.SaveChat()
+            document.getElementById('CONTENTCREATOR-PAGE::progress').style.visibility = 'hidden';            
+            document.getElementById('CONTENTCREATOR::create-article').classList       = 'btn btn-az-secondary btn-rounded';
+            document.getElementById('CONTENTCREATOR::create-article-label').innerHTML = 'Create article';            
+            document.getElementById('CONTENTCREATOR::spinner').style.display          = 'none';
+            document.getElementById('CONTENTCREATOR::create-article').onclick         = function(){CONTENTCREATOR.Start();}
+            document.getElementById('CONTENTCREATOR::ai-article').value = '';
+            for (const msg of this.__Chat){
+                if (msg.role === 'assistant')
+                    document.getElementById('CONTENTCREATOR::ai-article').value += msg.content + "\r\n"
+            }
+            return  
+        },
+        DoNextSection(json){
+            //DASHBOARD_SyncSleep(500);
+            //console.log(json);
+            this.__Chat = json.Reply.Chat;
+            let p   = document.getElementById('CONTENTCREATOR-PAGE::progress');
+            p.max   = this.__Sections.Tagged.length;
+            p.value = this.__SectionIndex;            
+            if (this.__SectionIndex == this.__Sections.Tagged.length){
+                this.End()
+                return 
+            } 
+            if (this.__StopSignaled){
+                return this.End()
+            }
+            var fetch_options  = DASHBOARD_FetchOPtions();
+            let Query          = {
+                Facts            : document.getElementById('CONTENTCREATOR::facts').value,
+                MergeSubsections : document.getElementById('CONTENTCREATOR::merge-subsections').checked,     
+                Sections       : this.__Sections.Plain,
+                Claude         : document.getElementById('CONTENTCREATOR::html-tags').checked, 
+                Model          : this.__Model,
+                Chat           : this.__Chat,
+                TaggedSection  : this.__Sections.Tagged[this.__SectionIndex],
+                PlainSection   : this.__Sections.Plain[this.__SectionIndex],
+                TrimedSection  : this.__Sections.Trimed[this.__SectionIndex],
+                Links          : this.GetLinksForSection(this.__Sections.Tagged[this.__SectionIndex]),
+                Tones          : this.GetTones(),
+                Audience       : this.GetAudience()         
+            }
+            if (!(this.__Chat.at(-1).content.startsWith('Error calling Open Router API:'))){
+                this.__SectionIndex += 1;
+            }            
+            fetch_options.body = JSON.stringify({Query : Query}); 
+            fetch('content-creator_next', fetch_options).then(response => {
+                if (response.status == 200){
+                    response.json().then(json => this.DoNextSection(json))
+                }
+            });    
+        },
+        DoFirstSection(json){
+            //console.log(json);
+            this.__Sections = {Tagged : [], Trimed : [], Plain : []}
+            for (let i=0; i<json.Reply.Sections.Tagged.length; i++){
+                if (json.Reply.Sections.Tagged[i].startsWith('Introduction-Tag')) continue;
+                this.__Sections.Tagged.push(json.Reply.Sections.Tagged[i]);
+                this.__Sections.Plain.push(json.Reply.Sections.Plain[i]);
+                this.__Sections.Trimed.push(json.Reply.Sections.Trimed[i]);
+            }
+            this.__Chat = json.Reply.Chat;
+            if (this.__Chat.at(-1).content.startsWith('Error calling Open Router API:')){
+                alert(this.__Chat.at(-1).content)
+                return this.End()
+            }
+            let p   = document.getElementById('CONTENTCREATOR-PAGE::progress');
+            p.max   = this.__Sections.Tagged.length;
+            p.value = this.__SectionIndex;
+            if (this.__SectionIndex == this.__Sections.Tagged.length){
+                return this.End()
+            } 
+            if (this.__StopSignaled){
+                return this.End()
+            }            
+            var fetch_options  = DASHBOARD_FetchOPtions();
+            let Query          = {
+                Facts            : document.getElementById('CONTENTCREATOR::facts').value,
+                MergeSubsections : document.getElementById('CONTENTCREATOR::merge-subsections').checked,     
+                Sections       : this.__Sections.Plain,
+                Claude         : document.getElementById('CONTENTCREATOR::html-tags').checked, 
+                Model          : this.__Model,
+                Chat           : this.__Chat,
+                TaggedSection  : this.__Sections.Tagged[this.__SectionIndex],
+                PlainSection   : this.__Sections.Plain[this.__SectionIndex],
+                TrimedSection  : this.__Sections.Trimed[this.__SectionIndex],
+                Links          : this.GetLinksForSection(this.__Sections.Tagged[this.__SectionIndex]),
+                Tones          : this.GetTones(),
+                Audience       : this.GetAudience()         
+            }
+            if (this.__Chat.at(-1).content.startsWith('Error calling Open Router API:')){
+                alert(this.__Chat.at(-1).content)
+                return this.End()
+            }
+            this.__SectionIndex += 1;
+            fetch_options.body = JSON.stringify({Query : Query}); 
+            fetch('content-creator_next', fetch_options).then(response => {
+                if (response.status == 200){
+                    response.json().then(json => this.DoNextSection(json))
+                }
+            });    
+        },
+        __SetSections(json, full=false){
+            this.__Chat         = []
+            this.__Sections     = full===false ? {Tagged : [], Trimed : [], Plain : [], Merged : []} : 
+            {Tagged : ['InitialData'], Trimed : ['InitialData'], Plain : ['InitialData'], Merged : ['InitialData']}
+            this.__SectionIndex = -1;
+            for (let i=0; i<json.Reply.Sections.Tagged.length; i++) {
+                //if (json.Reply.Sections.Tagged[i].startsWith('Introduction-Tag') /*&& full===false*/) continue;
+                this.__Sections.Tagged.push(json.Reply.Sections.Tagged[i]);
+                this.__Sections.Plain.push(json.Reply.Sections.Plain[i]);
+                this.__Sections.Trimed.push(json.Reply.Sections.Trimed[i]);
+                this.__Sections.Merged.push(json.Reply.Sections.Merged[i]);
+            }
+        },
+        __CurrSection(){
+            return {
+                Tagged  : this.__Sections.Tagged[this.__SectionIndex], 
+                Trimed  : this.__Sections.Trimed[this.__SectionIndex], 
+                Plain   : this.__Sections.Plain[this.__SectionIndex],
+                Merged  : this.__Sections.Merged[this.__SectionIndex]
+            }
+        },
+        __GetSectionType(){
+            if (CONTENTCREATOR_IsLegacyPrompt()){
+                return this.__SectionIndex === 0 ? 'Intro' : this.__SectionIndex === this.__Sections.Tagged.length-2 ? 'FAQ' : 
+                this.__SectionIndex === this.__Sections.Tagged.length-1 ? 'Conclusion' : 'Section'
+            }
+            return this.__SectionIndex === 0 ? 'Initial' : this.__SectionIndex === 1 ? 'Intro' :
+            this.__SectionIndex === this.__Sections.Tagged.length-2 ? 'FAQ' : 
+            this.__SectionIndex === this.__Sections.Tagged.length-1 ? 'Conclusion' : 'Section'
+        },
+        __NextSection(){
+            this.__SectionIndex  += 1;                
+            let prog              = document.getElementById('CONTENTCREATOR-PAGE::progress');    
+            prog.style.visibility = 'visible'  
+            if (this.__SectionIndex >= this.__Sections.Tagged.length) {
+                prog.value = 100;
+                return null; 
+            }   
+            prog.value = (this.__SectionIndex-1)/this.__Sections.Tagged.length*100;            
+            return {
+                Tagged : this.__Sections.Tagged[this.__SectionIndex], 
+                Trimed : this.__Sections.Trimed[this.__SectionIndex], 
+                Plain  : this.__Sections.Plain[this.__SectionIndex],
+                Merged : this.__Sections.Merged[this.__SectionIndex]
+            }
+        },
+        __PlainSections(){
+            return this.__Sections.Plain;
+        },       
+        __UpdateChat(json){
+            this.__Chat = json.Reply.Chat;
+        },
+        __UppendToChat(json){
+            if (json != null) this.__Chat.push(json);
+        },
+        __Chat(){
+            return this.__Chat
+        },
+        __ShoudStop(){
+            return this.__StopSignal;
+        },
+        __End(){
+            document.getElementById('CONTENTCREATOR-PAGE::progress').style.visibility = 'hidden';
+            document.getElementById('CONTENTCREATOR-PAGE::progress').value            = '0';                     
+            document.getElementById('CONTENTCREATOR::create-article').classList       = 'btn btn-az-secondary btn-rounded';
+            document.getElementById('CONTENTCREATOR::create-article-label').innerHTML = 'Create article';            
+            document.getElementById('CONTENTCREATOR::spinner').style.display          = 'none';
+            document.getElementById('CONTENTCREATOR::create-article').onclick         = function(){CONTENTCREATOR.Start();}
+            document.getElementById('CONTENTCREATOR::ai-article').value = '';
+
+            let index   =  0;
+            let article = '';
+            for (const msg of this.__Chat) {
+                if (msg.role == 'assistant') {
+                    //if (index > 0 || CONTENTCREATOR_IsLegacyPrompt())
+                        article += msg.content + '\n';            
+                    index += 1
+                }
+            }  
+            document.getElementById('CONTENTCREATOR::ai-article').value = article;          
+
+            const a    = document.createElement('a');
+            const blob = new Blob([JSON.stringify({'Chat' : this.__Chat}, null, '\t')]);
+            a.href     = URL.createObjectURL(blob);
+            a.download = 'Chat.json';                     
+            a.click();
+            return;
+        },
+        __GetFormatedLinks(){
+            let links = []
+            for (const link of this.__Links){
+                links.push({
+                    Origin        : document.getElementById('CONTENTCREATOR::keyword').value,
+                    OriginSection : link.Section,
+                    TargetURL     : link.TargetURL,                       
+                    Anchor        : link.Anchor,
+                })               
+            } 
+            return links;        
+        },
+        __GetLinksForsection(section) {
+            if (document.getElementById('CONTENTCREATOR::merge-subsections').checked == false) return [];            
+            let links          = []        
+            let section_number = 's'
+            try {
+                section_number = section.split('.')[0]
+            } catch{}
+            for (const link of this.__GetFormatedLinks()){     
+                let link_number = 'l';
+                try {
+                    link_number = link.OriginSection.split('.')[0]
+                } catch{}       
+                if (link_number == section_number) {                    
+                    links.push({
+                        TargetURL : link.TargetURL,
+                        Anchor    : link.Anchor,
+                        Section   : link.OriginSection
+                    })
+                }
+            }           
+            return links
+        },
+        __Expandprompt(template, section='', full_section=''){
+            let kword        = document.getElementById('CONTENTCREATOR::keyword').value;
+            let Outline      = document.getElementById('CONTENTCREATOR::outline').value;
+            let Intent       = document.getElementById('CONTENTCREATOR::search-intent').value;
+            let Facts        = document.getElementById('CONTENTCREATOR::facts').value;
+            let prompt       = template
+            let FullTones    = ''
+            let Tones        = ''   
+            let Links        = this.__GetLinksForsection(section)   
+            let links_str    = ''
+            for (let i=0; i<Links.length; i++){
+                let sec    =  Links[i]['Section'];
+                let anchor =  Links[i]['Anchor'];
+                let url    =  Links[i]['TargetURL'];
+                links_str += `Link${i+1}:\nTarget URL:${url}\nAnchor text:${anchor}\nSection:${sec}\n`
+            }   
+            let descriptions = DASHBOARD_GetToneDescriptions();   
+            let index        = 0;    
+            for (let [tone, description] of Object.entries(descriptions)){
+                Tones     += tone + ', ';
+                FullTones += index > 0 ? '\n\n' + tone + ': ' + description : tone + ': ' + description;
+                index ++;
+            }        
+            Tones  = Tones.substring(0, Tones.length-2) + ' ';
+            prompt = prompt.replaceAll("</p>", '');
+            prompt = prompt.replaceAll('{KEYWORD}', kword);
+            prompt = prompt.replaceAll('{OUTLINE}', Outline);
+            prompt = prompt.replaceAll('{INTENT}', Intent);
+            prompt = prompt.replaceAll('{TONES}', Tones);
+            prompt = prompt.replaceAll('{TONES_FULL}', FullTones);
+            prompt = prompt.replaceAll('{AUDIENCE}', DASHBOARD_GetOption('Selected Audience').length > 0 ? DASHBOARD_GetOption('Selected Audience')[0] : '');
+            prompt = prompt.replaceAll('{FACTS}', Facts);
+            prompt = prompt.replaceAll('{SECTION}', section);
+            prompt = prompt.replaceAll('{FULL_SECTION}', full_section);
+            prompt = prompt.replaceAll('{INTERNAL_LINKS}', links_str);
+            prompt = prompt.replaceAll('{BLACK_LIST}', SETTINGS_PROMPTS_GetBlackListedTerms().toString()); 
+            prompt = prompt.replaceAll('{COUNTRY}', ''); 
+            prompt = prompt.replaceAll('{DATE}', ''); 
+            let regex = /({NTONES==2})(.*)({@NTONES==2})/g
+            prompt = prompt.replaceAll(regex, DASHBOARD_GetOption('Selected Tones').length === 2 ? '$2' : '');
+            regex  = /({NTONES==1})(.*)({@NTONES==1})/g
+            prompt = prompt.replaceAll(regex, DASHBOARD_GetOption('Selected Tones').length === 1 ? '$2' : '');
+            regex  = /({NLINKS==1})(.*)({@NLINKS==1})/g
+            prompt = prompt.replaceAll(regex, Links.length === 1 ? '$2' : '');
+            regex  = /({NLINKS==2\+})(.*)({@NLINKS==2\+})/g
+            prompt = prompt.replaceAll(regex, Links.length > 1 ? '$2' : '');      
+            return prompt;
+        },
+        __GetMessages(section, full_section)  {
+            let prompt   = this.__Prompts[document.getElementById('CONTENTCREATOR::prompt').value];                  
+            let user     = prompt[`${this.__GetSectionType()} USER`]
+            let system   = prompt[`${this.__GetSectionType()} SYSTEM`]
+            user         = this.__Expandprompt(user, section, full_section)
+            system       = this.__Expandprompt(system, section, full_section)
+            return [{role : 'system', content : system}, {role : 'user', content : user}]
+        }, 
+        __Stop(){
+            this.__StopSignal = true
+        },
+        async __StartCustom(json){
+            await new Promise(r => setTimeout(r, 100));           
+            let fetch_options  = DASHBOARD_FetchOPtions();  
+            this.__Model       = DASHBOARD_GetModel('content');          
+            if (json === null){
+                document.getElementById('CONTENTCREATOR::create-article').classList       = 'btn btn-danger btn-rounded';
+                document.getElementById('CONTENTCREATOR::create-article-label').innerHTML = 'Cancel';            
+                document.getElementById('CONTENTCREATOR::spinner').style.display          = 'flex';
+                document.getElementById('CONTENTCREATOR::create-article').onclick         = function(){CONTENTCREATOR.__Stop();}
+                this.__StopSignal  = false
+                fetch_options.body = JSON.stringify({
+                    Query            : document.getElementById('CONTENTCREATOR::outline').value,
+                    MergeSubsections : true      
+                }); 
+                let secs = await DASHBOARD_Fetch('/content-creator_split-outline', fetch_options);                
+                this.__SetSections({Reply : {Sections : secs.Reply}}, CONTENTCREATOR_IsLegacyPrompt() ? false : true);
+            }   
+            console.log(this.__Sections) ;
+            let section = this.__NextSection()
+            if (section === null || this.__ShoudStop()) {    
+                this.__UppendToChat(json.Reply);               
+                return this.__End()
+            }  
+            if (json !== null) this.__UppendToChat(json.Reply);   
+            let msg = this.__GetMessages(section.Plain, section.Merged) 
+            this.__UppendToChat(msg[0]);  
+            this.__UppendToChat(msg[1]);      
+            let Query = {
+                Messages : this.__Chat,
+                Section  : section.Plain, 
+                Type     : this.__GetSectionType(),
+                Model    : this.__Model
+            } 
+            console.log(Query) ;                      
+            fetch_options.body = JSON.stringify({Query : Query}); 
+            fetch('/content-creator_open_route', fetch_options).then(response => {
+            if (response.status == 200){
+                response.json().then(json => this.__StartCustom(json))
+                }
+            })          
+        },
+        Start(){   
+            //return this.__StartCustom(null)        
+            this.__StopSignaled = false;
+            if (this.GetTones().length == 0){
+                alert("Select at least one tone")
+                return;
+            }
+            if (this.GetAudience() === ''){
+                alert("Select a audience")
+                return;
+            }
+            if (document.getElementById('CONTENTCREATOR::keyword').value === ''){
+                alert("Keyword field is empty")
+                return;
+            }
+            if (document.getElementById('CONTENTCREATOR::outline').value === 'Article outline' 
+                || document.getElementById('CONTENTCREATOR::outline').value === ''){
+                alert("Outline field is empty")
+                return;
+            }
+            if (document.getElementById('CONTENTCREATOR::search-intent').value === 'Search intent' 
+                || document.getElementById('CONTENTCREATOR::search-intent').value === ''){
+                alert("Search intent field is empty")
+                return;
+            }
+            return this.__StartCustom(null)
+            document.getElementById('CONTENTCREATOR-PAGE::progress').value            = '0';
+            document.getElementById('CONTENTCREATOR-PAGE::progress').style.visibility = 'visible';
+            document.getElementById('CONTENTCREATOR::create-article').classList       = 'btn btn-danger btn-rounded';
+            document.getElementById('CONTENTCREATOR::create-article-label').innerHTML = 'Cancel';            
+            document.getElementById('CONTENTCREATOR::spinner').style.display          = 'flex';
+            document.getElementById('CONTENTCREATOR::create-article').onclick         = function(){CONTENTCREATOR.SingnalStop();}
+            this.__SectionIndex = 0;
+            this.__Model        = DASHBOARD_GetModel('content');
+            var fetch_options   = DASHBOARD_FetchOPtions();           
+            let Query           = {
+                Facts            : document.getElementById('CONTENTCREATOR::facts').value,
+                Claude           : document.getElementById('CONTENTCREATOR::html-tags').checked, 
+                MergeSubsections : document.getElementById('CONTENTCREATOR::merge-subsections').checked,        
+                Model            : this.__Model,
+                Keyword          : document.getElementById('CONTENTCREATOR::keyword').value,
+                Outline          : document.getElementById('CONTENTCREATOR::outline').value,
+                SearchIntent     : document.getElementById('CONTENTCREATOR::search-intent').value,
+                Tones            : this.GetTones(),
+                Audience         : this.GetAudience()
+            }
+            fetch_options.body = JSON.stringify({Query : Query}); 
+            fetch('content-creator_start', fetch_options).then(response => {
+                if (response.status == 200){
+                    response.json().then(json => this.DoFirstSection(json))
+                }
+            });          
+        }    
+    } 
+CONTENTCREATOR.InitWidgets();   
+async function CONTENTCREATOR_PopulateModels(){   
+    var reply  = await DASHBOARD_Fetch('https://openrouter.ai/api/v1/models');    
+    console.log(reply);
+    let select = document.getElementById('CONTENTCREATOR::model')
+    for (const model of reply.data){
+        let option   = document.createElement('option');
+        option.value = model.id;
+        option.label = model.name;
+        select.appendChild(option);
+    }
+}
+CONTENTCREATOR_PopulateModels()
+document.getElementById('CONTENTCREATOR::add-link-dialog').onclick = function (event) {
+    event.stopPropagation();
+}
+document.getElementById('CONTENTCREATOR::add-link-button').onclick = async function(event) {
+    document.getElementById('CONTENTCREATOR::ai-article').value =  ''
+    let fetch_options  = DASHBOARD_FetchOPtions()  
+    fetch_options.body = JSON.stringify({
+        Query            : document.getElementById('CONTENTCREATOR::outline').value,
+        MergeSubsections : false      
+    }); 
+    var reply          = await DASHBOARD_Fetch('/content-creator_split-outline', fetch_options);      
+    let select         =  document.getElementById('CONTENTCREATOR::section_slelect')
+    select.innerHTML   = ''
+    for (let i=0; i<reply.Reply.Tagged.length; i++){
+        if (reply.Reply.Tagged[i].startsWith('Introduction-Tag') || 
+            reply.Reply.Tagged[i].startsWith('Conclusion-Tag[') ||
+            reply.Reply.Tagged[i].startsWith('FAQ-TAG[')) continue;
+        document.getElementById('CONTENTCREATOR::ai-article').value += reply.Reply.Plain[i] + '\r\n';
+        let option       = document.createElement('option');
+        option.value     = reply.Reply.Tagged[i];
+        option.label     = reply.Reply.Trimed[i];        
+        select.appendChild(option)
+    }  
+    event.stopPropagation();
+    document.getElementById('CONTENTCREATOR::add-link-dialog').style.display = 'flex';
+} 
+document.getElementById('CONTENTCREATOR::add-link-dialog-button').onclick = async function() {
+    let list       = document.getElementById('CONTENTCREATOR::links-list')
+    let base       = document.createElement('div');
+    base.style     = 'display:flex;flex-direction:column;margin-bottom:10px; background-color:#eae4f2';
+    let sec_select = document.getElementById('CONTENTCREATOR::section_slelect')
+    let items      = {
+        'TARGET URL'  : document.getElementById('CONTENTCREATOR::target-url').value,
+        'ANCHOR TEXT' : document.getElementById('CONTENTCREATOR::anchor-text').value,
+        SECTION       : sec_select.children[sec_select.selectedIndex].label,
+    };
+    let table_div   = document.createElement('div');    
+    table_div.style = 'border-top:1px solid #6f42c1ff; border-bottom:1px solid #6f42c1ff; display:flex;flex-direction:column;'
+    for (const [key, value] of Object.entries(items)){
+        let line          = document.createElement('div');        
+        let label         = document.createElement('div');
+        let content       = document.createElement('div');
+        line.style        = 'display:flex'
+        label.style       = 'width:120px; min-width:120px; border-right:1px solid #6f42c1ff; padding-left:6px';
+        content.classList = key === 'TARGET URL' ? 'DASHBOARD_ellipsis CONTENTCREATOR_target-url' : 'DASHBOARD_ellipsis';
+        content.style     = 'margin-left:6px';
+        label.innerHTML   = `<b>${key}</b>`;
+        content.innerHTML = value;
+        line.appendChild(label);
+        line.appendChild(content);
+        table_div.appendChild(line);       
+        if (key === 'TARGET URL'){
+            content.onclick = function(){window.open(content.innerHTML)};
+        }
+    }
+    CONTENTCREATOR.AppendLink(
+        document.getElementById('CONTENTCREATOR::target-url').value,
+        document.getElementById('CONTENTCREATOR::anchor-text').value,
+        sec_select.children[sec_select.selectedIndex].value
+    )
+    base.appendChild(table_div);
+    list.appendChild(base);
+    let trash_div        = document.createElement('div');
+    trash_div.style      = 'display:flex;flex-direction:row-reverse;padding:8 8 8 8; border-bottom:1px solid #6f42c1ff';
+    trash_div.innerHTML += '<svg xmlns="http://www.w3.org/2000/svg" name="KEYWORD_delete" class="DASHBOARD_icon-medium" viewBox="0 0 448 512"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>'
+    base.appendChild(trash_div);
+    trash_div.children[0].onclick = function(){
+        base.parentElement.removeChild(base)
+        CONTENTCREATOR.RemoveLink(
+            document.getElementById('CONTENTCREATOR::target-url').value,
+            document.getElementById('CONTENTCREATOR::anchor-text').value,
+            sec_select.children[sec_select.selectedIndex].value
+        )
+    }
+    document.getElementById('CONTENTCREATOR::add-link-dialog').style.display = 'none';
+}
+function CONTENTCREATOR_DoNextSection(json){
+    console.log(json);
+}
+document.getElementById('CONTENTCREATOR::create-article').onclick = function(){CONTENTCREATOR.Start();}
+document.getElementById('CONTENTCREATOR::outline').onkeypress = function(){CONTENTCREATOR.Clear();};
+document.getElementById('CONTENTCREATOR::outline').addEventListener("paste", () => {CONTENTCREATOR.Clear();})
+document.getElementById('CONTENTCREATOR::outline').onchange   = document.getElementById('CONTENTCREATOR::outline').onkeypress;
+</script>    
+

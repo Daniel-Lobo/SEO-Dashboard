@@ -1,0 +1,1246 @@
+{% extends 'dashboard.html' %}
+{% block breadcrumbs %}  
+<div style='display:flex; flex-direction: column; width:100%; margin-right:20px; margin-bottom:-16px;'>
+    <div style='display:flex; margin-bottom:20px; text-transform: uppercase;'> 
+        <span>SEO Tools</span>
+        <span>Settings</span>   
+    </div>        
+    <h1 class='az-content-title'>Settings</h1>    
+</div>  
+{% endblock %}  
+
+{% block tool_content %} 
+    {% if acess_flag_article_gen or acess_flag_outline_gen %} 
+<style>
+    .SETTINGS_MAIN{
+        position       : relative;
+        display        : flex;
+        flex-direction : column;
+        width          : 100%;
+        height         : 100%;
+        overflow       : auto;
+        gap            : 4px;          
+    }    
+    .SETTINGS_DIALOG{
+        scrollbar-color : grey var(--theme-clr-weak) ;;
+        position        : absolute; 
+        display         : none;
+        flex-direction  : column;
+        border          : 2px solid var(--theme-clr-strong);
+        background-color: var(--theme-clr-weak);
+        z-index         : 1;
+        gap             : 6px;
+        padding         : 8 8 8 8;
+    } 
+    .SETTINGS_tab-item{        
+        margin-bottom: -2px;
+        cursor: pointer;
+    }
+    .SETTINGS_help-icon{
+        fill         :black;
+        border       : 1px solid black;
+        border-radius: 50%;     
+        margin-top   : 0px;
+        margin-left  : 6px;        
+    }
+    .SETTINGS_help-icon-button{
+        background-color: transparent;
+        border          : none;
+        cursor          : pointer;
+        margin          : 0 0 0 0;
+        padding         : 0 0 0 0;
+        height          : 20px;
+    }
+</style>    
+<div class='SETTINGS_MAIN tw_Group-Container'>
+    <div style='display:flex; width:100%; margin-top:20px; gap:14px; padding-bottom:2px; border-bottom:1px solid lightgray;'>        
+        {% if admin %} 
+        <h3 id='SETTINGS::tab-item-General' onclick='SETTINGS_SelectTab(this)' class='tw_h3 SETTINGS_tab-item' style='border-bottom:2px solid black'>General Settings</h2>
+        <h3 id='SETTINGS::tab-item-Prompts' onclick='SETTINGS_SelectTab(this)' class='tw_h3 mg-b-4 SETTINGS_tab-item'>Prompts</h3>  
+        {% else %}   
+        <h3 id='SETTINGS::tab-item-General' class='tw_h3 mg-b-4 SETTINGS_tab-item' style='border-bottom:2px solid black'>General Settings</h3>
+        <h3 id='SETTINGS::tab-item-Prompts' class='tw_h3 mg-b-4 SETTINGS_tab-item' style='color:lightgray'>Prompts</h3> 
+        {% endif %}         
+    </div> 
+
+    <div style='display:flex;flex-direction:row; width:100%;height:100%;'>
+        <div style='display:flex;flex-direction:column; width:calc(100% - 20px);height:100%;' id='SETTINGS::General'>
+            <div class='tw_dialog-container' id='SETTINGS::new-tone-dialog' name='DASHBOARD::hide-me' style="z-index: 1;">
+                <div class="tw_dialog tw_Ctrl-Group">
+                    <h3 class='tw_h3' style='margin-top:0px; margin-left:0px;width:100%; position:relative;'>New tone dialog</h3>
+                    <div class="tw_h3_5" style="margin-top:20px;">Tone</div>
+                    <input id='SETTINGS::new-tone-name' class="tw_input" placeholder='New tone' type="text" style="width:100%"> 
+                    <div class="tw_h3_5" style="margin-top:20px;">Tag</div>
+                    <input id='SETTINGS::new-tone-tag' class="tw_input" placeholder='Tone tag' type="text" style="width:100%"> 
+                    <div class="tw_h3_5" style="margin-top:20px;">Description</div>
+                    <textarea id='SETTINGS::new-tone-description' class='tw_input' 
+                    style='width:490px; height:176px; margin-bottom:20px;' rows='7' placeholder='New tone description'></textarea>
+                    <div style='display:flex; flex-direction: row-reverse; gap:6px'>
+                        <button id='SETTINGS::new-tone-apply' class='tw_button-alt'>Submmit</button>
+                        <button class='tw_button' onclick="document.getElementById('SETTINGS::new-tone-dialog').style.display='none'">Close</button>
+                    </div>
+                </div>    
+            </div>
+            <div class='tw_dialog-container' id='SETTINGS::new-audience-dialog' name='DASHBOARD::hide-me' style="z-index: 1;">
+                <div class="tw_dialog tw_Ctrl-Group">
+                    <h3 class='tw_h3' style='margin-top:0px; margin-left:0px;width:100%; position:relative;'>New audience dialog</h3>
+                    <div class="tw_h3_5" style="margin-top:20px;">Audience</div>
+                    <input id='SETTINGS::new-audience-name' class="tw_input" placeholder='New audience' type="text" style="width:100%"> 
+                    <div class="tw_h3_5" style="margin-top:20px;">Tag</div>
+                    <input id='SETTINGS::new-audience-tag' class="tw_input" placeholder='Audience tag' type="text" style="width:100%"> 
+                    <div class="tw_h3_5" style="margin-top:20px;">Description</div>
+                    <textarea id='SETTINGS::new-audience-description' class='tw_input' 
+                    style='width:490px; height:176px; margin-bottom:20px;' rows='7' placeholder='New audience description'></textarea>
+                    <div style='display:flex; flex-direction: row-reverse; gap:6px'>
+                        <button id='SETTINGS::new-audience-apply' class='tw_button-alt'>Submmit</button>
+                        <button class='tw_button' onclick="document.getElementById('SETTINGS::new-audience-dialog').style.display='none'">Close</button>
+                    </div>
+                </div>    
+            </div>  
+            <div class='SETTINGS_DIALOG' id='SETTINGS::black-list-dialog' name='DASHBOARD::hide-me' style='height:610px;width:900px;left:0px;top:20px'>  
+                <div id='SETTINGS::black-list-diag-title' class='az-content-label mg-b-5' style='margin-bottom:12px'>Black listed terms</div>
+                <div style='display:flex;gap:2px'>                    
+                    <textarea id='SETTINGS::black-list-multiple' class='form-control' style='width:50%;resize:none;margin:none'></textarea>
+                    <div style='display:flex;flex-direction:column'>
+                        <div class='spacer'></div>
+                        <button id='SETTINGS::black-list-copy-over' class='btn btn-az-secondary btn-rounded DASHBOARD_Button'>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DASHBOARD_icon-medium" style='fill:white'>
+                                <path d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"/>
+                            </svg>
+                        </button>
+                        <div class='spacer'></div>                        
+                    </div>   
+                    <div id='SETTINGS::black-list-container' style='height:500px;overflow-y:auto;gap:2px;margin-bottom:12px;width:44%;
+                        border-left:1px solid #6f42c1'>
+                    </div>                   
+                </div>                
+                <div style='display:flex;flex-direction:row-reverse;gap:8px'>                    
+                    <button id='SETTINGS::black-list-apply' class='btn btn-az-secondary btn-rounded DASHBOARD_Button'>Submmit</button>
+                    <input id='SETTINGS::new-black-listed-term' class="form-control" placeholder='type a new term and hit enter' type="text"> 
+                </div>
+            </div>          
+
+            <div style='display:flex; gap:6px'>
+                <div style='display:flex; flex-direction:column; width:25%; position:relative;margin-top:10px' class="tw_Ctrl-Group">
+                    <h3 style="margin-bottom: 2px;" class='tw_h3'>Audiences</h3>
+                    <p class='tw_h4' style='margin-bottom:2px;'>Select one</p>         
+                    <select id='SETTINGS::audiences-container' class="tw_input" size='18' style='height:353px' multiple="multiple" onChange='SETTINGS.AudienceChanged()'>
+                        <template id='SETTINGS::audiences-template'>                                
+                            <option value="..."
+                            onmouseleave="document.getElementById('SETTINGS::audience-tip').style.display = 'none'">Whatever</option>
+                        </template>                  
+                    </select> 
+                    {% if admin %} 
+                    <div class="spacer"></div>
+                    <div style='display:flex; flex-direction: row-reverse; margin-top:10px; gap:10px'>
+                        <button id='SETTINGS::new-audience' class='tw_button-alt'>New\Edit</button>
+                        <button id='SETTINGS::del-audience' class='tw_button'>Delete</button>
+                    </div>
+                    {% endif %} 
+                    <div id='SETTINGS::audience-tip' style='position:absolute; top:420px; display:none; background-color:black; color:white; width:376px;
+                    padding:20 20 20 20; word-wrap: normal; z-index:1; border-radius: 8px;'>               
+                    </div>   
+                </div>   
+                <div style='display:flex; flex-direction:column; width:25%; position:relative;margin-top:10px' class="tw_Ctrl-Group">
+                    <h3 style="margin-bottom: 2px;" class='tw_h3'>Tones</h3>
+                    <p class='tw_h4' style='margin-bottom:2px;'>Select one or two</p>         
+                    <select id='SETTINGS::tones-container' class="tw_input" size='18' style='height:353px' multiple="multiple" onChange='SETTINGS.ToneChanged()'>
+                        <template id='SETTINGS::tones-template'>                                
+                            <option value="..." 
+                            onmouseleave="document.getElementById('SETTINGS::tones-tip').style.display = 'none'">Whatever</option>
+                        </template>                  
+                    </select> 
+                    {% if admin %} 
+                    <div class="spacer"></div>
+                    <div style='display:flex; flex-direction: row-reverse; margin-top:6px; gap:10px'>
+                        <button id='SETTINGS::new-tone' class='tw_button-alt'>New\Edit</button>
+                        <button id='SETTINGS::del-tone' class='tw_button'>Delete</button>
+                    </div>
+                    {% endif %} 
+                    <div id='SETTINGS::tones-tip' style='position:absolute; top:420px; display:none; background-color:black; color:white; width:376px;
+                    padding:20 20 20 20; word-wrap: normal; z-index:1; border-radius: 8px;'>               
+                    </div>           
+                </div> 
+                <div style="display:flex;width:50%;;margin-top:6px;gap:6px;margin-bottom: 1px;" class="tw_Ctrl-Group">
+                    <div style='display:flex; flex-direction:column; width:33%; position:relative;margin-top:0px;gap:0px'>
+                        <h3 class='tw_h3' style='margin-top:0px; margin-left:0px; margin-bottom:4px; width:100%; position:relative;'>Models</h3>               
+                        <div style='display:flex;flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>Content creator</p> 
+                                <button id='SETTINGS::tip-icon-model-content' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>  
+                            <!--<input class="form-control" list="SETTINGS::model-content">-->                      
+                            <select id='SETTINGS::model-content' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>
+                        <div style='display:flex;flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>Content creator - improve article</p> 
+                                <button id='SETTINGS::tip-icon-model-improve' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                          
+                            <select id='SETTINGS::model-improve-content' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>
+                        <div style='display:flex;flex-direction:column;;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>Outline generation</p> 
+                                <button id='SETTINGS::tip-icon-model-outline' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                            
+                            <select id='SETTINGS::model-outline-generation' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>
+                        <div style='display:flex;flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>Outline cleanup</p> 
+                                <button id='SETTINGS::tip-icon-model-outline-clean-up' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                            
+                            <select id='SETTINGS::model-outline-cleaning' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>
+                        <div style='display:flex;flex-direction:column;;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>Search Intent</p> 
+                                <button id='SETTINGS::tip-icon-model-search-intent' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                             
+                            <select id='SETTINGS::model-search-intent' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>Entity generation</p> 
+                                <button id='SETTINGS::tip-icon-model-entity' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                            
+                            <select id='SETTINGS::model-entities' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>   
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>Guest post - article generation</p> 
+                                <button id='SETTINGS::tip-icon-model-gp-article' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                           
+                            <select id='SETTINGS::model-guest-article' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>                                                              
+                    </div>   
+                    <div style='display:flex; flex-direction:column; width:33%; position:relative;margin-top:5px; gap:0px'>
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px; margin-top:18px;'>Anchors generation</p> 
+                                <button id='SETTINGS::tip-icon-model-anchors' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button' style='margin-top:10px'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                         
+                            <select id='SETTINGS::model-anchors' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div> 
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>Titles and meta-descriptions</p>
+                                <button id='SETTINGS::tip-icon-model-titles' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button> 
+                            </div>                         
+                            <select id='SETTINGS::model-titles' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>  
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>AI words removal</p>
+                                <button id='SETTINGS::tip-icon-model-black-list' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button> 
+                            </div>                             
+                            <select id='SETTINGS::model-black-list' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>   
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5 DASHBOARD_ellipsis' style='margin-bottom:2px;'>AI words removal - 2nd pass</p> 
+                                <button id='SETTINGS::tip-icon-model-black-list-2nd' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button> 
+                            </div>                           
+                            <select id='SETTINGS::model-black-list-2nd' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>   
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>AI words removal - Outline</p> 
+                                <button id='SETTINGS::tip-icon-model-black-list-outline' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                         
+                            <select id='SETTINGS::model-outline-black-list' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>  
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5 DASHBOARD_ellipsis' style='margin-bottom:2px;'>AI words removal - Outline - 2nd pass</p> 
+                                <button id='SETTINGS::tip-icon-model-black-list-outline-2nd' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                           
+                            <select id='SETTINGS::model-outline-black-list-2nd' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div> 
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5 DASHBOARD_ellipsis' style='margin-bottom:2px;'>Self referecing terms removal</p> 
+                                <button id='SETTINGS::tip-icon-model-self-referencing-outline-2nd' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                            
+                            <select id='SETTINGS::model-self-referencing' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>                                                
+                    </div>                 
+                    <div style='display:flex; flex-direction:column; width:33%; position:relative;margin-top:5px; gap:0px'>
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px; margin-top:18px;'>Important terms highlight</p> 
+                                <button id='SETTINGS::tip-icon-model-highlight' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button' style='margin-top:10px'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                         
+                            <select id='SETTINGS::model-highlight' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div> 
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>Links insertion</p> 
+                                <button id='SETTINGS::tip-icon-model-links-insertion' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                            
+                            <select id='SETTINGS::model-links-insertion' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>   
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>CTAS</p> 
+                                <button id='SETTINGS::tip-icon-model-CTAS' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                            
+                            <select id='SETTINGS::model-CTAS' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div> 
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>Story ideas</p> 
+                                <button id='SETTINGS::tip-icon-model-story-ideas' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                           
+                            <select id='SETTINGS::model-story-ideas' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div> 
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>Facts</p> 
+                                <button id='SETTINGS::tip-icon-model-self-referencing-outline-2nd' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                            
+                            <select id='SETTINGS::model-facs' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>   
+                        <div style='display:flex; flex-direction:column;'>
+                            <div style='display:flex'>
+                                <p class='tw_h3_5' style='margin-bottom:2px;'>Section facts</p> 
+                                <button id='SETTINGS::tip-icon-model-self-referencing-outline-2nd' name='DASHBOARD_tool-tip' class='SETTINGS_help-icon-button'>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small SETTINGS_help-icon">
+                                    <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                                </svg></button>
+                            </div>                            
+                            <select id='SETTINGS::model-section-facts' style='margin-bottom:2px;' class="tw_input">                                                         
+                            </select> 
+                        </div>             
+                    </div>        
+                </div> 
+            </div>      
+            <div style="display:flex; gap:6px">
+                <div style="display:flex; flex-direction:column; width:25%" class="tw_Ctrl-Group">
+                    <h3 class='tw_h3' style='margin-top:20px'>Threshold</h3>
+                    <p class='tw_h4' style='margin-bottom:0px'>Similarity threshold for auto assigning links</p> 
+                    <div style='display:flex; width:100%; gap:6px'>            
+                        <input type='range' class='tw_input' id='SETTINGS::threshold' min="0.1" max="1.0" step="0.01" value='0.5' style='flex-grow:1'></input>  
+                        <input type='number' class='tw_input' id='SETTINGS::threshold-label' min="0.1" max="1.0" step="0.01" value='0.5' 
+                        style='width:80px; height:36px'></input>  
+                    </div> 
+                </div>            
+        
+                <div style="display:flex; flex-direction:column; width:50%" class="tw_Ctrl-Group">
+                    <div style="display:flex;">
+                        <div style="display:flex;flex-direction:column;width:50%">
+                            <h3 class='tw_h3' style='margin-top:20px; margin-left:0px; margin-bottom:4px; width:100%; position:relative;'>Misc</h3>     
+                            <label class="ckbox DASHBOARD_CheckboxLabel" style="margin:0 2 2 6;">
+                                <input id="SETTINGS::trailing-backslash" class="checkbox" type="checkbox" style="margin-top:2px; margin-right:-10px;">
+                                <span>Export urls with a trailing slash</span>
+                            </label>  
+                            <label class="ckbox DASHBOARD_CheckboxLabel" style="margin:0 2 2 6; display:none;">
+                                <input id="SETTINGS::dont-append-kword" class="checkbox" type="checkbox" style="margin-top:2px; margin-right:-10px;">
+                                <span>Don't append keyword to the url</span>
+                            </label>                       
+                            <label class="ckbox DASHBOARD_CheckboxLabel" style="margin:0 2 2 6;">
+                                <input id="SETTINGS::url-remove-dots" class="checkbox" type="checkbox" style="margin-top:2px; margin-right:-10px;">
+                                <span>Remove dots when exporting urls</span>
+                            </label>
+                            <label class="ckbox DASHBOARD_CheckboxLabel" style="margin:0 2 2 6;">
+                                <input id="SETTINGS::overwrite-content" class="checkbox" type="checkbox" style="margin-top:2px; margin-right:-10px;">
+                                <span>Overwrite fields that already have data</span>
+                            </label>
+                            <label class="ckbox DASHBOARD_CheckboxLabel" style="margin:0 2 2 6;">
+                                <input id="SETTINGS::use-section-facts" class="checkbox" type="checkbox" style="margin-top:2px; margin-right:-10px;">
+                                <span>Generate per section facts</span>
+                            </label>
+                        </div>    
+                        <div style="display:flex;flex-direction:column;width:50%">
+                            <div style="height:36px"></div>
+                            <label class="ckbox DASHBOARD_CheckboxLabel" style="margin:0 2 2 6;">
+                                <input id="SETTINGS::fix-outlines" class="checkbox" type="checkbox" style="margin-top:2px; margin-right:-10px;">
+                                <span>Remove black listed terms from outlines</span>
+                            </label>
+                            <label class="ckbox DASHBOARD_CheckboxLabel" style="margin:0 2 2 6;">
+                                <input id="SETTINGS::log-prompts" class="checkbox" type="checkbox" style="margin-top:2px; margin-right:-10px;">
+                                <span>Log all AI requests</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                {% if admin %} 
+                <div style="display:flex; flex-direction:column; width:25%; gap:6px" class="tw_Ctrl-Group">
+                    <h3 class='tw_h3' style='margin-top:20px'>Edit black lists</h3>
+                    <div style='display:flex;flex-direction:row;gap:6px'>                                
+                        <button id='SETTINGS::black-list-button' class='tw_button-alt' style="width:200px">Articles</button>                                            
+                        <button id='SETTINGS::black-list-button-outlines' class='tw_button-alt'  style="width:200px">Outlines</button>                         
+                    </div>
+                    <div style='display:flex;flex-direction:row;gap:6px'>      
+                        <button id='SETTINGS::black-list-button-self-references' class='tw_button-alt'  style="width:200px">Self references</button>      
+                        <button id="SETTINGS::black-list-button-stop-words" class="tw_button-alt"  style="width:200px">Permalink stop words</button>   
+                    </div>      
+                </div>    
+                {% endif %}
+            </div>          
+        </div>    
+        {% include 'Settings-Prompts.html' %}
+    </div>  
+    
+    <div style='display:flex; flex-direction: row-reverse; width:100%; gap:6px; margin-top:20px'>           
+        <button id='SETTING::load-profile' class='tw_button-alt' onclick='SETTINGS_SaveProfile()'>
+            <i class="fa-solid fa-floppy-disk"></i>
+            Save profile
+        </button>
+        <button id='SETTING::load-profile' class='tw_button-alt' onclick='SETTINGS_Load()'>
+            <i class="fa-solid fa-folder-open"></i>
+            Load profile
+        </button>
+    </div>  
+</div> 
+
+<script>
+(async function(){
+    DASHBOARD_ReparentToBody("SETTINGS::new-tone-dialog")
+    DASHBOARD_ReparentToBody("SETTINGS::new-audience-dialog")
+})();
+
+//{% if admin %} 
+function SETTINGS_SelectTab(el){    
+    let id = el.id.replace('tab-item-', '');
+    for (const _id of ['General', 'Prompts']){
+        document.getElementById(`SETTINGS::${_id}`).style.display         = 'none';
+        document.getElementById(`SETTINGS::tab-item-${_id}`).style.border = 'none';
+    }
+    //document.getElementById('SETTING::commit').style.display  = id.includes('General') ? 'flex' : 'none';
+    document.getElementById(id).style.display                 = 'flex';
+    el.style                                                  = 'border-bottom:2px solid black'
+}
+//{% endif %} 
+//{% if admin %} 
+document.getElementById('SETTINGS::del-tone').onclick = async function(event){    
+    let selected_tone    = SETTINGS.GetTone(DASHBOARD_GetOptions('SETTINGS::tones-container'));    
+    let f_options        = DASHBOARD_FetchOPtions();
+    f_options.body       = JSON.stringify(selected_tone);    
+    reply                = await DASHBOARD_Fetch('/delete-tone-new-api', f_options);
+    window.location.href = '/seo_tool?page=Settings';     
+    return
+
+
+    let curr_tones = DASHBOARD_GetOptions('SETTINGS::tones-container');
+    if (curr_tones.length == 0){
+        return alert('Select something to delete');
+    }  
+    let fetch_options  = DASHBOARD_FetchOPtions();
+    fetch_options.body = JSON.stringify({Tone : curr_tones[0]});
+    await DASHBOARD_Fetch('/settings-delete-tone', fetch_options);
+    window.location.href = '/seo_tool?page=Settings';     
+}
+document.getElementById('SETTINGS::del-audience').onclick = async function(event){    
+    let selected_tone    = SETTINGS.GetAudience(DASHBOARD_GetOptions('SETTINGS::audiences-container'));    
+    let f_options        = DASHBOARD_FetchOPtions();
+    f_options.body       = JSON.stringify(selected_tone);    
+    reply                = await DASHBOARD_Fetch('/delete-audience-new-api', f_options);
+    console.log(reply)
+    window.location.href = '/seo_tool?page=Settings';     
+    return
+    
+
+    let curr_aud = DASHBOARD_GetOptions('SETTINGS::audiences-container');
+    if (curr_aud.length == 0){
+        return alert('Select something to delete');
+    }  
+    let fetch_options  = DASHBOARD_FetchOPtions();
+    fetch_options.body = JSON.stringify({Aud : curr_aud[0]});
+    await DASHBOARD_Fetch('/settings-delete-aud', fetch_options);
+    window.location.href = '/seo_tool?page=Settings';     
+}
+document.getElementById('SETTINGS::new-tone').onclick = function(event){
+    event.stopPropagation();
+    /*
+    let curr_tones = DASHBOARD_GetOptions('SETTINGS::tones-container');
+    if (curr_tones.length > 0){
+        document.getElementById('SETTINGS::new-tone-name').value        = curr_tones[0];
+        document.getElementById('SETTINGS::new-tone-description').value = SETTINGS.GetToneDescription(curr_tones[0]);
+    }
+    */
+    document.getElementById('SETTINGS::new-tone-dialog').style.display = 'flex';
+    document.getElementById('SETTINGS::new-tone-dialog').onclick = function(event){event.stopPropagation();}
+}
+document.getElementById('SETTINGS::new-audience').onclick = function(event){
+    event.stopPropagation();
+    /*
+    let curr_aud = DASHBOARD_GetOptions('SETTINGS::audiences-container');
+    if (curr_aud.length > 0){
+        document.getElementById('SETTINGS::new-audience-name').value        = curr_aud[0];
+        document.getElementById('SETTINGS::new-audience-description').value = SETTINGS.GetAudDescription(curr_aud[0]);
+    }
+    */
+    document.getElementById('SETTINGS::new-audience-dialog').style.display = 'flex';
+    document.getElementById('SETTINGS::new-audience-dialog').onclick = function(event){event.stopPropagation();}
+}
+document.getElementById('SETTINGS::new-tone-apply').onclick = async function(event){      
+    let tone           = document.getElementById('SETTINGS::new-tone-name').value;
+    let desc           = document.getElementById('SETTINGS::new-tone-description').value;
+    let tag            = document.getElementById('SETTINGS::new-tone-tag').value;
+    if (tone === ''){return alert('Enter a valid tone')}
+    if (desc === ''){return alert('Enter a valid tone description')}
+    
+    let fetch_options  = DASHBOARD_FetchOPtions();
+    fetch_options.body = JSON.stringify({
+       'Name'        : tone,
+       'Description' : desc,
+       'Tag'         : tag
+    });
+    reply                = await DASHBOARD_Fetch('/append-tone-new-api', fetch_options);    
+    window.location.href = '/seo_tool?page=Settings';
+}
+document.getElementById('SETTINGS::new-audience-apply').onclick = async function(event){      
+    let audience       = document.getElementById('SETTINGS::new-audience-name').value;
+    let desc           = document.getElementById('SETTINGS::new-audience-description').value;
+    let tag            = document.getElementById('SETTINGS::new-audience-tag').value;
+    if (audience === ''){return alert('Enter a valid audience')}
+    if (desc     === ''){return alert('Enter a valid audience description')}
+
+    let fetch_options  = DASHBOARD_FetchOPtions();
+    fetch_options.body = JSON.stringify({
+       'Name'        : audience,
+       'Description' : desc,
+       'Tag'         : tag
+    });
+    reply                = await DASHBOARD_Fetch('/append-audience-new-api', fetch_options);        
+    window.location.href = '/seo_tool?page=Settings';
+}
+document.getElementById('SETTINGS::black-list-button').onclick = function(){
+    SETTINGS_BlackListDiag(event, 'content_creator-set_blacklisted_words?list=Articles' , 'content_creator-get_blacklisted_words?list=Articles')
+}
+document.getElementById('SETTINGS::black-list-button-outlines').onclick = function(event){
+    SETTINGS_BlackListDiag(event, 'content_creator-set_blacklisted_words?list=Outlines' , 'content_creator-get_blacklisted_words?list=Outlines')
+}
+document.getElementById('SETTINGS::black-list-button-self-references').onclick = function(event){
+    SETTINGS_BlackListDiag(event, 'content_creator-set_blacklisted_words?list=Self References ', 'content_creator-get_blacklisted_words?list=Self References ')
+}
+document.getElementById('SETTINGS::black-list-button-stop-words').onclick = function(event){
+    SETTINGS_BlackListDiag(event, 'content_creator-set_blacklisted_words?list=Stop Words', 'content_creator-get_blacklisted_words?list=Stop Words')
+}
+//{% endif %} 
+async function SETTINGS_BlackListDiag(event, set, get) {     
+    event.stopPropagation();
+    document.getElementById('SETTINGS::black-list-diag-title').innerHTML = `${set.split('=')[1]} Black listed terms`
+    document.getElementById("SETTINGS::black-list-dialog").style.display="flex";    
+    let list             = (await DASHBOARD_Fetch(get, DASHBOARD_FetchOPtions())).Reply;  
+    let container        =  document.getElementById("SETTINGS::black-list-container");
+    container.innerHTML  = '';
+    let add_item         = function(item){
+        let item_div     = document.createElement('div');
+        let p            = document.createElement('p');
+        let spacer       = document.createElement('div');
+        item_div.style   = 'display:flex;flex-direction:row;margin: 2 12 2 2'
+        spacer.className = 'spacer';
+        p.innerHTML      = item;
+        p.style          = 'margin: 2 2 2 2';
+        item_div.appendChild(p);
+        item_div.appendChild(spacer);
+        item_div.innerHTML += `
+        <svg xmlns="http://www.w3.org/2000/svg" class="DASHBOARD_icon-small" viewBox="0 0 448 512">
+            <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+        </svg>`
+        container.appendChild(item_div);
+        item_div.children[2].onclick = function(event){
+            event.stopPropagation();
+            item_div.parentElement.removeChild(item_div);
+            list.splice(list.indexOf(p.innerHTML), 1)
+        }
+        return item_div
+    }
+    for (const item of list){
+        add_item(item)
+    }
+    document.getElementById('SETTINGS::new-black-listed-term').onclick    = function(event){event.stopPropagation();}
+    document.getElementById('SETTINGS::new-black-listed-term').onkeypress = function(event){
+        event.stopPropagation(); 
+        if (event.key !== 'Enter') return;
+        if (list.includes(this.value)){
+            return alert(`"${this.value}" is already on the list`);
+        }
+        add_item(this.value).scrollIntoView();  
+        list.push(this.value);
+        this.value = '';     
+    }
+    document.getElementById('SETTINGS::black-list-multiple').onclick = function(event){event.stopPropagation();}
+    document.getElementById('SETTINGS::black-list-copy-over').onclick = function(event){
+        event.stopPropagation(); 
+        words = document.getElementById('SETTINGS::black-list-multiple').value.split(/\r?\n/)
+        for (let word of words) {
+            if (list.includes(word)) continue;
+            if (word === '')         continue;
+            add_item(word).scrollIntoView();  
+            list.push(word);            
+        } 
+        document.getElementById('SETTINGS::black-list-multiple').value =  '';
+    }
+    document.getElementById('SETTINGS::black-list-apply').onclick = async function(event){
+        event.stopPropagation(); 
+        let options  = DASHBOARD_FetchOPtions();
+        options.body = JSON.stringify({'Black List' : list})
+        await DASHBOARD_Fetch(set, options);
+        document.getElementById("SETTINGS::black-list-dialog").style.display = 'none'; 
+    }
+}
+document.getElementById('SETTINGS::threshold').onchange = function(){
+    let val = document.getElementById('SETTINGS::threshold').value;
+    document.getElementById('SETTINGS::threshold-label').value = val;   
+} 
+document.getElementById('SETTINGS::threshold').onchange = function(){
+    let val = document.getElementById('SETTINGS::threshold').value;
+    document.getElementById('SETTINGS::threshold-label').value = val;   
+} 
+document.getElementById('SETTINGS::threshold-label').onchange = function(){
+    let val = document.getElementById('SETTINGS::threshold-label').value;
+    document.getElementById('SETTINGS::threshold').value = val;    
+}   
+SETTINGS = {
+    ModelsSufixes              : ['outline-generation', 'outline-cleaning', 'search-intent', 'content', 'entities', 'anchors', 'guest-article',
+    'improve-content', 'titles', 'black-list', 'outline-black-list', 'black-list-2nd', 'outline-black-list-2nd', 'self-referencing', 'facs', 'story-ideas',
+    'highlight', 'links-insertion', 'CTAS', 'section-facts'],
+    GUID                       : DASHBOARD.GUIDs.Settings,
+    __Descriptions             : {Tones : {}, Audiences : {}},
+    __Tones                    : [],
+    __Audiences                : [],
+    async Init(){      
+        let global_settings   = (await DASHBOARD_Fetch('get-global-settings-new-api', DASHBOARD_FetchOPtions())).Settings;
+        let selected_tones    = []
+        let selected_audience = {'Name' : '', 'Tag' : '', 'Description' : ''}
+        
+        if (true === ('Selected Tones' in global_settings)){
+            selected_tones = global_settings['Selected Tones']
+        }
+        if (true === ('Selected Audience' in global_settings)){
+            selected_audience = global_settings['Selected Audience']
+        }
+        
+        let tones          = await DASHBOARD_Fetch('get-tones-and-audiences-new-api', DASHBOARD_FetchOPtions());
+        let fetch_options  = DASHBOARD_FetchOPtions()  
+        fetch_options.body = JSON.stringify({Request : {SettingsID : SETTINGS.GUID}}); 
+        /*
+        let oldtones       = await DASHBOARD_Fetch('/outlinegen-get-tones', fetch_options);  
+        for (let [key, desc] of Object.entries(oldtones.Tones)){
+            let fetch_options  = DASHBOARD_FetchOPtions();
+            fetch_options.body = JSON.stringify({
+                'Name'        : desc.Tone,
+                'Description' : desc.Caption,
+                'Tag'         : ''
+                });
+            reply = await DASHBOARD_Fetch('/append-tone-new-api', fetch_options);  
+            console.log(reply)             
+        }
+        for (let [key, desc] of Object.entries(oldtones.Audiences)){
+            fetch_options.body = JSON.stringify({
+                'Name'        : desc.Audience,
+                'Description' : desc.Caption,
+                'Tag'         : ''
+                });
+            reply = await DASHBOARD_Fetch('/append-audience-new-api', fetch_options);  
+            console.log(reply)  
+        }
+        */
+
+        let container      = document.getElementById('SETTINGS::tones-container');
+        let src            = document.getElementById('SETTINGS::tones-template');       
+        this.__Tones       = tones.Tones;
+        for (const [index, tone] of this.__Tones.entries()){            
+            let clone                   = src.content.cloneNode(true);     
+            let option                  = clone.children[0]             
+            option.innerHTML            = tone.Tag === "" ? tone.Name : `${tone.Name} (${tone.Tag})`;         
+            option.value                = index;   
+            option.onmouseenter         = function(){
+                document.getElementById('SETTINGS::tones-tip').innerHTML     = tone.Description;
+                document.getElementById('SETTINGS::tones-tip').style.display = 'block'
+            }   
+            option.onclick              = function(){
+                document.getElementById('SETTINGS::new-tone-name').value        = tone.Name;
+                document.getElementById('SETTINGS::new-tone-description').value = tone.Description;
+                document.getElementById('SETTINGS::new-tone-tag').value         = tone.Tag;
+            }
+            let index_to_exclude = -1 
+            for (let [s_index, selected] of selected_tones.entries()){
+                console.log(s_index, selected)
+                if (selected.Name === tone.Name && selected.Tag === tone.Tag && selected.Description === tone.Description){
+                    option.selected  = true;
+                    index_to_exclude = s_index;     
+                    option.onclick()               
+                    break
+                }
+            }  
+            if (index_to_exclude >-1) selected_tones.splice(index_to_exclude, 1)
+            container.appendChild(clone);                  
+        }
+        container          = document.getElementById('SETTINGS::audiences-container');
+        src                = document.getElementById('SETTINGS::audiences-template');       
+        this.__Audiences   = tones.Audiences;
+        for (const [index, aud] of this.__Audiences.entries()){            
+            let clone                   = src.content.cloneNode(true);     
+            let option                  = clone.children[0]             
+            option.innerHTML            = aud.Tag === "" ? aud.Name : `${aud.Name} (${aud.Tag})`;         
+            option.value                = index;   
+            option.onmouseenter         = function(){
+                document.getElementById('SETTINGS::audience-tip').innerHTML     = aud.Description;
+                document.getElementById('SETTINGS::audience-tip').style.display = 'block'
+            }
+            option.onclick              = function(){
+                document.getElementById('SETTINGS::new-audience-name').value        = aud.Name;
+                document.getElementById('SETTINGS::new-audience-description').value = aud.Description;
+                document.getElementById('SETTINGS::new-audience-tag').value         = aud.Tag;
+            }
+            if (aud.Name === selected_audience.Name && aud.Tag === selected_audience.Tag && aud.Description === selected_audience.Description) {
+                option.selected   = true
+                selected_audience = {'Name' : '', 'Tag' : '', 'Description' : ''}
+                option.onclick()
+            }            
+            container.appendChild(clone);                  
+        }            
+    },  
+    GetTone(index){
+        return this.__Tones[index];
+    },  
+    GetAudience(index){
+        return this.__Audiences[index];
+    },  
+    SetToneDescription(tone, desc) {
+        this.__Descriptions.Tones[tone.replaceAll("-", ' ')] = desc;
+    },
+    SetAudienceDescription(audience, desc) {
+        this.__Descriptions.Audiences[audience.replaceAll("-", ' ')] = desc;
+    },
+    ShowAudienceTip(src){        
+        let key = src.id.replace('SETTINGS::audience-', '').replaceAll('-', ' ')          
+        let tip =  this.GetAudDescription(key);                   
+        document.getElementById('SETTINGS::audience-tip').innerHTML     = tip;
+        document.getElementById('SETTINGS::audience-tip').style.display = 'block'
+    },    
+    ShowToneTip(src){       
+        let key = src.id.replace('SETTINGS::tones-', '').replaceAll('-', ' ')            
+        let tip = this.GetToneDescription(key);                  
+        document.getElementById('SETTINGS::tones-tip').innerHTML     = tip;
+        document.getElementById('SETTINGS::tones-tip').style.display = 'block'
+    },
+    GetToneDescription(tone){
+        return this.__Descriptions.Tones[tone.replaceAll("-", " ")];
+    },
+    GetAudDescription(aud){
+        return this.__Descriptions.Audiences[aud.replaceAll("-", " ")];
+    },
+    IsTone(t){
+        for (const tone of this.ListTones()){
+            if (tone.Name.toLowerCase() === t.toLowerCase()){
+                return true;
+            }
+        }
+        return false;
+    },
+    IsAudience(a){
+        for (const aucience of this.ListAudiences()){
+            if (aucience.Name.toLowerCase() === a.toLowerCase()){
+                return true;
+            }
+        }
+        return false;
+    },
+    ListTones(){
+        let tones = []
+        var slct  = document.getElementById('SETTINGS::tones-container') ;           
+        for (option of slct.options) {
+            tones.push({Name : option.value, Description : this.__Descriptions.Tones[option.value]})
+        }
+        return tones;            
+    },
+    ListAudiences(){
+        let audiences = []
+        var slct  = document.getElementById('SETTINGS::audiences-container') ;           
+        for (option of slct.options) {
+            audiences.push({Name : option.value, Description : this.__Descriptions.Audiences[option.value]})
+        }  
+        return audiences;             
+    },
+    ToneChanged(){          
+        var slct = document.getElementById('SETTINGS::tones-container') ;
+        count    = 0;     
+        for (option of slct.options) {
+            if (option.selected) {
+                count += 1
+                if (count > 2){
+                    option.selected = false;
+                    alert('Select only two')
+                    break;
+                }
+            }
+        }  
+        let selection = []  
+        for (option of slct.options) {
+            if (option.selected) {                
+                selection.push(SETTINGS.GetTone(parseInt(option.value)))
+            }
+        };  
+        (async function() {
+            let options  = DASHBOARD_FetchOPtions();
+            options.body = JSON.stringify({
+                'Key'   : 'Selected Tones',
+                'Value' : selection
+            }); 
+            DASHBOARD_Fetch('global-settings-new-api-set-value', options)
+        })()         
+    },
+    AudienceChanged(src){            
+        var slct = document.getElementById('SETTINGS::audiences-container') ;
+        count    = 0;     
+        for (option of slct.options) {
+            if (option.selected) {
+                count += 1
+                if (count > 1){
+                    option.selected = false;
+                    alert('Select only one')
+                    return;
+                }
+            }
+        }  
+        let aud = '' 
+        for (option of slct.options) {
+            if (option.selected) {                
+                aud = SETTINGS.GetAudience(parseInt(option.value));
+            }
+        };  
+        (async function() {
+            let options  = DASHBOARD_FetchOPtions();
+            options.body = JSON.stringify({
+                'Key'   : 'Selected Audience',
+                'Value' : aud
+            }); 
+            DASHBOARD_Fetch('global-settings-new-api-set-value', options)
+        })()      
+    },     
+}    
+function SETTINGS_GetModelSelectors(){
+    let r = [];    
+    for (const sufix of SETTINGS.ModelsSufixes){
+        let id     = 'SETTINGS::model-' + sufix;
+        let widget = document.getElementById(id);
+        console.log(widget)
+        r.push({
+            'Option' : sufix, 
+            'Widget' : widget, 
+            'Value'  : widget.options.length > 0 ? widget.options[widget.selectedIndex].value : ''
+        })       
+    }
+    return r;
+}
+
+async function SETTINGS_SaveProfile() {
+    let _this = this;
+    this.AddProfile = async(profile, always=false)=>{
+        if (elements.profiles_list.includes(profile) && !always){
+            return alert('Profile already exists');
+        }
+        let html = /*html*/`
+        <button class="tw_button-alt" style="width:100%;" data-self="commit">
+            ${profile}
+        </button>
+        `
+        console.log(profile, elements);  
+        let new_profile = bff(html).AppendTo(elements.profiles); 
+        new_profile.commit.onclick = async () => {
+            DASHBOARD_OK_Cancel(`Save the current settings to the ${profile} profile?`, 'Save', async() => {         
+                elements.spinner.style.display = 'flex'   
+                let Settings          = await A_SETTINGS_Apply();
+                let fetch_options     = DASHBOARD_FetchOPtions()  
+                fetch_options.body    = JSON.stringify(Settings.Data); 
+                console.log("new profile", Settings)
+                await DASHBOARD_Fetch(`/Settings-Profiles/save?profile=${profile}`, fetch_options);
+                DASHBOARD.SetSettingsProfile(profile);
+                await DASHBOARD_UpdateSettings()          
+                elements.spinner.style.display = 'none'                 
+            })           
+        }
+        if (!always){
+            new_profile.commit.click();
+            profiles_list.push(profile);
+        }
+    }
+
+    let html = /*html*/`
+    <div class="tw_dialog-container" data-self="container" data-data="{}">
+        <div class="tw_dialog tw_Groups-Container" style="width:500px;;height:650px;flex-direction:column;border-radius:8px;padding:20px 20px 20px 20px">
+            <div class="tw_h3" style="margin-top:0px; margin-left:0px;width:100%; position:relative;margin-bottom:-10px">Profiles</div>
+            <p class="tw_h4" style="margin-bottom:20px;">Select a profile to save the current settings</p>
+            <div style="display:flex;flex-direction:column;gap:10px;height:600px;overflow-y:auto;margin-bottom:20px" data-self="profiles">
+                <button class="tw_button" style="width:100%;" data-self="Default">
+                    Default profile
+                </button>
+            </div>
+            <p class="tw_h4" style="margin-bottom:0px;">Create a new profile</p>
+            <input class="tw_input" style="margin-bottom:20px;" placeholder="Type the name of the new prrfile and hit enter" data-self="NewProfile">
+            <div style="display:flex;flex-direction:row-reverse;gap:20px;">
+                <button class="tw_button" style="width:100px;" data-self="close">
+                    Close
+                </button>
+                <div class="loader" style="width:26px; height:26px; margin-top:4px;" data-self="spinner"></div>
+            </div>
+        </div>        
+    </div>`
+    let elements                     = bff(html).AppendTo(document.body);
+    elements.spinner.style.display   = 'flex'
+    elements.container.style.display = 'flex';
+    let profiles                     = await DASHBOARD_Fetch('/Settings-Profiles/list', DASHBOARD_FetchOPtions());
+    elements.spinner.style.display   = 'none'
+    elements.profiles_list           = profiles.Profiles
+    for (let profile of profiles.Profiles){
+        _this.AddProfile(profile, true)
+    }
+    console.log("profiles", profiles)
+
+    elements.close.onclick = () => {
+        elements.container.remove();
+    }
+
+    elements.NewProfile.onkeypress = async (event) => {
+        if (event.key !== 'Enter') return;
+        let profile = elements.NewProfile.value;
+        if (profile === '') return;        
+        _this.AddProfile(profile, false)
+        elements.NewProfile.value = '';
+    }
+    
+    elements.Default.onclick = async () => {
+        DASHBOARD_OK_Cancel(`Save the current settings to the default profile?`, 'Save', async() => {         
+            elements.spinner.style.display = 'flex'   
+            let Settings          = await A_SETTINGS_Apply();
+            let fetch_options     = DASHBOARD_FetchOPtions()  
+            fetch_options.body    = JSON.stringify({Request : Settings}); 
+            await DASHBOARD_Fetch('/global-settings-new-api-set-all-values', fetch_options);
+            DASHBOARD.SetSettingsProfile('');
+            await DASHBOARD_UpdateSettings()           
+            elements.spinner.style.display = 'none'
+        }) 
+    }
+}
+
+async function SETTINGS_Load(finished){
+    let _this = this;
+    this.AddProfile = async (profile) => {
+        let html = /*html*/`
+        <div style="display:flex;flex-direction:row-reverse;gap:10px;" data-self="container">
+            <i class="fa-solid fa-trash tw_Icon-Clickable" data-self="delete"></i>
+            <button class="tw_button-alt" style="width:100%;" data-self="commit">
+                ${profile}
+            </button>
+        </div>    
+        `
+        console.log(profile, elements);  
+        let new_profile = bff(html).AppendTo(elements.profiles); 
+        new_profile.commit.onclick = async () => {
+            elements.spinner.style.display = 'flex'
+            let settings = await DASHBOARD_Fetch(`/Settings-Profiles/get?profile=${profile}`, DASHBOARD_FetchOPtions());
+            console.log("settings==============================", settings.Settings)
+            await SETTINGS_Init(settings.Settings);
+            DASHBOARD.SetSettingsProfile(profile);
+            await DASHBOARD_UpdateSettings();
+            alert('Profile loaded')
+            elements.container.remove();
+        }  
+        new_profile.delete.onclick = async () => {
+            DASHBOARD_OK_Cancel(`Delete the ${profile} profile?`, 'Delete', async() => {         
+                elements.spinner.style.display = 'flex'
+                await DASHBOARD_Fetch(`/Settings-Profiles/delete?profile=${profile}`, DASHBOARD_FetchOPtions());
+                new_profile.container.remove();
+                elements.spinner.style.display = 'none'
+            })
+        }     
+    }
+
+    let html = /*html*/`
+    <div class="tw_dialog-container" data-self="container" data-data="{}">
+        <div class="tw_dialog tw_Groups-Container" style="width:500px;;height:650px;flex-direction:column;border-radius:8px">
+            <div class="tw_h3" style="margin-top:0px; margin-left:0px;width:100%; position:relative;margin-bottom:-10px">Profiles</div>
+            <p class="tw_h4" style="margin-bottom:20px;">Select a profile to load</p>
+            <div style="display:flex;flex-direction:column;gap:10px;height:600px;overflow-y:auto;margin-bottom:20px" data-self="profiles">
+                <button class="tw_button" style="width:100%;" data-self="Default">
+                    Default profile
+                </button>
+            </div>
+            <div style="display:flex;flex-direction:row-reverse;gap:20px;">
+                <button class="tw_button" style="width:100px;" data-self="close">
+                    Close
+                </button>
+                <div class="loader" style="width:26px; height:26px; margin-top:4px;" data-self="spinner"></div>
+            </div>
+        </div>        
+    </div>`
+    let elements = bff(html).AppendTo(document.body);
+    elements.container.style.display = 'flex';
+    elements.spinner.style.display   = 'flex'
+    let profiles = await DASHBOARD_Fetch('/Settings-Profiles/list', DASHBOARD_FetchOPtions());
+    for (let profile of profiles.Profiles){
+        _this.AddProfile(profile)
+    }
+    
+    elements.spinner.style.display = 'none'
+    elements.close.onclick = () => {
+        elements.container.remove();
+    }
+    elements.Default.onclick = async () => {
+        elements.spinner.style.display = 'flex'
+        let fetch_options  = DASHBOARD_FetchOPtions()  
+        fetch_options.body = JSON.stringify({Request : {SettingsID : SETTINGS.GUID}}); 
+        let settings = ''    
+        try {
+            settings  = (await DASHBOARD_Fetch('/get-global-settings-new-api', fetch_options)).Settings;
+        } catch(error){       
+            settings = {"err" : error};
+        }            
+        await SETTINGS_Init(settings)
+        DASHBOARD.SetSettingsProfile('');
+        await DASHBOARD_UpdateSettings();
+        alert('Default profile loaded')
+        elements.container.remove();
+    }   
+}
+
+async function SETTINGS_Init(settings){    
+    let antrhopic_models = await DASHBOARD_Fetch("/list-anthropic-models", DASHBOARD_FetchOPtions());
+    console.log("antrhopic_models", antrhopic_models)
+    let google_models    = await DASHBOARD_Fetch("/list-google-models", DASHBOARD_FetchOPtions());
+    console.log("google_models", google_models)
+    if (antrhopic_models.Err !== 'S_OK'){
+        throw new Error(antrhopic_models.Err);
+    }
+    let reply            = await DASHBOARD_Fetch('https://openrouter.ai/api/v1/models');     
+    for (const selector of SETTINGS_GetModelSelectors()) {        
+        for (const model of reply.data){
+            let option   = document.createElement('option');
+            option.value = model.id;
+            option.label = model.name;
+            selector.Widget.appendChild(option);
+        } 
+        for (let model of antrhopic_models.Models){
+            let option   = document.createElement('option');
+            option.value = model.id + '🇦';
+            option.label = '🇦 ' + model.name;
+            selector.Widget.appendChild(option);
+        }    
+        for (let model of google_models.Models){
+            let option   = document.createElement('option');
+            option.value = model.id + '🇬';
+            option.label = '🇬 ' + model.name;
+            selector.Widget.appendChild(option);
+            if (false === model.name.includes('2.0')) continue;
+            option       = document.createElement('option');
+            option.value = model.id + '🇬 🇬';
+            option.label = '🇬 🇬 ' + model.name;
+            selector.Widget.appendChild(option);
+        }     
+    }  
+    //await SETTINGS_Load()
+
+      
+    for (const key of SETTINGS.ModelsSufixes){
+        if (true === ('Models' in settings) && true === (key in settings.Models)){           
+            document.getElementById('SETTINGS::model-' + key).value = settings.Models[key];
+            //{% if not admin %} 
+            document.getElementById('SETTINGS::model-' + key).disabled = true;
+            //{% endif %}
+        }
+    }
+    
+    console.log("Loading========================", settings)
+    /*
+    let container      = document.getElementById('SETTINGS::audiences-container');
+    let src            = document.getElementById('SETTINGS::audiences-template');
+    let tones          = await DASHBOARD_Fetch('/outlinegen-get-tones', fetch_options);  
+    console.log(settings)     
+    for (const audience of tones.Audiences) {        
+        let clone                   = src.content.cloneNode(true);          
+        clone.children[0].id        = `SETTINGS::audience-${audience.Audience.replaceAll(" ", "-")}`; 
+        clone.children[0].innerHTML = audience.Audience;         
+        clone.children[0].value     = audience.Audience;        
+        container.appendChild(clone);       
+        SETTINGS.SetAudienceDescription(audience.Audience, audience.Caption);
+    }   
+    container      = document.getElementById('SETTINGS::tones-container');
+    src            = document.getElementById('SETTINGS::tones-template'); 
+    for (const tone of tones.Tones) {
+        let clone                   = src.content.cloneNode(true);          
+        clone.children[0].id        = `SETTINGS::tones-${tone.Tone.replaceAll(" ", "-")}`; 
+        clone.children[0].innerHTML = tone.Tone;         
+        clone.children[0].value     = tone.Tone;        
+        container.appendChild(clone);       
+        SETTINGS.SetToneDescription(tone.Tone, tone.Caption);
+    }   
+    */
+    SETTINGS.Init()     
+    if ('Selected Tones' in settings)    DASHBOARD_SetOptions('SETTINGS::tones-container', settings['Selected Tones']);
+    if ('Selected Audience' in settings) DASHBOARD_SetOptions('SETTINGS::audiences-container', settings['Selected Audience']);
+    if ('Prompts' in settings) {
+        await SETTINGS_PROMPTS.FromJson(JSON.stringify(settings))     
+    } 
+    if ('More Prompts' in settings) {
+        await SETTINGS_MORE_PROMPTS.SetPrompts(settings['More Prompts'])     
+    } 
+    if ('Last Prompt' in settings) {
+        SETTINGS_PROMPTS.SetLastPrompt(settings['Last Prompt'])     
+    } 
+    if ('Black Listed Terms' in settings) {
+        for (const term of settings['Black Listed Terms']) {
+            SETTINGS_PROMPTS_AddBlackListedTerm(term)
+        }  
+    } 
+    if ('AI Logs Enabled' in settings)   document.getElementById('SETTINGS::log-prompts').checked        = settings['AI Logs Enabled'];   
+    if ('Fix Outlines' in settings)      document.getElementById('SETTINGS::fix-outlines').checked       = settings['Fix Outlines'];    
+    if ('Backslash' in settings)         document.getElementById('SETTINGS::trailing-backslash').checked = settings.Backslash;
+    if ('Remove Dots' in settings)       document.getElementById('SETTINGS::url-remove-dots').checked    = settings['Remove Dots'];
+    if ('Overwrite Content' in settings) document.getElementById('SETTINGS::overwrite-content').checked  = settings['Overwrite Content'];
+    if ('Plain Full URL' in settings)    document.getElementById('SETTINGS::dont-append-kword').checked  = settings['Plain Full URL'];
+    if ('Use Section Facts' in settings) document.getElementById('SETTINGS::use-section-facts').checked  = settings['Use Section Facts'];
+    if ('Threshold' in settings)         {
+        document.getElementById('SETTINGS::threshold').value       = settings['Threshold'];
+        document.getElementById('SETTINGS::threshold-label').value = settings['Threshold'];
+    }
+    console.log(settings)
+};
+(async function() {
+    let fetch_options  = DASHBOARD_FetchOPtions()  
+    fetch_options.body = JSON.stringify({Request : {SettingsID : SETTINGS.GUID}}); 
+    let settings = ''    
+    try {
+        settings  = (await DASHBOARD_Fetch('/get-global-settings-new-api', fetch_options)).Settings;
+    } catch(error){       
+        settings = {"err" : error};
+    }     
+    SETTINGS_Init(settings)
+})()
+
+async function A_SETTINGS_Apply(){
+    let current_settings   = (await DASHBOARD_Fetch('get-global-settings-new-api', DASHBOARD_FetchOPtions())).Settings;
+    let selected_tones    = []
+    let selected_audience = {'Name' : '', 'Tag' : '', 'Description' : ''}
+    
+    if (true === ('Selected Tones' in current_settings)){
+        selected_tones = current_settings['Selected Tones']
+    }
+    if (true === ('Selected Audience' in current_settings)){
+        selected_audience = current_settings['Selected Audience']
+    }
+    let Settings = {SettingsID : SETTINGS.GUID, Data : {Models : {}}};   
+    Settings.Data['Selected Tones']    = selected_tones;
+    Settings.Data['Selected Audience'] = selected_audience;
+    for (const model of SETTINGS_GetModelSelectors()){
+        Settings.Data.Models[model.Option] = model.Value;
+    }    
+    Settings.Data['Threshold']         = document.getElementById('SETTINGS::threshold').value
+    Settings.Data['AI Logs Enabled']   = document.getElementById('SETTINGS::log-prompts').value
+    Settings.Data['Fix Outlines']      = document.getElementById('SETTINGS::fix-outlines').checked
+    Settings.Data['Backslash']         = document.getElementById('SETTINGS::trailing-backslash').checked;
+    Settings.Data['Remove Dots']       = document.getElementById('SETTINGS::url-remove-dots').checked;
+    Settings.Data['Overwrite Content'] = document.getElementById('SETTINGS::overwrite-content').checked;
+    Settings.Data['Plain Full URL']    = document.getElementById('SETTINGS::dont-append-kword').checked;
+    Settings.Data['Use Section Facts'] = document.getElementById('SETTINGS::use-section-facts').checked;
+    Settings.Data['Last Prompt']       = SETTINGS_PROMPTS.GetLastPrompt();
+    let prompts                        = SETTINGS_PROMPTS.GetPrompts();
+    //delete prompts.Default;
+    //delete prompts.Legacy;
+    Settings.Data.Prompts               = prompts;
+    Settings.Data['More Prompts']       = SETTINGS_MORE_PROMPTS.GetPrompts();
+    Settings.Data['Black Listed Terms'] = SETTINGS_PROMPTS_GetBlackListedTerms();
+    return Settings
+    let fetch_options     = DASHBOARD_FetchOPtions()  
+    console.log(Settings)
+    fetch_options.body    = JSON.stringify({Request : Settings}); 
+    await DASHBOARD_Fetch('/global-settings-new-api-set-all-values', fetch_options);
+    await DASHBOARD_UpdateSettings()    
+    document.getElementById('SETTING::commit').classList             = 'btn btn-az-secondary btn-rounded'       
+    document.getElementById('SETTING::commit-label').innerHTML       = 'Commit changes'         
+    document.getElementById('SETTING::commit-spinner').style.display = 'none' 
+}
+function SETTINGS_Apply(){
+    document.getElementById('SETTING::commit').classList             = 'btn btn-danger btn-rounded'   
+    document.getElementById('SETTING::commit-label').innerHTML       = 'Commiting'     
+    document.getElementById('SETTING::commit-spinner').style.display = 'flex'       
+    A_SETTINGS_Apply()
+}
+</script>
+    {% else %}
+<h1 class='az-content-title DASHBOARD_Noaccess'>You don't have access to this tool</h1>
+    {% endif %}
+{% endblock %}
+
+

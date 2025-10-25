@@ -1,0 +1,1270 @@
+{% extends 'base.html' %}
+{% block title %}Main page{% endblock %}
+{% block content %}  
+    <style>
+        :root {
+            --theme-clr-strong: #6f42c1;
+            --theme-clr-weak: #eae4f2;
+            --cntrl-group-clr: white;
+        }
+        body{
+			display       : flex;  
+            flex-direction: column;
+            height        : 100%;
+            width         : 100%;
+            overflow      : hidden;     
+            box-sizing    : border-box;      
+            font-family           : "Inter", sans-serif;
+            font-feature-settings : "cv11";
+		}
+        progress::-moz-progress-bar { background: #6f42c1; }
+        progress::-webkit-progress-value { background: #6f42c1; }
+        progress { color: #6f42c1; }
+        .spacer{
+            flex-grow: 1;
+        } 
+        .DASHBOARD_tailwind-button{  
+            background-color: rgba(51, 102, 255, 0.25);
+            border          : 0;
+            border-radius   : .5rem;
+            box-sizing      : border-box;
+            color           : #000000;
+            font-family     : "Inter var",ui-sans-serif,system-ui,-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+            font-size       : .875rem;
+            font-weight     : 600;
+            line-height     : 1.25rem;
+            padding         : .25rem .25rem;
+            text-align      : center;
+            text-decoration : none #D1D5DB solid;
+            text-decoration-thickness: auto;
+            box-shadow               : 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);           
+            -webkit-user-select      : none;
+            user-select              : none;
+            touch-action             : manipulation;
+            height                   : 40px;
+        }
+        .DASHBOARD_tailwind-button:hover {
+            background-color: rgb(249,250,251);
+        }
+        .DASHBOARD_tailwind-button:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+        }
+        .DASHBOARD_tailwind-button:focus-visible {
+            box-shadow: none;
+        }        
+        .DASHBOARD_page-tile{
+            background-color:  #6f42c1;
+            color : white;
+        }
+        .DASHBOARD_User{
+            margin-top  : 18px;
+            margin-right: 30px;            
+        }   
+        .DASHBOARD_Breadcrumb{
+            margin-bottom:30px;
+            margin-left:10px;
+            color:black;
+            text-transform:none;
+            font-family           : "Inter", sans-serif;
+            font-feature-settings : "cv11";
+        }
+        .DASHBOARD_BarAndContentContainer{  
+            display       : flex;            
+            height        : 100%;           
+            width         : 100%;            
+            padding: 0 0 20 0;
+        }
+        .DASHBOARD_Toobar{
+            display       : flex;  
+            flex-direction: column;
+            height        : 100%;
+            margin-left   : 20px; 
+            gap:0px;
+            margin-top    : 80px ;
+            width:200px
+        }
+        .DASHBOARD_Toobar-Button{
+            border:none;
+            width:100%;
+            padding-left:2px;
+            margin-left: 0px;            
+            display:flex;
+            flex-direction: row;
+            gap:6px;
+            margin-bottom: 0px;
+            margin-top: 0px;
+        }
+        .DASHBOARD_Toobar-Button-Selected{
+            border:none;
+            width:100%;
+            padding-left:2px;
+            margin-left: 0px;            
+            display:flex;
+            flex-direction: row;
+            gap:6px;
+            margin-bottom: 0px;
+            margin-top: 0px;
+            background-color: #f0f0f0;
+        }
+        .DASHBOARD_ContentBase{
+            display       : flex;  
+            flex-direction: column;
+            height        : 100%;
+            width         : 100%;
+            overflow      : hidden;  
+            background-color: #f9f9f9; 
+            padding-top: 20px;            
+        }    
+        .DASHBOARD_Content{
+            display       : flex;  
+            flex-direction: row;
+            height        : 100%;
+            width         : 100%;
+            gap           : 20px;
+            overflow-x    : auto;
+            overflow-y    : auto;            
+        }    
+        .DASHBOARD_ClicableText{
+            color  : black;
+            cursor : pointer;
+        }
+        .DASHBOARD_ClicableText:hover{
+            text-decoration:underline;
+        }   
+        .DASHBOARD_Noaccess {
+            color: darkred;
+        } 
+        .DASHBOARD_Button {
+            height: 38px; /*match height with other azia widgets*/
+        }   
+        .DASHBOARD_icon-large{    
+            vertical-align : -.125em;            
+            width          : 6em;
+            height         : 6em;                
+        }  
+        .DASHBOARD_icon-yes-small{    
+            vertical-align : -.125em;
+            fill           : green;
+            width          : 1.0em;
+            height         : 1.0em;                
+        }  
+        .DASHBOARD_icon-yes-medium{    
+            vertical-align : -.125em;
+            fill           : green;
+            width          : 1.6em;
+            height         : 1.6em;                
+        } 
+        .DASHBOARD_icon-no-small{    
+            vertical-align : -.125em;
+            fill           : darkred;
+            width          : 1.0em;
+            height         : 1.0em;                
+        }  
+        .DASHBOARD_icon{    
+            vertical-align : -.125em;
+            fill           : grey;
+            width          : 2em;
+            height         : 2em;                
+        }  
+        .DASHBOARD_icon-medium{    
+            vertical-align : -.125em;
+            fill           : grey;
+            width          : 1.5em;
+            height         : 1.5em;                
+        } 
+        .DASHBOARD_icon-small{    
+            vertical-align : -.125em;
+            fill           : grey;
+            width          : 1.0em;
+            height         : 1.0em;                
+        }  
+        .DASHBOARD_icon-very-small{    
+            vertical-align : -.125em;
+            fill           : grey;
+            width          : 0.5em;
+            height         : 0.5em;
+                
+        }  
+        .DASHBOARD_icon-small-disabled{    
+            vertical-align : -.125em;
+            fill           : grey;
+            width          : 1.0em;
+            height         : 1.0em;                
+        }  
+        .DASHBOARD_icon:hover{         
+            fill   :  black;
+        }   
+        .DASHBOARD_icon-small:hover{         
+            fill   :  black;
+        } 
+        .DASHBOARD_icon-medium:hover{         
+            fill   :  black;
+        } 
+        .DASHBOARD_ubuntu-console{  
+            background-color:black;
+            color:white;
+            font-family: monospace;      
+            border-radius: 12px;  
+            margin:10 10 10 10;                  
+        }    
+        .DASHBOARD_ellipsis {
+            text-overflow : ellipsis; 
+            white-space   : nowrap; 
+            overflow      : hidden;
+        }
+        .DASHBOARD_client-exception-diag{
+            position     : absolute;
+            z-index      : 5;
+            bottom       : 30%;
+            height       : 60%;
+            right        : 50%;     
+            width        : 30%;    
+            background   : #eae4f2;  
+            margin-top   : 10px ;
+            border       : 1px solid #6f42c1;
+            padding      : 10 10 10 10 ;
+            overflow     : none;
+            display      : none;
+        } 
+    </style>    
+    
+    <script>
+        "use strict";
+        var DASHBOARD = {
+            GUIDs   : {
+                Settings     : 'cfaa70f0-5276-4c84-944b-beb4946b6ed0',
+                TonesID      : 'ae9be87d-1d19-4328-95a2-5407ed77d09d',
+                AudiencesID  : 'dc3da9b9-b017-44b4-a54c-d70853a29d6f',
+                SharedDataID : '1bdd2cb3-07a8-4a42-aff5-b1fed512b696'
+            },
+            OPTIONS   : {},
+            TONES     : {},
+            __TONES   : {},
+            __TIPS    : {},
+            __OPTIONS : {},
+            __SettingsProfile : "",
+            SetSettingsProfile(profile){
+                this.__SettingsProfile = profile;
+            },
+            GetSettingsProfile(){
+                return this.__SettingsProfile;
+            },
+            GetTip(key){
+                if (false === key in DASHBOARD.__TIPS) return key;
+                return this.__TIPS[key].replaceAll('\n','<br>');
+            },           
+        }        
+        function DASHBOARD_GUID(key){
+            return DASHBOARD.GUIDs[key]
+        }  
+        async function DASHBOARD_Fetch(url, options){
+            try {
+                const response = await fetch(url, options);
+                var  json      = await response.json();
+            } catch (err){
+                return {'err' : err};
+            }
+            return json;
+        }
+        function DASHBOARD_OptionF(key){            
+            if (key in DASHBOARD.OPTIONS) return DASHBOARD.OPTIONS[key];
+            return 0.5
+        }
+        function DASHBOARD_OptionB(key){           
+            if (key in DASHBOARD.OPTIONS) return DASHBOARD.OPTIONS[key];
+            return false
+        }
+        function DASHBOARD_Option(key){           
+            if ((key == 'Selected Audience') && true == ('Selected Audience' in DASHBOARD.__OPTIONS)) { 
+                return DASHBOARD.__OPTIONS['Selected Audience'].Name;
+            }
+            if (key in DASHBOARD.OPTIONS) return DASHBOARD.OPTIONS[key];
+            return ''
+        }
+        function DASHBOARD_OptionA(key){    
+            if ((key == 'Selected Tones') && true == ('Selected Tones' in DASHBOARD.__OPTIONS)) {
+                let tones = [];
+                for (let tone of DASHBOARD.__OPTIONS['Selected Tones']){
+                    tones.push(tone.Name);
+                }
+                return tones
+            }
+            if (key in DASHBOARD.OPTIONS) return DASHBOARD.OPTIONS[key];
+            return []
+        }
+        function DASHBOARD_OptionO(key){            
+            if (key in DASHBOARD.OPTIONS) return DASHBOARD.OPTIONS[key];
+            return {}
+        }
+        function DASHBOARD_FetchOPtions(){
+            return {				
+				credentials: 'same-origin',
+				mode       : 'same-origin',
+				method     : 'POST',
+				headers    : {'Content-Type': 'application/json', 'Accept' : 'application/json'}				
+			}
+        }
+        async function DASHBOARD_AppendTone(Tone) {
+            let options  = DASHBOARD_FetchOPtions()
+            options.body = JSON.stringify({
+                'Name'        : Tone.Name,
+                'Description' : Tone.Description,
+                'Tag '        : Tone.Tag
+            })
+            let result = (await DASHBOARD_Fetch('/append-tone-new-ap')).Reply;
+            if (result !== 'S_OK') {
+                alert(`Error: ${result}\nsetting new tone`)
+            }
+        }
+        async function DASHBOARD_AppendAudience(Aud) {
+            let options  = DASHBOARD_FetchOPtions()
+            options.body = JSON.stringify({
+                'Name'        : Aud.Name,
+                'Description' : Aud.Description,
+                'Tag '        : Aud.Tag 
+            })            
+            let result = (await DASHBOARD_Fetch('/append-audience-new-api')).Reply;
+            if (result !== 'S_OK') {
+                alert(`Error: ${result}\nsetting new audience`)
+            }
+        }
+        async function DASHBOARD_GetTones(){
+            await DASHBOARD_UpdateSettings();
+            return JSON.parse(JSON.stringify(DASHBOARD.__TONES.Tones));
+        }
+        async function DASHBOARD_GetAudiences(params) {
+            await DASHBOARD_UpdateSettings();
+            return JSON.parse(JSON.stringify(DASHBOARD.__TONES.Audiences));
+        }
+        async function DASHBOARD_UpdateSettings(){            
+            let fetch_options  = DASHBOARD_FetchOPtions()  
+            fetch_options.body = JSON.stringify({Request : {SettingsID : 'cfaa70f0-5276-4c84-944b-beb4946b6ed0'}}); 
+            try {
+                let profile = DASHBOARD.GetSettingsProfile();
+                if (profile == '')
+                    DASHBOARD.OPTIONS = (await DASHBOARD_Fetch('/get-global-settings-new-api', fetch_options)).Settings;  
+                else
+                    DASHBOARD.OPTIONS = (await DASHBOARD_Fetch(`/Settings-Profiles/get?profile=${profile}`, DASHBOARD_FetchOPtions())).Settings;
+                if (false === ('Prompts' in DASHBOARD.OPTIONS)){
+                    DASHBOARD.OPTIONS.Prompts = {};
+                }
+            } catch(error){
+                DASHBOARD.OPTIONS = {'Prompts' : {}};
+            } 
+            DASHBOARD.__OPTIONS = DASHBOARD.OPTIONS;
+            DASHBOARD.TONES     = await DASHBOARD_Fetch('/outlinegen-get-tones', fetch_options);  
+            DASHBOARD.__TONES   = await DASHBOARD_Fetch('/get-tones-and-audiences-new-api');  
+            console.log("Update Settings", DASHBOARD.__OPTIONS)
+            /* 
+            DASHBOARD.OPTIONS.Prompts['Default'] = {};
+            DASHBOARD.OPTIONS.Prompts['Legacy']  = {};   
+                                       
+            let d      = await DASHBOARD_Fetch('/content-creator_default-prompt');                      
+            let l_secs = ['Intro SYSTEM','Intro USER','Section SYSTEM','Section USER','FAQ SYSTEM','FAQ USER','Conclusion SYSTEM','Conclusion USER']
+            for (let i=0; i<d.Reply.length; i++) {                          
+                DASHBOARD.OPTIONS.Prompts.Legacy[l_secs[i]] = d.Legacy[i];
+            }              
+            let secs  = ['Initial SYSTEM','Initial USER','Intro SYSTEM','Intro USER','Section SYSTEM','Section USER','FAQ SYSTEM','FAQ USER',
+            'Conclusion SYSTEM','Conclusion USER', 'Improve Intro SYSTEM', 'Improve Intro USER', 'Improve SYSTEM', 'Improve USER']
+            for (let i=0; i<d.Reply.length; i++) {
+                DASHBOARD.OPTIONS.Prompts.Default[secs[i]] = d.Reply[i];
+            }      
+            */             
+           DASHBOARD.OPTIONS.BlackLists = 
+           {'Stop Words' : (await DASHBOARD_Fetch('content_creator-get_blacklisted_words?list=Stop Words', fetch_options)).Reply};
+           //console.log(DASHBOARD.OPTIONS.BlackLists)
+           console.log(DASHBOARD.OPTIONS)
+        }
+        function DASHBOARD_GetToneDescriptions(){           
+            let desc = {}
+            for (const tone of DASHBOARD.__OPTIONS['Selected Tones']) {
+                desc[tone.Name] = tone.Description
+            }
+            return desc;  
+            
+            for (const select_tone of DASHBOARD_GetOption('Selected Tones')){
+                for (const tone of DASHBOARD.TONES.Tones) {
+                    if (tone.Tone === select_tone){
+                        desc[select_tone] = tone.Caption;
+                    }
+                }                
+            }
+            return desc;
+        }
+        function DASHBOARD_AudienceDescription(aud){   
+            for (let audience of DASHBOARD.__TONES.Audiences){
+                if (audience.Name === aud){                    
+                    return audience.Description;
+                }
+            }
+            return ''
+
+            for (let audience of DASHBOARD.TONES.Audiences){
+                if (audience.Audience === aud){
+                    //console.log(audience.Caption)
+                    return audience.Caption;
+                }
+            }
+            return ''
+        }
+        function DASHBOARD_GetModel(task){
+            task = task === "CTAS" ? 'CTAS'  : task.replaceAll(' ', '-').toLowerCase();
+            task = task === 'facts' ? 'facs' : task
+            console.log(DASHBOARD.OPTIONS.Models)
+            if ((true === 'Models' in DASHBOARD.OPTIONS) && (true === task in DASHBOARD.OPTIONS.Models)){
+                return DASHBOARD.OPTIONS.Models[task];
+            }
+            throw new Error(`No model for task ${task}`);            
+            return NULL
+        }
+        function DASHBOARD_GetOption(key){  
+            if (key in DASHBOARD.OPTIONS){
+                return DASHBOARD.OPTIONS[key];
+            }       
+            return `${key} not in options`
+        }
+        DASHBOARD_UpdateSettings();
+        function DASHBOARD_ExpandPrompt(tags, template){       
+            let descriptions = DASHBOARD_GetToneDescriptions();   
+            let index        = 0;    
+            let Tones        = '';
+            let FullTones    = '';
+            for (let [tone, description] of Object.entries(descriptions)){
+                Tones     += tone + ', ';
+                FullTones += index > 0 ? '\n\n' + tone + ': ' + description : tone + ': ' + description;
+                index ++;
+            }        
+            tags.Tones      = Tones.substring(0, Tones.length-2) + ' ';      
+            tags.TONES_FULL = FullTones;           
+            for (let [tag, value] of Object.entries(tags)){
+                template = template.replaceAll(`{${tag.toUpperCase()}}`, value);
+            }
+            return template;
+        }
+        function DASHBOARD_ElementIndex(el){
+            return `::Index_${el.id.split('::Index_')[1]}`;
+        }
+        function DASHBOARD_TruncateString(str, max=100) {
+            return str.length > max ? `${str.substring(0, max-3)}...` : str; 
+        }
+        function DASHBOARD_ShowUserMenu() {              
+            document.getElementById('DASHBOARD::user_menu').style.display = 'block';
+        }        
+        function DASHBOARD_SyncSleep(ms) {            
+            let start = new Date().getTime(), expire = start + ms;
+            while (new Date().getTime() < expire) { }
+            return;
+        }
+        function DASHBOARD_AwsomeSVG(icon_path, viewbox, classname = 'DASHBOARD_icon'){
+            var path      = document.createElementNS("http://www.w3.org/2000/svg", "path");          
+            var svg       = document.createElementNS("http://www.w3.org/2000/svg", "svg");                  
+            svg.setAttribute('class', classname);
+            svg.setAttribute('viewBox', viewbox);
+            path.setAttribute('d', icon_path);
+            svg.appendChild(path);             
+            return svg;         
+        }
+        function DASHBOARD_AziaButton(caption='Replace me', extra_styles=''){
+            var element                = document.createElement('button');
+            element.className          = 'btn btn-az-primary';
+            element.innerHTML          = caption;  
+            if (extra_styles !== '') {
+                element.style = extra_styles;
+            }          
+            return element;
+        }
+        function DASHBOARD_AziaForm(tag='textarea', placeholder='', extra_styles=''){
+            let element                = document.createElement(tag);
+            element.className          = 'tw_input';
+            element.placeholder        = placeholder;  
+            if (extra_styles !== '') {
+                element.style = extra_styles;
+            }          
+            return element;
+        }
+        function DASHBOARD_AziaSubtitle(caption, extra_styles=''){
+            let element                = document.createElement('ps')
+            element.className          = 'tw_h4';
+            element.innerHTML          = caption;
+            if (extra_styles !== '') {
+                element.style = extra_styles;
+            }
+            return element;
+        }
+        function DASHBOARD_GetOptions(selector_id){   
+            let elemment = selector_id instanceof HTMLElement ? selector_id : document.getElementById(selector_id);
+            let options = []           
+            for (const option of elemment.options) {
+                if (option.selected) {
+                    options.push(option.value)
+                }
+            }
+            return options
+        }
+        function DASHBOARD_SetOptions(selector_id, options){   
+            if (false === (Array.isArray(options))) {
+                options = [options];
+            }  
+            for (const option of document.getElementById(selector_id).options) {
+                if (options.includes(option.value)){
+                    option.selected = true;
+                }
+            }            
+        }
+        function DASHBOARD_Cookie(key){
+            for (const cookie of document.cookie.split(';')){
+                let split = cookie.split('=');
+                if (split[0].trim() === key){
+                    return split[1];
+                }                
+            }
+            return ''
+        }
+        function DASHBOARD_Load(callback, accept = '.json') {           
+            var diag      = document.getElementById('DASHBOARD::load-dialog')        
+            diag.accept   = accept
+            diag.onchange = function() {            
+                var reader       = new FileReader();
+                reader.onloadend = function() { 
+                    callback(this.result);
+                    let parent     = document.getElementById('DASHBOARD::load-dialog').parentElement;
+                    parent.removeChild(document.getElementById('DASHBOARD::load-dialog'));
+                    let newdiag    = document.createElement('input') ;
+                    newdiag.type   = 'file'; 
+                    newdiag.id     = 'DASHBOARD::load-dialog';
+                    newdiag.style  = 'display:none'; 
+                    newdiag.accept = accept
+                    parent.appendChild(newdiag);                          
+                }                
+                reader.readAsText(this.files[0], 'UTF-8');                     
+            }
+            diag.click();       
+        }
+        function DASHBOARD_LoadB(accept = '.json', callback, finished_callback = null) {           
+            var diag       = document.getElementById('DASHBOARD::load-dialog')        
+            diag.multiple  = 'multiple';
+            diag.accept    = accept; 
+            let file_count = 0
+            diag.onchange  = function() {         
+                file_count = this.files.length;          
+                for (const file of this.files){
+                    let reader = new FileReader();
+                    reader.onloadend = async function() { 
+                        await callback(file.name, this.result);
+                        file_count -= 1;
+                        if (file_count == 0 && finished_callback !== null){
+                            finished_callback();
+                        }
+                    }
+                    if (file.name.endsWith('.pdf') || file.name.endsWith('.docx') || file.name.endsWith('.xlsx'))
+                        reader.readAsArrayBuffer(file);
+                    else if (file.name.endsWith('.png'))
+                        reader.readAsDataURL(file);
+                    else
+                        reader.readAsText(file, 'UTF-8');                                       
+                }  
+                let parent       = document.getElementById('DASHBOARD::load-dialog').parentElement;
+                parent.removeChild(document.getElementById('DASHBOARD::load-dialog'));
+                let newdiag      = document.createElement('input') ;                
+                newdiag.type     = 'file'; 
+                newdiag.id       = 'DASHBOARD::load-dialog';
+                newdiag.style    = 'display:none'; 
+                newdiag.accept   = accept
+                parent.appendChild(newdiag);                                             
+            }
+            diag.click();       
+        }
+        function DASHBOARD_except(err){           
+            document.getElementById('DASHBOARD::client-exception-dialog').style.display  = 'flex'; 
+            document.getElementById('DASHBOARD::client-exception-details').value         = `Exection:\n'${err}\n${err.stack}`;
+            document.getElementById('DASHBOARD::client-exception-close').onclick = function(){
+                document.getElementById('DASHBOARD::client-exception-dialog').style.display  = 'none'; 
+                document.getElementById('DASHBOARD::client-exception-comments').value        = '';
+            }    
+            document.getElementById('DASHBOARD::client-exception-submit').onclick = function(){
+                let options  = DASHBOARD_FetchOPtions()
+                options.body = JSON.stringify({
+                    'Exception' : document.getElementById('DASHBOARD::client-exception-details').value,
+                    'Comments'  : document.getElementById('DASHBOARD::client-exception-comments').value                 
+                })
+                document.getElementById('DASHBOARD::client-exception-dialog').style.display  = 'none'; 
+                document.getElementById('DASHBOARD::client-exception-comments').value        = '';
+                DASHBOARD_Fetch('/log-exception', options);
+            }         
+        }
+        function DASHBOARD_SpliceString(string, tag){
+            let start_tag = `{${tag}}`;
+            let end_tag   = `{@${tag}}`;
+            return string.slice(0, string.indexOf(start_tag)) + string.slice(string.indexOf(end_tag) + end_tag.length)             
+        }    
+        function DASHBOARD_Children(parent,action){
+            for (let child of parent.children){
+                action(child);
+                DASHBOARD_Children(child, action);
+            }
+        }   
+
+        async function DASHBOARD_PopulatePromptSelect(selector, prompts_sub_group){
+            await DASHBOARD_UpdateSettings();
+            for (const prompt in DASHBOARD_OptionO(prompts_sub_group)){
+                let option      = document.createElement('option');
+                option.value    = prompt;
+                option.label    = prompt;           
+                selector.appendChild(option);
+            }
+        }
+
+        async function DASHBOARD_PopulateModelSelect(selector){
+            let antrhopic_models  = await DASHBOARD_Fetch("/list-anthropic-models", DASHBOARD_FetchOPtions());
+            let google_models     = await DASHBOARD_Fetch("/list-google-models", DASHBOARD_FetchOPtions());
+            let openrouter_models = await DASHBOARD_Fetch('https://openrouter.ai/api/v1/models');               
+              
+            for (const model of openrouter_models.data){
+                let option   = document.createElement('option');
+                option.value = model.id;
+                option.label = model.name;
+                selector.appendChild(option);
+            } 
+            for (let model of antrhopic_models.Models){
+                let option   = document.createElement('option');
+                option.value = model.id + '🇦';
+                option.label = '🇦 ' + model.name;
+                selector.appendChild(option);
+            }    
+            for (let model of google_models.Models){
+                let option   = document.createElement('option');
+                option.value = model.id + '🇬';
+                option.label = '🇬 ' + model.name;
+                selector.appendChild(option);
+                if (false === model.name.includes('2.0')) continue;
+                option       = document.createElement('option');
+                option.value = model.id + '🇬 🇬';
+                option.label = '🇬 🇬 ' + model.name;
+                selector.appendChild(option);
+            }            
+        }
+        // Caller calls DASHBOARD_UpdateSettings(); before calling
+        async function DASHBOARD_PopulateAudienceSelect(select) {
+            let audiences = await DASHBOARD_GetAudiences();
+            for (let [index, audience] of audiences.entries()) {
+                let option = document.createElement('option');
+                option.value = JSON.stringify(audience);
+                option.text  = audience.Tag === "" ? audience.Name : `${audience.Name} (${audience.Tag})`;    
+                option.setAttribute('data-bs-toggle', `tooltip`);
+                option.setAttribute('data-bs-placement', `right`);
+                option.setAttribute('data-bs-title', `${audience.Description}`);
+                select.appendChild(option);
+            }             
+        }
+        async function DASHBOARD_PopulateTonesSelect(select) {
+            let tones = await DASHBOARD_GetTones();
+            for (let [index, tone] of tones.entries()) {
+                let option = document.createElement('option');
+                option.value = JSON.stringify(tone);
+                option.text  = tone.Tag === "" ? tone.Name : `${tone.Name} (${tone.Tag})`;    
+                option.setAttribute('data-bs-toggle', `tooltip`);
+                option.setAttribute('data-bs-placement', `right`);
+                option.setAttribute('data-bs-title', `${tone.Description}`);
+                select.appendChild(option);
+            }   
+            select.onchange = function(){
+                let count = 0;
+                for (let option of select.options) {
+                    if (option.selected) {
+                        count += 1
+                        if (count > 2){
+                            option.selected = false;
+                            alert('Select only two')
+                            break;
+                        }
+                    }
+                }  
+            }         
+        }
+        function DASHBOARD_ReparentToBody(id)
+        {
+            let element = document.getElementById(id);
+            element.parentElement.removeChild(element);
+            document.body.appendChild(element);
+        }
+        function bff(html){
+            let _this = {
+                    html        : html,
+                    containner  : document.createElement('div'),
+                    elements    : {},
+                    GetElementsByData(element) {
+                        if (element.dataset.self) {
+                            this.elements[element.dataset.self] = element
+                        }
+                        if (element.dataset.data) {
+                            this.elements.data_container = element;
+                        }
+                        for (let child of element.children) {
+                            this.GetElementsByData(child)
+                        }
+                    },
+                    GetElements(position, new_parent){
+                        this.containner.insertAdjacentHTML('beforeend', this.html);
+                        this.GetElementsByData(this.containner)
+                        let children = Array.from(this.containner.children)
+                        if (position === 'afterbegin') children = children.reverse();
+                        for (let child of children){
+                                new_parent.insertAdjacentElement(position, child)
+                            }                        
+                        let elemements = this.elements
+                        elemements.Data = () =>{
+                                if (elemements.data_container){
+                                    let data    = JSON.parse(elemements.data_container.dataset.data)
+                                    data.update = () =>{
+                                        elemements.data_container.dataset.data = JSON.stringify(data); 
+                                    }
+                                    data.set = (new_data) => {
+                                        elemements.data_container.dataset.data = JSON.stringify(new_data);
+                                    }
+                                    return data;
+                                } else {
+                                    throw new Error('No data container')
+                                }
+                            }                                         
+                        return this.elements
+                    },
+                    AppendTo(parent){
+                        return this.GetElements('beforeend', parent)
+                    },
+                    PrepentTo(parent){
+                        return this.GetElements('afterbegin', parent)
+                    }
+                }
+                return _this    
+           }
+        function DASHBOARD_Multichoice(options=[]){
+            var self = {
+                __Container                : document.createElement('span'),
+                __SelectedOptionsContainer : document.createElement('span'),
+                __OptionsContainer         : document.createElement('span'),
+                __Options                  : [],   
+                Container : function(){
+                    return this.__Container
+                },             
+                AddOption : function(option) {
+                    //console.log(option);
+                    var _this  = this;
+                    var Option = {
+                        div      : document.createElement('div'),                   
+                        text     : document.createElement('button'),
+                        button   : document.createElement('button'), 
+                        slct_but : document.createElement('button'), 
+                        selected : false,
+                        Unselect : function(){  
+                            this.selected = false                          
+                            _this.Unselect(this);
+                        },
+                        Select : function(){  
+                            this.selected = true                          
+                            _this.Select(this);
+                        }
+                    }
+                    Option.slct_but.style     = 'width:100%; border:none; background-color:LightGray; color:black; text-justify:justify; height:30px'
+                    Option.div.style          = 'display:flex; background-color:black; color:white; border-radius:4px; height:30px';
+                    Option.text.innerHTML     = option;
+                    Option.slct_but.innerHTML = option
+                    Option.text.style         = 'color:inherit; background-color:inherit; border: none; font: inherit; border-right:1px solid white; \
+                                                border-top-left-radius: inherit; border-bottom-left-radius: inherit; cursor:default';
+                    Option.button.style       = 'color:inherit; background-color:inherit; border: none; font: inherit; border-radius: inherit';
+                    Option.button.innerHTML   = 'X'
+                    Option.div.appendChild(Option.text);
+                    Option.div.appendChild(Option.button);                   
+                    this.__Options.push(Option);
+                    Option.button.onclick  = function(event){
+                        Option.Unselect();
+                        event.stopPropagation()
+                    }
+                    Option.slct_but.onclick = function(event){
+                        Option.Select();
+                        this.style.backgroundColor = 'LightGray';
+                        this.style.color           = 'black';
+                        event.stopPropagation()
+                    }
+                    Option.text.onclick = function(event){event.stopPropagation()};
+                    Option.slct_but.onmouseenter   = function(){
+                        this.style.backgroundColor = 'black';
+                        this.style.color           = 'white';
+                    }
+                    Option.slct_but.onmouseleave   = function(){
+                        this.style.backgroundColor = 'LightGray';
+                        this.style.color           = 'black';
+                    }
+                    this.__OptionsContainer.appendChild(Option.slct_but);
+                    this.Select(Option);
+                    return Option;
+                },
+                Select : function(option){
+                    this.__SelectedOptionsContainer.appendChild(option.div);
+                    self.__OptionsContainer.removeChild(option.slct_but);
+                    self.__OptionsContainer.style.display = 'none'
+                    var rect  = self.__SelectedOptionsContainer.getBoundingClientRect();
+                    self.__OptionsContainer.style.top  = rect.bottom - rect.top + 2;
+                    option.selected = true;
+                    //if (self.OptionsContainer.children.length == 0)
+                        //self.OptionsContainer.style.display = 'none';
+                },
+                Unselect : function(option){
+                    self.__SelectedOptionsContainer.removeChild(option.div);
+                    self.__OptionsContainer.appendChild(option.slct_but);
+                    option.selected = false;                    
+                },
+                Selection() {
+                    var sel = []
+                    for (const option of self.__Options) {
+                        //console.log(option);
+                        if (option.selected == true)
+                        sel.push(option.text.innerHTML);
+                    } 
+                    return sel;
+                }
+            }            
+            self.__OptionsContainer.style         = 'position:absolute; display:none; flex-direction:column; z-index:2; padding:0px; border:1px solid lightgray; \
+            background-color:LightGray; color:black; min-height:30px; margin:0%; border:none; margin:-1px'   
+            self.__OptionsContainer.setAttribute('name', 'DASHBOARD::hide-me');
+            self.__SelectedOptionsContainer.style = 'display:flex; flex-wrap:wrap; flex-grow:1; gap:4px; padding:4px; cursor:pointer';
+            self.__Container.style                = 'display:column; position:relative; flex-direction:column; color:white; flex-grow:1; gap:0px; \
+            border:1px solid lightgray; cursor:pointer; min-height:80px; width:100%; z-index:2; padding:0px';
+            self.__Container.appendChild(self.__SelectedOptionsContainer);
+            self.__Container.appendChild(self.__OptionsContainer);
+            for (const option of options){
+                var op = self.AddOption(option);                
+            }    
+            self.__Container.onclick = function(event){
+                //if (self.OptionsContainer.children.length == 0)
+                //return;
+                var rect                                    = self.__SelectedOptionsContainer.getBoundingClientRect();
+                var rct                                     = self.__SelectedOptionsContainer.getBoundingClientRect()
+                //console.log(self.__Container.style.width)
+                self.__OptionsContainer.style.width         = rct.rigth   - rct.left;          
+                self.__OptionsContainer.style.top           = rect.bottom - rect.top + 2;
+                self.__OptionsContainer.style.left          = '0px';
+                self.__OptionsContainer.style.right         = '0px';
+                self.__OptionsContainer.style.display       = 'flex';
+                event.stopPropagation();
+            }        
+            return self
+        }        
+    </script>    
+
+    <div class='az-header' style='display:flex; width:100%;background-color: #000000;'>       
+        <img src='static/img/logo_small.png' style='width:220px; height:50px; cursor:pointer' alt='???' onclick='location.href="/"'></img>
+        <div class="spacer"></div>
+        <div style="position:relative">
+            <div onclick="document.getElementById('DASHBOARD::user_pic').click()" style="cursor: pointer;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="fill:white; width:2em; height:2em;margin-top:16px">              
+                <path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464l349.5 0c-8.9-63.3-63.3-112-129-112l-91.4 0c-65.7 0-120.1 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304l91.4 0C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7L29.7 512C13.3 512 0 498.7 0 482.3z"/>
+            </svg></div>
+            <div id="DASHBOARD::credits-display" 
+            style="position:absolute;right:0px;background-color:#6f42c1;color:white; padding:4 4 4 4;border-radius:2px;display:none">pocoto</div>
+        </div>
+        <div class="dropdown az-profile-menu">
+            <a href='javascript: DASHBOARD_ShowUserMenu()' style="display:none"
+            id='DASHBOARD::user_pic' class="az-img-user DASHBOARD_User"><img src='{{config.IMG}}{{user}}' alt='???'></a>
+            <div id='DASHBOARD::user_menu' class="dropdown-menu DASHBOARD_User">              
+                <div class="az-header-profile">
+                    <div class="az-img-user">
+                        <img src='{{config.IMG}}{{user}}' alt='???'>
+                    </div><!-- az-img-user -->                
+               </div><!-- az-header-profile -->             
+               <a href="/logout" class="dropdown-item"><i class="typcn typcn-power-outline"></i> Sign Out</a>
+            </div><!-- dropdown-menu -->
+        </div>        	    
+    </div>   
+    <div id='DASBOARD::tool-tip' style='position:absolute;z-index:2;top:100px;background-color:black;color:white;
+    padding:6 6 6 6;font-weight:bold;display:none;margin-right:2px;border-radius:6px;'>
+        tool-tip
+    </div>
+    <div class="tw_dialog-container" id="DASBOARD::Ok-Cancel" style="display:none;z-index:20">
+        <div class="tw_dialog tw_Ctrl-Group">
+        <h3 id="DASBOARD::Ok-Cancel-Message" class="tw_h3">Message placeholder</h3>
+        <div style="height:20px;"></div>
+        <div style="display:flex;flex-direction:row-reverse;gap:6px">
+            <button class="tw_button tw_button" id="DASBOARD::Ok-Cancel-Ok">Yes</button>
+            <button class="tw_button tw_button-alt" id="DASBOARD::Ok-Cancel-Cancel" 
+                onclick="document.getElementById('DASBOARD::Ok-Cancel').style.display='none'">Cancel</button>
+        </div>    
+        </div>
+    </div>    
+    <div id='DASHBOARD::client-exception-dialog' class='DASHBOARD_client-exception-diag'>
+        <div style='display:flex;flex-direction:column;gap:16px;height:100%;width:100%'>
+            <div style='display:flex;flex-direction:row;gap:40px'>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DASHBOARD_icon" style="fill:red">
+                    <path d="M256 0c53 0 96 43 96 96l0 3.6c0 15.7-12.7 28.4-28.4 28.4l-135.1 0c-15.7 0-28.4-12.7-28.4-28.4l0-3.6c0-53 43-96 96-96zM41.4 105.4c12.5-12.5 32.8-12.5 45.3 0l64 64c.7 .7 1.3 1.4 1.9 2.1c14.2-7.3 30.4-11.4 47.5-11.4l112 0c17.1 0 33.2 4.1 47.5 11.4c.6-.7 1.2-1.4 1.9-2.1l64-64c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-64 64c-.7 .7-1.4 1.3-2.1 1.9c6.2 12 10.1 25.3 11.1 39.5l64.3 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c0 24.6-5.5 47.8-15.4 68.6c2.2 1.3 4.2 2.9 6 4.8l64 64c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0l-63.1-63.1c-24.5 21.8-55.8 36.2-90.3 39.6L272 240c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 239.2c-34.5-3.4-65.8-17.8-90.3-39.6L86.6 502.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l64-64c1.9-1.9 3.9-3.4 6-4.8C101.5 367.8 96 344.6 96 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64.3 0c1.1-14.1 5-27.5 11.1-39.5c-.7-.6-1.4-1.2-2.1-1.9l-64-64c-12.5-12.5-12.5-32.8 0-45.3z"/>
+                </svg>
+                <div class="az-content-label mg-b-5;" style="margin-bottom:10px;margin-top:8px">Client exception</div>
+                <div class="Spacer"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DASHBOARD_icon" id="DASHBOARD::client-exception-close">
+                    <path d="M64 80c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l384 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80zM0 96C0 60.7 28.7 32 64 32l384 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zm175 79c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"/>
+                </svg>
+            </div>  
+            <div style='display:flex;flex-direction:column;width:100%'>
+                <div class="az-content-label mg-b-5;" style="margin-bottom:10px;margin-top:8px">Exception details</div> 
+                <textarea id='DASHBOARD::client-exception-details' class="form-control" rows="8" readonly 
+                style="border-bottom:1px solid lightgray;overflow-y:auto;width:100%"></textarea>
+            </div>  
+            <div style='display:flex;flex-direction:column;width:100%'>
+                <div class="az-content-label mg-b-5;" style="margin-bottom:10px;margin-top:8px">Additional comments</div> 
+                <textarea id='DASHBOARD::client-exception-comments' class="form-control" rows="8" 
+                style="border-bottom:1px solid lightgray;overflow-y:auto;width:100%"></textarea>
+            </div> 
+            <div style='flex-grow:10;'></div>
+            <div style="display:flex;flex-direction:row-reverse;">
+                <button id="DASHBOARD::client-exception-submit" class="btn btn-az-secondary btn-rounded">Report</button>
+            </div> 
+        </div>        
+    </div>        
+        
+    </div>
+    <div class='DASHBOARD_BarAndContentContainer' style="margin-top:0px;margin-right:0px;">
+        <div id="DASHBOARD::toolbar" class='DASHBOARD_Toobar'>
+            <div style='height:50px;'></div>
+            {% if admin %}            
+            <div>
+                <h3 class='tw_h4'>Admin tools</h3>  
+                <div style='height:4px;'></div>                                                        
+                <button class='tw_button-alt DASHBOARD_Toobar-Button'
+                    id='DASBOARD::admin-users-page' onclick="window.location.href='/admin?page=Users'">
+                    <i class="fa-solid fa-users" style="width:20px;margin-top:4px;"></i>
+                    Users
+                </button>                
+                <div style='height:4px'></div>                                         
+                <button class='tw_button-alt DASHBOARD_Toobar-Button'
+                    onclick="window.location.href='/admin?page=Labs'">
+                    <i class="fa-solid fa-flask" style="width:20px;margin-top:4px;"></i>
+                    Labs
+                </button>  
+                <div style='height:4px'></div>        
+                <button class='tw_button-alt DASHBOARD_Toobar-Button'
+                    onclick="window.location.href='/admin?page=Logs'">
+                    <i class="fa-solid fa-download" style="width:20px;margin-top:4px;"></i>
+                    Logs
+                </button>   
+                <div style='height:4px'></div>        
+                <button class='tw_button-alt DASHBOARD_Toobar-Button' style="display:none"
+                    onclick="dashboard_backdoor()">
+                    <i class="fa-solid fa-door-open" style="width:20px;margin-top:4px;"></i>
+                    Backdoor
+                </button>                         
+                <div style='height:4px'></div>                 
+                {% if acess_flag_dbug %}     
+                <div style='display:flex'>                   
+                <button onclick="window.location.href='/set_user_debug_enabled?dbug_flag=False'" class="tw_button-alt DASHBOARD_Toobar-Button">
+                    <i class="fa-solid fa-bug-slash" style="width:20px;margin-top:4px;"></i>
+                    Disable dbug
+                </button>
+                </div>  
+                {% else %}                     
+                <div style='display:flex'>                    
+                <button onclick="window.location.href='/set_user_debug_enabled?dbug_flag=True'" class="tw_button-alt DASHBOARD_Toobar-Button">
+                    <i class="fa-solid fa-bug" style="width:20px;margin-top:4px;"></i>
+                    Enable dbug
+                </button>
+                </div> 
+                {% endif %}                 
+            </div>    
+            <div style='height:50px;'></div>
+            {% endif %}            
+            <div class='component-item'>                
+                <h3 class='tw_h4'>Content tools</h3>  
+                <div style='height:4px;'></div>                   
+                <div style='display:flex'>                                         
+                <button class="tw_button-alt DASHBOARD_Toobar-Button"
+                    onclick="window.location.href='/seo_tool?page=ClusterCreator'">
+                    <i class="fa-solid fa-circle-nodes" style="width:20px;margin-top:4px;"></i>
+                    Content Creator
+                </button>  
+                </div>    
+                <div style='height:4px'></div>                
+                <div style='display:flex'>                                         
+                    <button class="tw_button-alt DASHBOARD_Toobar-Button"
+                        onclick="window.location.href='/seo_tool?page=GuestPosting'">
+                        <i class="fa-solid fa-envelope" style="width:20px;margin-top:4px;"></i>
+                        Guest posting
+                    </button>  
+                 </div>  
+                <div style='height:4px'></div>                
+                <div style='display:flex'>                                         
+                <button class="tw_button-alt DASHBOARD_Toobar-Button"
+                    onclick="window.location.href='/seo_tool?page=CTAs'">
+                    <i class="fa-solid fa-users" style="width:20px;margin-top:4px;"></i>
+                    Manage clients
+                </button>  
+                </div>    
+                <div style='height:4px'></div>                
+                <div style='display:flex'>                                         
+                    <button class="tw_button-alt DASHBOARD_Toobar-Button"
+                        onclick="window.location.href='/seo_tool?page=AIWords'">
+                        <i class="fa-solid fa-text-slash" style="width:20px;margin-top:4px;"></i>
+                        AI Words removal
+                    </button>  
+                </div> 
+                <div style='height:4px'></div>                
+                <div style='display:flex'>                                         
+                    <button class="tw_button-alt DASHBOARD_Toobar-Button"
+                        onclick="window.location.href='/seo_tool?page=improve-content'">
+                        <i class="fa-solid fa-book" style="width:20px;margin-top:4px;"></i>
+                        Improve content
+                    </button>  
+                </div>      
+                <div style='height:4px'></div>                
+                <div style='display:flex'>                                         
+                    <button class="tw_button-alt DASHBOARD_Toobar-Button"
+                        onclick="window.location.href='/seo_tool?page=Settings'">
+                        <i class="fa-solid fa-gear" style="width:20px;margin-top:4px;"></i>
+                        Settings
+                    </button>  
+                 </div>   
+                 
+                 <div style='height:4px;'></div>  
+                <div style='display:flex'>                                         
+                    <button class="tw_button-alt DASHBOARD_Toobar-Button"
+                        onclick="window.location.href='/seo_tool?page=DatasetFinetuning'">
+                        <i class="fa-solid fa-database" style="width:20px;margin-top:4px;"></i>
+                        Dataset Finetuning
+                    </button>  
+                </div>  
+                <!--
+                <div style='height:10px'></div>
+                <div style='display:flex'> 
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class='DASHBOARD_icon-small' style='margin-right:4px; position:relative; top:2px'>
+                        <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32H472c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6V320.9L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z"/>
+                    </svg>                      
+                    <nav class='nav flex-column'>
+                        <a href='/seo_tool?page=DomainFilter' class="nav-link" style='font-size: 14px;'>Domain filter</a>
+                    </nav>  
+                </div>  
+                <div style='height:10px'></div>
+                <div style='display:flex'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class='DASHBOARD_icon-small' style='margin-right:4px; position:relative; top:2px'>
+                        <path d="M64 144a48 48 0 1 0 0-96 48 48 0 1 0 0 96zM192 64c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zM64 464a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm48-208a48 48 0 1 0 -96 0 48 48 0 1 0 96 0z"/>
+                    </svg> 
+                    <nav class='nav flex-column'>
+                        <a href='/seo_tool?page=OutlineGenPage' class="nav-link" style='font-size: 14px;'>Outline creator</a>
+                    </nav>  
+                </div>                 
+                <div style='height:10px'></div>  
+                <div style='display:flex'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class='DASHBOARD_icon-small' style='margin-right:4px; position:relative; top:2px' onclick='window.location.href="/seo_tool?page=ContentCreatorPage"'>
+                        <path d="M96 0C43 0 0 43 0 96V416c0 53 43 96 96 96H384h32c17.7 0 32-14.3 32-32s-14.3-32-32-32V384c17.7 0 32-14.3 32-32V32c0-17.7-14.3-32-32-32H384 96zm0 384H352v64H96c-17.7 0-32-14.3-32-32s14.3-32 32-32zm32-240c0-8.8 7.2-16 16-16H336c8.8 0 16 7.2 16 16s-7.2 16-16 16H144c-8.8 0-16-7.2-16-16zm16 48H336c8.8 0 16 7.2 16 16s-7.2 16-16 16H144c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/>
+                    </svg>   
+                    <nav class='nav flex-column'>
+                        <a href='/seo_tool?page=ContentCreatorPage' class="nav-link" style='font-size: 14px;'>Content creator</a>
+                    </nav>  
+                </div>
+                <div style='height:10px'></div>
+                <div style='display:flex'> 
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class='DASHBOARD_icon-small' style='margin-right:4px; position:relative; top:2px' onclick='window.location.href="/seo_tool?page=Internal-Links"'>
+                        <path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/>
+                    </svg>                     
+                    <nav class='nav flex-column'>
+                        <a href='/seo_tool?page=Internal-Links' class="nav-link" style='font-size: 14px;'>Internal Links</a>
+                    </nav>  
+                </div>
+                <div style='height:10px'></div>
+                <div style='display:flex'> 
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DASHBOARD_icon-small"  style='margin-right:4px; position:relative; top:2px' onclick='window.location.href="/seo_tool?page=GuestPosting"'>
+                        <path d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"/>
+                    </svg>                    
+                    <nav class='nav flex-column'>
+                        <a href='/seo_tool?page=GuestPosting' class="nav-link" style='font-size: 14px;'>Guest Posting</a>
+                    </nav>  
+                </div>
+                <div style='height:10px'></div>
+                <div style='display:flex'> 
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-small" style='margin-right:4px; position:relative; top:2px' onclick='window.location.href="/seo_tool?page=DatasetFinetuning"'>
+                        <path d="M448 80v48c0 44.2-100.3 80-224 80S0 172.2 0 128V80C0 35.8 100.3 0 224 0S448 35.8 448 80zM393.2 214.7c20.8-7.4 39.9-16.9 54.8-28.6V288c0 44.2-100.3 80-224 80S0 332.2 0 288V186.1c14.9 11.8 34 21.2 54.8 28.6C99.7 230.7 159.5 240 224 240s124.3-9.3 169.2-25.3zM0 346.1c14.9 11.8 34 21.2 54.8 28.6C99.7 390.7 159.5 400 224 400s124.3-9.3 169.2-25.3c20.8-7.4 39.9-16.9 54.8-28.6V432c0 44.2-100.3 80-224 80S0 476.2 0 432V346.1z"/>
+                    </svg>                  
+                    <nav class='nav flex-column'>
+                        <a href='/seo_tool?page=DatasetFinetuning' class="nav-link" style='font-size: 14px;'>Dataset Finetuning</a>
+                    </nav>  
+                </div>-->                        
+            </div> 
+            <div style='height:50px;'></div>
+            <div class='component-item'>                
+                <h3 class='tw_h4'>PR Tools</h3>  
+                <div style='height:4px;'></div>  
+                <div style='display:flex'>                                         
+                    <button class="tw_button-alt DASHBOARD_Toobar-Button"
+                        onclick="window.location.href='/seo_tool?page=RPNews'">
+                        <i class="fa-solid fa-newspaper" style="width:20px;margin-top:4px;"></i>
+                        News Analysis
+                    </button>  
+                 </div>        
+            </div>     
+        </div>  
+        
+        <div class='DASHBOARD_ContentBase'>    
+            <input type='file' accept='.json' id='DASHBOARD::load-dialog' style='display:none'></input>
+            <div class='az-content-breadcrumb DASHBOARD_Breadcrumb'>
+                {% block breadcrumbs %} {% endblock %}                
+            </div>
+            <div class='DASHBOARD_Content'>            
+                <div class='spacer'></div>                                  
+                {% block tool_content %} 
+                <div style='display:flex; flex-direction:column;'>
+                    <div style='height:100px'></div>
+                    <div style='display:flex'>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class='DASHBOARD_icon-large'>
+                            <path d="M493.7 .9L299.4 75.6l2.3-29.3c1-12.8-12.8-21.5-24-15.1L101.3 133.4C38.6 169.7 0 236.6 0 309C0 421.1 90.9 512 203 512c72.4 0 139.4-38.6 175.7-101.3L480.8 234.3c6.5-11.1-2.2-25-15.1-24l-29.3 2.3L511.1 18.3c.6-1.5 .9-3.2 .9-4.8C512 6 506 0 498.5 0c-1.7 0-3.3 .3-4.8 .9zM192 192a128 128 0 1 1 0 256 128 128 0 1 1 0-256zm0 96a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm16 96a16 16 0 1 0 0-32 16 16 0 1 0 0 32z"/>
+                        </svg>
+                        <h1 style='position:relative;top:46px;left:10px'>FLAWLESS DASHBOARD</h1>     
+                    </div>  
+                    <h2 style='position:relative;top:10px;left:-60px; border-bottom: 2px solid #031b4e;'>Where custom tools meet excellence in boosting productivity</h2>                     
+                </div>
+                {% endblock %}                     
+                <div class='spacer'></div>        
+            </div>
+            <div style='min-height:20px'></div>       
+        </div>    
+    </div>    
+
+    {% include 'DashBoard-Tool-Tips.html' %}
+
+    <script>
+        document.body.onclick = function() {
+            document.getElementById('DASHBOARD::user_menu').style.display = 'none';   
+            var hide_me = document.getElementsByName('DASHBOARD::hide-me');
+            for (let i = 0; i < hide_me.length; i++) {
+                hide_me[i].style.display = 'none';
+            }             
+        };
+        (function (){
+            let tip      = document.getElementById('DASBOARD::tool-tip');
+            let elements = document.getElementsByName('DASHBOARD_tool-tip');
+            for (let el of elements) {                
+                el.onmouseenter = function() {
+                    tip.innerHTML = DASHBOARD.GetTip(el.id)                   
+                    let rect = el.getBoundingClientRect();
+                    if (rect.top > window.visualViewport.height/2) {                       
+                        let top  = rect.top - rect.height;
+                        tip.style.left = rect.left + 'px';
+                        tip.style.top  = top + 'px'; 
+
+                        top  = rect.top  + rect.height;
+                        tip.style.left = rect.left + 'px';
+                        tip.style.top  = rect.bottom  + 'px'; 
+                    } else {                        
+                        let top  = rect.top  + rect.height;
+                        tip.style.left = rect.left + 'px';
+                        tip.style.top  = rect.bottom  + 'px'; 
+                    }
+                    if (rect.left > window.visualViewport.width/2){
+                        let left = rect.left - 200;                        
+                        tip.style.left = left + 'px';
+                    }
+                    tip.style.display = 'flex';
+                }
+                el.onmouseleave = function() {
+                    tip.style.display = 'none';
+                }
+            }
+            let dialogs = Array.from(document.getElementsByName('DASHBOARD::modal'));
+            console.log(dialogs)
+            for (dialog of dialogs){     
+                console.log(dialog)           
+                dialog.parentElement.removeChild(dialog);
+                document.body.appendChild(dialog); 
+            }
+        })()
+        /*
+        document.getElementById("DASHBOARD::check-credits").onmouseenter = async function() {    
+            return;        
+            let credits           = await DASHBOARD_Fetch('/check-credits', DASHBOARD_FetchOPtions());
+            let display           = document.getElementById("DASHBOARD::credits-display")
+            display.innerHTML     = `OpenRouter credits: ${credits.openrouter}`;
+            display.style.display = 'flex';
+        }
+       
+        document.getElementById("DASHBOARD::check-credits").onmouseleave = async function() { 
+            document.getElementById("DASHBOARD::credits-display").style.display = 'none';
+        }     
+        */   
+        function DASHBOARD_ActivateToolTips(){
+            let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+			    let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+				    return new bootstrap.Tooltip(tooltipTriggerEl)
+			    })            
+        }
+        function DASHBOARD_OK_Cancel(msg, caption, ok, cancel=null, event=null){
+            document.getElementById('DASBOARD::Ok-Cancel-Message').innerHTML = msg;
+            document.getElementById('DASBOARD::Ok-Cancel-Ok').innerHTML      = caption;
+            document.getElementById('DASBOARD::Ok-Cancel').style.display     = 'flex';
+            document.getElementById('DASBOARD::Ok-Cancel-Ok').onclick = async function(event) {
+                if (event !== null) {
+                    event.preventDefault();
+                }
+                await ok();
+                document.getElementById('DASBOARD::Ok-Cancel').style.display = 'none';
+           }
+        };
+        (async function(parent)
+        {
+            if (false === window.location.href.includes('?')) return
+            if (parent === undefined)
+            {
+                parent = document.getElementById('DASHBOARD::toolbar');                
+            }
+            let page  = ''
+            let split = window.location.href.split("?page=")
+            if (split.length === 2)
+            {
+                page = split[1].toLowerCase();
+            }
+            else
+            {
+                page = 'dbug';
+            }
+            if (page === "clustercreator")
+            {
+                page = "content creator"
+            } 
+            else if (page === 'aiwords')
+            {
+                page = "ai words"
+            } 
+            else if (page === 'rpnews')
+            {
+                page = "news analysis"
+            }
+            else if (page === 'guestposting')
+            {
+                page = "guest posting"
+            }
+            console.log(page)
+            for (let child of parent.children) 
+            {
+                if (child.tagName === 'BUTTON' && child.innerHTML.toLowerCase().includes(page))
+                {
+                    child.classList = 'DASHBOARD_Toobar-Button-Selected tw_button-alt';
+                    //console.log(page, child.tagName, child.innerHTML.toLowerCase())
+                    return;
+                } 
+                arguments.callee(child);    
+            }
+        })()        
+        function dashboard_backdoor(){
+            DASHBOARD_LoadB(accept = '.db', async function(name, data){               
+                let options  = {method: 'POST', body: new Blob([data])}
+                let response = await fetch('/import-database', options)
+                let text     = (await response.json()).Err
+                alert(text)
+                return
+                /*
+                DASHBOARD_LoadB(accept = '.db', async function(name, data){               
+                    let options  = {method: 'POST', body: new Blob([data])}
+                    let response = await fetch('/import-alchemy-database', options)
+                    let text     = (await response.json()).Err
+                    alert(text)          
+                }) 
+                    */            
+            })            
+        }
+        DASHBOARD_ActivateToolTips();
+    </script>    
+{% endblock content %}  

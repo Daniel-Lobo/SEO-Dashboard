@@ -1,0 +1,326 @@
+{% extends 'dashboard.html' %}
+
+{% block breadcrumbs %}  
+<style>    
+    .CLUSTERCREATOR_tab-item{        
+        margin-bottom: -2px;
+        cursor: pointer;
+    }
+    .CLUSTERCREATOR_tab-item:hover{
+        color  :  #333333;
+    }    
+    .CLUSTERCREATOR_icon-group{
+        display :flex;        
+        gap     :10px;
+        border-radius: 10px;
+        padding: 10px 10px 10px 10px;
+        height: 40px;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    }
+</style>
+
+
+<div style='display:flex; flex-direction: column; width:100%; margin-right:20px; margin-bottom:-16px;'>
+    <div style='display:flex; margin-bottom:20px;'> 
+        <span>SEO Tools</span>
+        <span>Content creator</span>    
+    </div>  
+    <div style='display:flex'>
+        <h1 style="margin-bottom: 40px;">Content Creator</h1> 
+        <h4 id='CLUSTERCREATOR::msg' style='margin-top:6px; margin-left: 40px; color: black; text-transform:none;'></h4> 
+        <div id='CLUSTERCREATOR::spinner' class='DASHBOARD_Loader' style='width:26px; height:26px; margin-top:2px;'></div>
+    </div>    
+    <div style='display:flex; margin-top:-22px; gap:14px; position:relative'>    
+        <div class="CLUSTERCREATOR_icon-group">   
+            <i class="fa-solid fa-user-slash fa-xl" style="margin-top:10px;"></i>
+            <div style="width: 2px; height: 34px; background-color: black; margin: -9px 6px 0px -8px"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' id='CLUSTERCREATOR::save' viewBox="0 0 448 512"
+                onmouseenter='document.getElementById("CLUSTERCREATOR::save-tip").style.display="flex";' 
+                onmouseleave='document.getElementById("CLUSTERCREATOR::save-tip").style.display="none";'>
+                <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/>
+            </svg>       
+            <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' id='CLUSTERCREATOR::load' viewBox="0 0 576 512"
+                onmouseenter='document.getElementById("CLUSTERCREATOR::load-tip").style.display="flex";' 
+                onmouseleave='document.getElementById("CLUSTERCREATOR::load-tip").style.display="none";'>
+                <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' id='CLUSTERCREATOR::save-db' viewBox="0 0 512 512"
+                onmouseenter='document.getElementById("CLUSTERCREATOR::db-tip").style.display="flex";' 
+                onmouseleave='document.getElementById("CLUSTERCREATOR::db-tip").style.display="none";'>
+                <path d="M448 80v48c0 44.2-100.3 80-224 80S0 172.2 0 128V80C0 35.8 100.3 0 224 0S448 35.8 448 80zM393.2 214.7c20.8-7.4 39.9-16.9 54.8-28.6V288c0 44.2-100.3 80-224 80S0 332.2 0 288V186.1c14.9 11.8 34 21.2 54.8 28.6C99.7 230.7 159.5 240 224 240s124.3-9.3 169.2-25.3zM0 346.1c14.9 11.8 34 21.2 54.8 28.6C99.7 390.7 159.5 400 224 400s124.3-9.3 169.2-25.3c20.8-7.4 39.9-16.9 54.8-28.6V432c0 44.2-100.3 80-224 80S0 476.2 0 432V346.1z"/>
+            </svg>    
+        </div>    
+        <div class="CLUSTERCREATOR_icon-group">   
+            <i class="fa-solid fa-user-large fa-xl" style="margin-top:9px;"></i>
+            <div style="width: 2px; height: 34px; background-color: black; margin: -9px 6px 0px -8px"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' id='CLUSTERCREATOR::client-save' viewBox="0 0 448 512"
+                onmouseenter='document.getElementById("CLUSTERCREATOR::client-save-tip").style.display="flex";' 
+                onmouseleave='document.getElementById("CLUSTERCREATOR::client-save-tip").style.display="none";'
+                onclick="ClusterCreatorUsersDomains_Save()">
+                <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/>
+            </svg>       
+            <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' id='CLUSTERCREATOR::client-load' viewBox="0 0 576 512"
+                onmouseenter='document.getElementById("CLUSTERCREATOR::client-load-tip").style.display="flex";' 
+                onmouseleave='document.getElementById("CLUSTERCREATOR::client-load-tip").style.display="none";'
+                onclick="ClusterCreatorUsersDomains_ShowDialog()">
+                <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
+            </svg>              
+        </div>         
+        <div class="CLUSTERCREATOR_icon-group" style="height:40px;">    
+            <p class="tw_h4" id="CLUSTERCREATOR::curr-settings-profile-indicator"> Current profile: Default</p>          
+            <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' viewBox="0 0 512 512"
+                onmouseenter='document.getElementById("CLUSTERCREATOR::settings-profile-tip").style.display="flex";' 
+                onmouseleave='document.getElementById("CLUSTERCREATOR::settings-profile-tip").style.display="none";'
+                onclick="ClusterCreator_ShowSettingsDialog()">
+                <path d="M142.9 142.9c-17.5 17.5-30.1 38-37.8 59.8c-5.9 16.7-24.2 25.4-40.8 19.5s-25.4-24.2-19.5-40.8C55.6 150.7 73.2 122 97.6 97.6c87.2-87.2 228.3-87.5 315.8-1L455 55c6.9-6.9 17.2-8.9 26.2-5.2s14.8 12.5 14.8 22.2l0 128c0 13.3-10.7 24-24 24l-8.4 0c0 0 0 0 0 0L344 224c-9.7 0-18.5-5.8-22.2-14.8s-1.7-19.3 5.2-26.2l41.1-41.1c-62.6-61.5-163.1-61.2-225.3 1zM16 312c0-13.3 10.7-24 24-24l7.6 0 .7 0L168 288c9.7 0 18.5 5.8 22.2 14.8s1.7 19.3-5.2 26.2l-41.1 41.1c62.6 61.5 163.1 61.2 225.3-1c17.5-17.5 30.1-38 37.8-59.8c5.9-16.7 24.2-25.4 40.8-19.5s25.4 24.2 19.5 40.8c-10.8 30.6-28.4 59.3-52.9 83.8c-87.2 87.2-228.3 87.5-315.8 1L57 457c-6.9 6.9-17.2 8.9-26.2 5.2S16 449.7 16 440l0-119.6 0-.7 0-7.6z"/>
+            </svg>            
+        </div>                 
+        <div id='CLUSTERCREATOR::save-tip' style='position:absolute;top:42px;display:none;background-color:white;border:1px solid black;color:black;;
+            padding:20 20 20 20; word-wrap: normal; z-index:1; font-size:14px'> Save cluster on JSON format              
+        </div>   
+        <div id='CLUSTERCREATOR::load-tip' style='position:absolute; top:42px;left:32px; display:none;background-color:white;border:1px solid black;color:black;;
+            padding:20 20 20 20; word-wrap: normal; z-index:1;font-size:14px'> Load cluster from JSON file              
+        </div> 
+        <div id='CLUSTERCREATOR::db-tip' style='position:absolute;top:42px;left:66px; display:none; background-color:white;border:1px solid black; color:black;;
+            padding:20 20 20 20; word-wrap: normal; z-index:1;font-size:14px'> Load\Save a cluster on the server's database            
+        </div>
+        <div id='CLUSTERCREATOR::settings-profile-tip' style='position:absolute;top:42px;left:260px; display:none; background-color:white;border:1px solid black; color:black;;
+            padding:20 20 20 20; word-wrap: normal; z-index:1;font-size:14px'> Select the settings to use for all tasks          
+        </div>               
+        <div id='CLUSTERCREATOR::save-dialog' name='DASHBOARD::hide-me' style='position:absolute; top:0px; left:0px; display:none; background-color:white; color:black;
+            padding:20 20 20 20; word-wrap:normal; z-index:1; gap:20px; border:1px solid black; height:600px; flex-direction: column;'>
+            <div style='display:flex;flex-direction:column; width:400px'> 
+                <h6>Update\Load\Delete cluster</h6>
+                <div id='CLUSTERCREATOR::save-dialog-list' style='display:flex;flex-direction:column; overflow-y:auto; text-transform:none; gap:0px; margin-top:20px;
+                height:380px; padding: 2 2 2 2'>                     
+                </div> 
+            </div>   
+            <div class='spacer'></div>           
+            <div style='display:flex;flex-direction:column; width:270px'> 
+                <h6>Create new cluster</h6>
+                <input id='CLUSTERCREATOR::save-dialog-new' type='text' placeholder='type the new cluster name and hit enter' class='form-control' style='border:none; border-bottom:1px solid lightgray;'>
+                </input>
+            </div>               
+            <progress id='CLUSTERCREATOR::db-dialog-progress' max="100" style="width:100%"></progress>      
+        </div> 
+        <input type='file' accept='.json' id='CLUSTERCREATOR::load-dialog' style='display:none'></input>
+
+        <div id='CLUSTERCREATOR::client-save-tip' style='position:absolute;top:42px;left:162px;display:none;background-color:white;border:1px solid black;color:black;;
+            padding:20 20 20 20; word-wrap: normal; z-index:1; font-size:14px'> Save a cluster assigned to client on the server database              
+        </div>   
+        <div id='CLUSTERCREATOR::client-load-tip' style='position:absolute; top:42px;left:200px; display:none;background-color:white;border:1px solid black;color:black;;
+            padding:20 20 20 20; word-wrap: normal; z-index:1;font-size:14px'> Load client owned clusters from the server database             
+        </div>           
+    </div>
+
+    <div style='display:flex; width:100%; margin-top:20px; gap:14px; padding-bottom:2px; border-bottom:1px solid lightgray;'>
+        <h4 id='CLUSTERCREATOR::tab-item-Keywords' onclick='CLUSTERCREATOR_SelectTab(this)' class='CLUSTERCREATOR_tab-item' style='border-bottom:2px solid #6f42c1'>Keywords</h2>
+        <h4 id='CLUSTERCREATOR::tab-item-Outlines' onclick='CLUSTERCREATOR_SelectTab(this)' class='CLUSTERCREATOR_tab-item'>Outlines</h2> 
+        <h4 id='CLUSTERCREATOR::tab-item-Links'    onclick='CLUSTERCREATOR_SelectTab(this)' class='CLUSTERCREATOR_tab-item'>Links</h2>  
+        <h4 id='CLUSTERCREATOR::tab-item-Settings' onclick='CLUSTERCREATOR_SelectTab(this)' class='CLUSTERCREATOR_tab-item' style='display:none'>Settings</h2>        
+        <h4 id='CLUSTERCREATOR::tab-item-Prompts' onclick='CLUSTERCREATOR_SelectTab(this)' class='CLUSTERCREATOR_tab-item' style='display:none'>Prompts</h2>        
+    </div> 
+</div>  
+
+<script>        
+    async function ClusterCreator_ShowSettingsDialog() {
+        let _this = this;
+        this.AddProfile = async (profile) => {
+            let html = /*html*/`
+            <button class="tw_button-alt" style="width:100%;" data-self="commit">
+                ${profile}
+            </button>
+            `
+            console.log(profile, elements);  
+            let new_profile = bff(html).AppendTo(elements.profiles); 
+            new_profile.commit.onclick = async () => {
+                DASHBOARD.SetSettingsProfile(profile);
+                await DASHBOARD_UpdateSettings();
+                elements.container.remove();
+                document.getElementById('CLUSTERCREATOR::curr-settings-profile-indicator').innerHTML = `Current profile: ${profile}`;
+            }       
+        }
+
+        let html = /*html*/`
+        <div class="tw_dialog-container" data-self="container" data-data="{}">
+            <div class="tw_dialog tw_Groups-Container" style="width:500px;;height:650px;flex-direction:column;border-radius:8px">
+                <div class="tw_h3" style="margin-top:0px; margin-left:0px;width:100%; position:relative;margin-bottom:-10px">Profiles</div>
+                <p class="tw_h4" style="margin-bottom:20px;">Select a profile to use for all tasks</p>
+                <div style="display:flex;flex-direction:column;gap:10px;height:600px;overflow-y:auto;margin-bottom:20px" data-self="profiles">
+                    <button class="tw_button" style="width:100%;" data-self="Default">
+                        Default profile
+                    </button>
+                </div>
+                <div style="display:flex;flex-direction:row-reverse;gap:20px;">
+                    <button class="tw_button" style="width:100px;" data-self="close">
+                        Close
+                    </button>
+                    <div class="loader" style="width:26px; height:26px; margin-top:4px;" data-self="spinner"></div>
+                </div>
+            </div>        
+        </div>`
+        let elements = bff(html).AppendTo(document.body);
+        elements.container.style.display = 'flex';
+        elements.spinner.style.display   = 'flex'
+        let profiles = await DASHBOARD_Fetch('/Settings-Profiles/list', DASHBOARD_FetchOPtions());
+        for (let profile of profiles.Profiles){
+            _this.AddProfile(profile)
+        }
+        
+        elements.spinner.style.display = 'none'
+        elements.close.onclick = () => {
+            elements.container.remove();
+        }
+        elements.Default.onclick = async () => {
+            DASHBOARD.SetSettingsProfile('');
+            await DASHBOARD_UpdateSettings();
+            elements.container.remove();
+            document.getElementById('CLUSTERCREATOR::curr-settings-profile-indicator').innerHTML = 'Current profile: Default';
+        }   
+    }    
+
+    document.getElementById('CLUSTERCREATOR::save-db').onclick = async function(event){
+        event.stopPropagation();        
+        document.getElementById('CLUSTERCREATOR::save-dialog-new').value               = '';
+        document.getElementById('CLUSTERCREATOR::save-dialog').style.display           = 'flex';
+        var fetch_options  = DASHBOARD_FetchOPtions();  
+        var reply          = await DASHBOARD_Fetch('/cluster_creator-list', fetch_options);
+        fetch_options.body = JSON.stringify({}); 
+        document.getElementById('CLUSTERCREATOR::save-dialog-list').innerHTML = '';
+        for (name of reply.Reply) {
+            let div       = document.createElement('div');
+            let el        = document.createElement('p');
+            div.style     = 'display:flex; padding 2 2 2 2; gap:4px; border-bottom:1px dotted black;'
+            el.className  = 'DASHBOARD_ClicableText';
+            el.innerHTML  = name;
+            el.style      = 'margin: 0 0 0 0; font-size: 14px';
+            let spacer    = document.createElement('div');
+            spacer.style  = 'flex-grow: 1'
+            div.appendChild(el)
+            div.appendChild(spacer)
+            div.innerHTML += '<svg xmlns="http://www.w3.org/2000/svg" class="DASHBOARD_icon" viewBox="0 0 448 512" style="padding-top:4px"> \
+                <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>'
+            div.innerHTML += '<svg xmlns="http://www.w3.org/2000/svg" class="DASHBOARD_icon" viewBox="0 0 448 512" style="padding-top:4px"> \
+                <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/></svg>'  
+            div.innerHTML += '<svg xmlns="http://www.w3.org/2000/svg" class="DASHBOARD_icon" viewBox="0 0 448 512" style="padding-top:4px"> \
+                <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/></svg>'          
+            document.getElementById('CLUSTERCREATOR::save-dialog-list').appendChild(div);
+            div.children[3].onclick = function(event){
+                event.stopPropagation();
+                document.getElementById('CLUSTERCREATOR::db-dialog-progress').style.visibility = 'visible';
+                CLUSTERCREATOR_SaveDBCluster(el.innerHTML)
+            }
+            div.children[2].onclick = async function(event){
+                event.stopPropagation();
+                fetch_options.body = JSON.stringify({Request : {Name : el.innerHTML}}); 
+                await DASHBOARD_Fetch('/cluster_creator-delete', fetch_options);
+                let onclick = document.getElementById('CLUSTERCREATOR::save-db').onclick;
+                onclick(event);
+            }
+            div.children[4].onclick = async function(event){
+                event.stopPropagation();                              
+                document.getElementById('CLUSTERCREATOR::save-dialog').style.display = 'none';
+                CLUSTERCREATOR_msg('Loading cluster and updating the UI')
+                CLUSTERCREATOR_LoadDBCluster(el.innerHTML)
+            }
+        }      
+        document.getElementById('CLUSTERCREATOR::save-dialog-new').onclick = function(event){
+                event.stopPropagation();  
+        }
+        document.getElementById('CLUSTERCREATOR::save-dialog-new').onkeypress = async function(event){
+            if (event.key === 'Enter'){
+                if (reply.Reply.includes(this.value)){
+                    alert(`Cluster "${this.value}" already exists`);
+                    this.value = '';
+                    return
+                } 
+                document.getElementById('CLUSTERCREATOR::db-dialog-progress').style.visibility = 'visible';
+                CLUSTERCREATOR_SaveDBCluster(this.value)
+            }
+        }  
+        document.getElementById('CLUSTERCREATOR::db-dialog-progress').style.visibility = 'hidden';      
+        return;       
+    }
+    document.getElementById('CLUSTERCREATOR::load').onclick = function() {  
+        var diag      = document.getElementById('CLUSTERCREATOR::load-dialog')        
+        diag.onchange = function() {            
+            var reader       = new FileReader();
+            reader.onloadend = function() {                              
+                KEYWORDS.FromJson(JSON.parse(this.result));  
+                CLUSTERCREATOR_SETTINGS.FromJson(JSON.parse(this.result))
+                CLUSTERCREATOR_SelectTab(document.getElementById(`CLUSTERCREATOR::tab-item-Keywords`))                
+                CLUSTERCREATOR_msg('', 'Finished loading file')  
+                var parent   = document.getElementById('CLUSTERCREATOR::load-dialog').parentElement;
+                parent.removeChild( document.getElementById('CLUSTERCREATOR::load-dialog'));
+                var newdiag    = document.createElement('input') ;
+                newdiag.type   = 'file'; 
+                newdiag.id     = 'CLUSTERCREATOR::load-dialog';
+                newdiag.style  = 'display:none'; 
+                newdiag.accept = '.json'
+                parent.appendChild(newdiag);                          
+            }
+            CLUSTERCREATOR_msg('Loading json file and updating the UI')
+            reader.readAsText(this.files[0], 'UTF-8');                     
+        }
+        diag.click();       
+    }
+    document.getElementById('CLUSTERCREATOR::save').onclick = function() {  
+        KEYWORDS.ToJson();     
+    }
+    function CLUSTERCREATOR_msg(msg, console_msg=''){
+        document.getElementById('CLUSTERCREATOR::msg').innerHTML         = msg;
+        document.getElementById('CLUSTERCREATOR::spinner').style.display = msg === '' ? 'None' : 'block';
+        var console =  document.getElementById('KEYWORDS::ubuntu-console');
+        if (console != null && (msg !== '' || console_msg !== ''))
+            console.value += console_msg === '' ? msg : console_msg;
+            console.value += '\n';
+    }
+    async function CLUSTERCREATOR_LoadDBCluster(name){
+        let fetch_options  = DASHBOARD_FetchOPtions()
+        fetch_options.body = JSON.stringify({Request : {Name :name}}); 
+        let reply = await DASHBOARD_Fetch('/cluster_creator-load', fetch_options);        
+        KEYWORDS.FromJson(JSON.parse(reply.Reply));  
+        CLUSTERCREATOR_SETTINGS.FromJson(JSON.parse(reply.Reply))
+        CLUSTERCREATOR_msg('', 'Finished loading cluster')
+    }
+    async function CLUSTERCREATOR_SaveDBCluster(name){
+        let fetch_options  = DASHBOARD_FetchOPtions()
+        fetch_options.body = JSON.stringify({Request : {Name : name, 'Data' : KEYWORDS.ToDB()}}); 
+        await DASHBOARD_Fetch('/cluster_creator-save', fetch_options);
+        document.getElementById('CLUSTERCREATOR::save-dialog').style.display = 'none';
+    }
+</script>
+
+{% endblock %}  
+
+{% block tool_content %} 
+    {% if acess_flag_cluster_creator %} 
+        {% set page_name = "cluster" %}
+        {% include 'Keywords.html' %}        
+        {% include 'OutlineGen.html' %}
+        {% include 'Links.html' %}
+        {% include 'ClusterCreatorSettings.html' %}       
+        {% include 'ClusterCreatorPrompts.html' %}
+    {% else %}
+        <h1 class='az-content-title DASHBOARD_Noaccess'>You don't have access to this tool</h1>
+    {% endif %}
+
+<script>
+    function CLUSTERCREATOR_SelectTab(tab, kword=null) {        
+        for (const prefix of ['OUTLINEGEN', 'KEYWORDS', 'LINKS', 'CLUSTERCREATOR-SETTINGS', 'CLUSTERCREATOR-PROMPTS'])        
+            document.getElementById(`${prefix}::root`).style.display = 'none';
+        for (const sulfix of ['Keywords', 'Outlines', 'Links', 'Settings', 'Prompts']) 
+            document.getElementById(`CLUSTERCREATOR::tab-item-${sulfix}`).style.border = "none"
+        tab.style.borderBottom = '2px solid black'
+        src = {Keywords : 'KEYWORDS',  Outlines : 'OUTLINEGEN', Links: 'LINKS',  Settings : 'CLUSTERCREATOR-SETTINGS', Prompts : 'CLUSTERCREATOR-PROMPTS'}
+        document.getElementById(`${src[tab.innerHTML]}::root`).style.display = 'flex';   
+        if (tab.innerHTML === 'Outlines'){
+            OUTLINEGEN_ImportKeywords(kword);
+        }   
+        if (tab.innerHTML === 'Prompts'){
+            CLUSTERCREATOR_PROMPTS_InitUI();
+        }        
+    }
+    CLUSTERCREATOR_SelectTab(document.getElementById(`CLUSTERCREATOR::tab-item-Keywords`))
+</script>    
+{% endblock %}

@@ -1,0 +1,31 @@
+<style>   
+    .ubuntu_console
+    {
+        /*{}*/    
+        /*margin: auto;     */
+        resize: none;
+        border: none;
+        background-color:#481036;
+        color:#eeeeee;
+        font-family: monospace;
+        outline: none;
+        font-size:12px;
+        display:inline-block;        
+    } 
+    .utuntu_console:focus
+    {
+        border: none;   
+        outline: none;  
+    } 
+    .console_container    
+    {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+</style>  
+<meta charset="UTF-8"></meta>
+<div id=${_domid} class="console_container">     
+    <textarea id="{_text_area_id}" spellcheck="false" readonly class="ubuntu_console">
+        ${value}
+    </textarea>      
+</div>

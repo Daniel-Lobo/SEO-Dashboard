@@ -1,0 +1,214 @@
+{% extends 'dashboard.html' %}
+
+{% block breadcrumbs %}  
+    <span>Admin Tools</span>
+    <span>Users management</span>    
+{% endblock %}    
+
+{% block tool_content %} 
+<style>
+    .USERS_Titles{
+        text-align: left;
+    }
+    .USERS_Containers{
+        width:  600px;
+        height: 100%;       
+    }
+    .USERS_ScrollContainer{
+        width:  600px;
+        height: 80%;   
+        overflow-y:auto;    
+    }
+    .USERS_Name{
+        cursor : pointer;
+    }
+    .USERS_Name:hover{
+        color : #6f42c1;
+    }
+    .USERS_Row{
+        display: flex;        
+    }
+    .USERS_Msg{
+        margin-left: 20px; 
+        display    : None;      
+    }    
+</style>    
+
+<div class='USERS_Containers'>
+    <div class='USERS_Row'>
+        <h2 class='az-content-title USERS_Titles'>Users list</h2>        
+        <h4 id='USERS::msg' class='az-content-title USERS_Titles user_msg'>Loading users</h4>
+        <div id='USERS::spinner' class="DASHBOARD_Loader"></div>
+    </div>    
+    <div class="USERS_ScrollContainer">
+        <div class="table-responsive">
+            <table class="table mg-b-0">
+                <thead>
+                    <tr>
+                    <th>Name</th>
+                    <th>Email</th>              
+                    </tr>
+                </thead>
+                <tbody id='USERS::table'>             
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>  
+<div style='width: 180px;'> </div> 
+<div class='USERS_Containers' disabled='true'>
+    <h2 class='az-content-title USERS_Titles'>User access rights</h2>  
+    <div id='USERS::user_name' class="az-content-label mg-b-5">User: Admin</div>  
+    <div id='USERS::email' style='display:none'>...</div>  
+    <div style='height: 50px;'> </div> 
+    <label class="ckbox DASHBOARD_CheckboxLabel">
+        <input id='USERS::access_admin' disabled='disabled' onclick='javascript:USERS_AccessFlagsChanged(this);' type="checkbox"><span>Admin</span>
+    </label>
+    <label class="ckbox DASHBOARD_CheckboxLabel">
+        <input id='USERS::access_outline' disabled='disabled' onclick='javascript:USERS_AccessFlagsChanged(this);' type="checkbox"><span>Outline generator</span>
+    </label>
+    <label class="ckbox DASHBOARD_CheckboxLabel">
+        <input id='USERS::access_cluster'  disabled='disabled'onclick='javascript:USERS_AccessFlagsChanged(this);' type="checkbox"><span>Topic cluster creator</span>
+    </label> 
+    <label class="ckbox DASHBOARD_CheckboxLabel">
+        <input id='USERS::access_entity'  disabled='disabled'onclick='javascript:USERS_AccessFlagsChanged(this);' type="checkbox"><span>Entity generator</span>
+    </label>   
+    <label class="ckbox DASHBOARD_CheckboxLabel">
+        <input id='USERS::access_domain' disabled='disabled' onclick='javascript:USERS_AccessFlagsChanged(this);' type="checkbox"><span>Domain filter</span>
+    </label>   
+    <label class="ckbox DASHBOARD_CheckboxLabel">
+        <input id='USERS::access_article' disabled='disabled' onclick='javascript:USERS_AccessFlagsChanged(this);' type="checkbox"><span>Content creator</span>
+    </label> 
+    <label class="ckbox DASHBOARD_CheckboxLabel">
+        <input id='USERS::access_links' disabled='disabled' onclick='javascript:USERS_AccessFlagsChanged(this);' type="checkbox"><span>Internal links</span>
+    </label>  
+    <label class="ckbox DASHBOARD_CheckboxLabel">
+        <input id='USERS::access_gposting' disabled='disabled' onclick='javascript:USERS_AccessFlagsChanged(this);' type="checkbox"><span>Guest posting</span>
+    </label>  
+    <label class="ckbox DASHBOARD_CheckboxLabel">
+        <input id='USERS::access_dtuning' disabled='disabled' onclick='javascript:USERS_AccessFlagsChanged(this);' type="checkbox"><span>Dataset tuning</span>
+    </label>   
+    <label class="ckbox DASHBOARD_CheckboxLabel">
+        <input id='USERS::access_aiwords' disabled='disabled' onclick='javascript:USERS_AccessFlagsChanged(this);' type="checkbox"><span>AI Words</span>
+    </label> 
+</div> 
+
+
+<script>
+    async function USERS_AccessFlagsChanged(src){
+        var flags     = 0;
+        const ADMIN   = 0x80000000;
+        const OUTLINE = 0x00000001;
+        const CLUSTER = 0x00000002;
+        const ENTITY  = 0x00000004;
+        const DOMAIN  = 0x00000008;
+        const ARTICLE = 0x00000010;
+        const LINKS   = 0x00000020;
+        const GUEST   = 0x00000040;
+        const TUNING  = 0x00000080;
+        const AIWORDS = 0x00000100;
+        flags |= document.getElementById('USERS::access_admin').checked    == true ? ADMIN   : 0;
+        flags |= document.getElementById('USERS::access_outline').checked  == true ? OUTLINE : 0;
+        flags |= document.getElementById('USERS::access_cluster').checked  == true ? CLUSTER : 0;
+        flags |= document.getElementById('USERS::access_entity').checked   == true ? ENTITY  : 0;
+        flags |= document.getElementById('USERS::access_domain').checked   == true ? DOMAIN  : 0;
+        flags |= document.getElementById('USERS::access_article').checked  == true ? ARTICLE : 0;
+        flags |= document.getElementById('USERS::access_links').checked    == true ? LINKS   : 0;
+        flags |= document.getElementById('USERS::access_gposting').checked == true ? GUEST   : 0;
+        flags |= document.getElementById('USERS::access_dtuning').checked  == true ? TUNING  : 0;
+        flags |= document.getElementById('USERS::access_aiwords').checked  == true ? AIWORDS : 0;
+        if (flags & CLUSTER){
+            flags |= OUTLINE;
+        }
+        
+        try {  
+            const options   = {method : 'POST', headers : {'Content-Type': 'application/json', 'Accept' : 'application/json'}};
+            const user_name =   document.getElementById('USERS::user_name').innerHTML.split('User: ')[1];
+            const email     =   document.getElementById('USERS::email').innerHTML;    
+            console.log(user_name);      
+            console.log(email);       
+            const response  = await fetch(`/set_user_acess_flags?user_name=${user_name}&email=${email}&access_flags=${flags}`, options);
+            var user        = await response.json();
+        } catch (error) {return}; 
+
+        await USERS_ShowUserAcessFlags({innerHTML : user})
+    }
+    async function USERS_ShowUserAcessFlags(src){
+        try {
+            const options  = {method : 'POST', headers : {'Content-Type': 'application/json', 'Accept' : 'application/json'}};
+            const response = await fetch(`/get_user?user_name=${src.innerHTML}`, options);
+            var user       = await response.json();
+        } catch (error) {return}; 
+
+        const ADMIN   = 0x80000000;
+        const OUTLINE = 0x00000001;
+        const CLUSTER = 0x00000002;
+        const ENTITY  = 0x00000004;
+        const DOMAIN  = 0x00000008;
+        const ARTICLE = 0x00000010;
+        const LINKS   = 0x00000020;
+        const GUEST   = 0x00000040;
+        const TUNING  = 0x00000080;
+        const AIWORDS = 0x00000100;
+        
+        if ('err' in user) {return}; 
+        var access = user['access_flags'];          
+       
+        document.getElementById('USERS::access_admin').disabled    = false;  
+        document.getElementById('USERS::access_outline').disabled  = false;  
+        document.getElementById('USERS::access_cluster').disabled  = false;   
+        document.getElementById('USERS::access_entity').disabled   = false;   
+        document.getElementById('USERS::access_domain').disabled   = false;  
+        document.getElementById('USERS::access_article').disabled  = false;  
+        document.getElementById('USERS::access_links').disabled    = false;  
+        document.getElementById('USERS::access_gposting').disabled = false;  
+        document.getElementById('USERS::access_gposting').disabled = false;  
+        document.getElementById('USERS::access_dtuning').disabled  = false;  
+        document.getElementById('USERS::access_aiwords').disabled  = false;  
+
+
+        document.getElementById('USERS::user_name').innerHTML     = `User: ${user.user_name}`;  
+        document.getElementById('USERS::email').innerHTML         = `${user.email}`;  
+        document.getElementById('USERS::access_admin').checked    = access & ADMIN   ? true : false;  
+        document.getElementById('USERS::access_outline').checked  = access & OUTLINE ? true : false;  
+        document.getElementById('USERS::access_cluster').checked  = access & CLUSTER ? true : false;   
+        document.getElementById('USERS::access_entity').checked   = access & ENTITY  ? true : false;   
+        document.getElementById('USERS::access_domain').checked   = access & DOMAIN  ? true : false;           
+        document.getElementById('USERS::access_article').checked  = access & ARTICLE ? true : false;       
+        document.getElementById('USERS::access_links').checked    = access & LINKS   ? true : false;    
+        document.getElementById('USERS::access_gposting').checked = access & GUEST   ? true : false;    
+        document.getElementById('USERS::access_dtuning').checked  = access & TUNING  ? true : false;   
+        document.getElementById('USERS::access_aiwords').checked  = access & AIWORDS ? true : false;       
+    }
+
+    function USERS_ShowWidgets(display='block'){
+        document.getElementById('USERS::spinner').style.display = display;  
+        document.getElementById('USERS::msg').style.display     = display;        
+    }
+
+    async function USERS_PopulateUsersList() {
+        try {
+            const response = await fetch('/list_users', base.fetch_options);
+            var users      = await response.json();
+        } catch (error) {return};    
+
+        var container  = document.getElementById('USERS::table');        
+        for (const [user, user_data] of Object.entries(users))
+        {
+            container.innerHTML += `
+            <tr>
+                <th class='USERS_Name' scope='row' onclick='javascript:USERS_ShowUserAcessFlags(this)'>${user}</th>
+                <td>${user_data.email}</td>    
+                <td><svg onclick="window.location='/delete_user?user_name=${user}'"
+                    xmlns="http://www.w3.org/2000/svg" name="KEYWORD_delete" class="DASHBOARD_icon-small" viewBox="0 0 448 512"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
+                </td>              
+            </tr>
+            `
+        }         
+        USERS_ShowWidgets('None');           
+    }
+    USERS_ShowUserAcessFlags({innerHTML : 'admin'})
+    USERS_ShowWidgets('block');
+    USERS_PopulateUsersList();
+</script>
+{% endblock %}

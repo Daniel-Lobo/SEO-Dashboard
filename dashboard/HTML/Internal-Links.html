@@ -1,0 +1,50 @@
+{% extends 'dashboard.html' %}
+
+{% block breadcrumbs %}  
+<div style='display:flex; flex-direction: column; width:100%; margin-right:20px; margin-bottom:-16px;'>
+    <div style='display:flex; margin-bottom:20px; text-transform: uppercase;'> 
+        <span>SEO Tools</span>
+        <span>Interal Links</span>   
+    </div>        
+    <h1 class='az-content-title'>Internal Links</h1>
+</div>    
+{% endblock %}  
+
+{% block tool_content %} 
+    {% if acess_flag_links_gen %} 
+<div style='display:flex;flex-direction:column;'>
+    <input type='file' accept='.csv' id='INTERNAL-LINKS::load-dialog' style='display:none'></input>
+    <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' id='INTERNAL-LINKS::load' viewBox="0 0 576 512"
+        onclick="INTERNAL_LINKS_LoadCSV()">
+        <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
+    </svg>
+</div>
+<div style='flex-grow: 100;'></div>
+
+<script>
+function INTERNAL_LINKS_LoadCSV(){
+    var diag = document.getElementById('INTERNAL-LINKS::load-dialog')        
+    diag.onchange = function() {            
+        var reader       = new FileReader();
+        reader.onloadend = async function() {             
+            let options    = DASHBOARD_FetchOPtions();
+            options.body   = JSON.stringify({CSV : this.result});
+            console.log((await DASHBOARD_Fetch('internal_links-parse_csv', options)).Reply);   
+            var parent     = document.getElementById('INTERNAL-LINKS::load-dialog').parentElement;
+            parent.removeChild(document.getElementById('INTERNAL-LINKS::load-dialog'));
+            var newdiag    = document.createElement('input') ;
+            newdiag.type   = 'file'; 
+            newdiag.id     = 'INTERNAL-LINKS::load-dialog';
+            newdiag.style  = 'display:none'; 
+            newdiag.accept = '.csv'
+            parent.appendChild(newdiag);                          
+        }            
+        reader.readAsText(this.files[0], 'UTF-8');                     
+    }
+    diag.click(); 
+}
+</script>
+    {% else %}
+        <h1 class='az-content-title DASHBOARD_Noaccess'>You don't have access to this tool</h1>
+    {% endif %}
+{% endblock %}

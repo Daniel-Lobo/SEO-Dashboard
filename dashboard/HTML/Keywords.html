@@ -1,0 +1,2067 @@
+<style>
+    :root {
+        --KEYWORDS-bg-color: #f9f9f9;
+    }
+    .KEYWORDS_base-row{
+        display       : flex;
+        flex-direction: row;
+        width         : 100%;
+        height        : calc(100% - 20px); 
+        gap           : 0px;
+        position      : relative;
+        background-color : var(--KEYWORDS-bg-color) ;
+        overflow: auto;
+    }
+    .KEYWORDS_kwords-list-container{
+        display        : flex;
+        flex-direction : column;
+        width          : 30%;
+        height         : calc(100% - 20px); 
+        gap            : 10px;      
+        margin         : 10px;
+        padding-bottom : 10px
+    }
+    .KEYWORDS_kwords-list-column{
+        display       : flex;
+        flex-direction: column;
+        width         : 100%;
+        height        : 100%;
+        overflow-y    : auto;
+        background-color : white ;
+        padding       : 10 10 10 10;
+    }
+    .KEYWORDS_kword-views-container{
+        display       : flex;
+        flex-direction: column;
+        width         : 36%;
+        height        : 100%;     
+        margin-left   : 0px;      
+        margin-right  : 0px;   
+        padding       : 10 10 10 10;  
+        background-color : var(--KEYWORDS-bg-color) ;      
+    }
+    .KEYWORDS_kword-views-column{
+        display       : flex;
+        flex-direction: column;
+        width         : 100%;
+        height        : 100%;
+        overflow-y    : auto ;  
+        scrollbar-color: grey var(--KEYWORDS-bg-color) ;;
+    }
+    .KEYWORDS_keyword-fields-container {
+        display       : flex;
+        flex-direction: column;
+        width         : 100%;           
+    }
+    .KEYWORDS_apply-urlr{        
+        fill           : grey;
+        width          : 3em;
+        height         : 3em;        
+    }
+    .KEYWORDS_apply-urlr:hover{
+        fill           :  black;
+    }
+    .KEYWORDS_gdoc-all{        
+        fill           : white;
+        width          : 1.5em;
+        height         : 1.5em;        
+    }
+    .KEYWORD_gen-button{
+        background-color: white;
+        border          : 1px solid #3355ff;
+        text-transform  : uppercase; 
+        padding-top     : 0px;   
+        padding-bottom  : 0px;  
+        color           : #3355ff    
+    }    
+    .KEYWORD_gen-button:hover{      
+        border          : 1px solid #0039e6;          
+        color           : #0039e6    
+    }   
+    .KEYWORD_help-icon{
+        fill         :black;
+        border       : 1px solid black;
+        border-radius: 50%;     
+        margin-top   : 0px;
+        margin-left  : 6px;        
+    }
+    .KEYWORD_help-icon-button{
+        background-color: transparent;
+        border          : none;
+        cursor          : pointer;
+        margin          : 0 0 0 0;
+        padding         : 0 0 0 0;
+        height          : 20px;
+    }     
+</style>
+<div id="KEYWORDS::select-cluster-dialog" class="tw_dialog-container" name='DASHBOARD::modal' style="z-index: 5"
+	onclick='event.stopPropagation()'>
+	<div class="tw_Ctrl-Group tw_dialog" style="width:360px;height:440px">
+        <p class='tw_h3' style="margin-bottom:0px"> Clusters</p>	
+        <p class='tw_h4' style="margin-top:-10px; margin-bottom:10px;"> Select the additional clusters to include as possible links targets</p>
+        <div id="KEYWORDS::select-cluster-items" style="display:flex;flex-direction:column;flex-grow:1;overflow-y: auto;height:270px;margin-bottom: 20px;"> 
+        </div>          
+        <div style="display:flex; flex-direction:row-reverse; width:100%; gap:6px;"> 
+            <button id='KEYWORDS::select-cluster-apply' class="tw_button-alt">Apply</button>
+            <button onclick="document.getElementById('KEYWORDS::select-cluster-dialog').style.display='none'" class="tw_button">Cancel</button>
+        </div>     
+    </div>
+</div>       
+
+<div id='KEYWORDS::root' class='KEYWORDS_base-row'>
+    {% include 'ClusterContentCreator.html' %}
+    <div class='KEYWORDS_kwords-list-container'> 
+        <div id='KEYWORDS::list' class='KEYWORDS_kwords-list-column tw_Ctrl-Group'> 
+        </div> <!-- KEYWORDS_kwords-list-column -->         
+        <input id='KEYWORDS::add' class="tw_input" style='border:none; border-bottom: 1px solid lightgray;' placeholder='Add keyword' type="text">    
+        <div style='display:flex; gap: 6px'>       
+            <input id='KEYWORDS::url' class="tw_input" style='border:none; border-bottom: 1px solid lightgray;' placeholder='Base Url' type="text">             
+            <svg id='KEYWORDS::apply-url' xmlns="http://www.w3.org/2000/svg" class="KEYWORDS_apply-urlr" viewBox="0 2 24 24">
+                <path/>
+                <path d="M4.698 4.034l16.302 7.966l-16.302 7.966a.503 .503 0 0 1 -.546 -.124a.555 .555 0 0 1 -.12 -.568l2.468 -7.274l-2.468 -7.274a.555 .555 0 0 1 .12 -.568a.503 .503 0 0 1 .546 -.124z" />
+                <path d="M6.5 12h14.5"/>
+            </svg>
+        </div>     
+        <div style='display:flex; flex-direction:row; width:100%; gap:6px;'> 
+        </div>                   
+    </div> <!-- KEYWORDS_kwords-list-container -->   
+
+    <div class='KEYWORDS_kword-views-container'> 
+        <div id='KEYWORDS::views' class='KEYWORDS_kword-views-column'> 
+        </div> <!-- KEYWORDS_kword-views-column -->          
+    </div>    
+    
+    <div style='display:flex; flex-direction:column;height:100%;width:33%;padding:10 10 10 10; gap:10px'>
+
+        <div style="display:flex; flex-direction:column;gap:10px;height: 100%;">   
+            <div class="tw_Ctrl-Group" style="display:flex; flex-direction:column;  gap:10px">    
+                <h3 class="tw_h3">Additional Keywords</h3>   
+                <button class="tw_button-alt" onclick="ADDITIONAL_KEYWORDS_V2.Edit()">Cluster</button>
+                <button class="tw_button-alt" onclick="DOMAIN_KEYWORS_V2.Edit()">Siblings</button>
+                <button class="tw_button-alt" onclick="DOMAIN_OWNED_KEYWORS.Edit()">Domain</button>       
+            </div>    
+        </div>    
+
+        <div style="display: flex; flex-direction: row; margin-bottom: 10px; height: 100%;" class="tw_Ctrl-Group">
+            <div style='display:flex; flex-direction:column; width:33%; gap:6px;'>                
+                <button id='KEYWORDS::create-article' class='tw_button-alt'>                    
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DASHBOARD_icon-small" style="fill:black">
+                        <path d="M278.5 215.6L23 471c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l57-57 68 0c49.7 0 97.9-14.4 139-41c11.1-7.2 5.5-23-7.8-23c-5.1 0-9.2-4.1-9.2-9.2c0-4.1 2.7-7.6 6.5-8.8l81-24.3c2.5-.8 4.8-2.1 6.7-4l22.4-22.4c10.1-10.1 2.9-27.3-11.3-27.3l-32.2 0c-5.1 0-9.2-4.1-9.2-9.2c0-4.1 2.7-7.6 6.5-8.8l112-33.6c4-1.2 7.4-3.9 9.3-7.7C506.4 207.6 512 184.1 512 160c0-41-16.3-80.3-45.3-109.3l-5.5-5.5C432.3 16.3 393 0 352 0s-80.3 16.3-109.3 45.3L139 149C91 197 64 262.1 64 330l0 55.3L253.6 195.8c6.2-6.2 16.4-6.2 22.6 0c5.4 5.4 6.1 13.6 2.2 19.8z"/>
+                    </svg>
+                    Create article
+                </button>  
+                <button id='KEYWORDS::gdoc-all' class='tw_button-alt'>                                 
+                    <svg xmlns="http://www.w3.org/2000/svg" class="DASHBOARD_icon-small" viewBox="0 0 448 512" style="fill:black">
+                        <path d="M208 0H332.1c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V48c0-26.5 21.5-48 48-48zM48 128h80v64H64V448H256V416h64v48c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48z"/>
+                    </svg>
+                    Export
+                </button>   
+                <button id='KEYWORDS::clipboard-all' class='tw_button-alt'>                         
+                    <svg xmlns="http://www.w3.org/2000/svg" class="DASHBOARD_icon-small" viewBox="0 0 384 512" style="fill:black">
+                        <path d="M280 64h40c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128C0 92.7 28.7 64 64 64h40 9.6C121 27.5 153.3 0 192 0s71 27.5 78.4 64H280zM64 112c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16H320c8.8 0 16-7.2 16-16V128c0-8.8-7.2-16-16-16H304v24c0 13.3-10.7 24-24 24H192 104c-13.3 0-24-10.7-24-24V112H64zm128-8a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"/>
+                    </svg>
+                    Clipboard  
+                </button> 
+                <div style="display:flex;flex-direction: row;width: max-content;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small KEYWORD_help-icon"
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Prompt used to generate facts">
+                        <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                    </svg>
+                    <select id='KEYWORDS::select-facts-prompt' class='tw_input' style='width:130px;margin-left: 10px;'>
+                    <select>
+                </div>            
+            </div>   
+
+            <div style='display:flex; flex-direction:column; width:33%; gap:6px;'>                
+                <button id='KEYWORDS::gen-links' class='tw_button-alt' style='padding: 6 0 6 0;'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="DASHBOARD_icon-small" style="fill:black">
+                        <path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/>
+                    </svg>
+                    Generate links
+                </button> 
+                <button id='KEYWORDS::gen-groups'  onclick='KEYWORDS.GroupKeyWords()' class='tw_button-alt' style='padding: 6 0 6 0;'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="DASHBOARD_icon-small" style="fill:black">
+                        <path d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z"/>
+                    </svg>
+                    Update groups
+                </button>   
+                <button id='KEYWORDS::gen-anchors' class='tw_button-alt'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="DASHBOARD_icon-small" style="fill:black">
+                        <path d="M320 96a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zm21.1 80C367 158.8 384 129.4 384 96c0-53-43-96-96-96s-96 43-96 96c0 33.4 17 62.8 42.9 80L224 176c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0 0 208-48 0c-53 0-96-43-96-96l0-6.1 7 7c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9L97 263c-9.4-9.4-24.6-9.4-33.9 0L7 319c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l7-7 0 6.1c0 88.4 71.6 160 160 160l80 0 80 0c88.4 0 160-71.6 160-160l0-6.1 7 7c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-56-56c-9.4-9.4-24.6-9.4-33.9 0l-56 56c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l7-7 0 6.1c0 53-43 96-96 96l-48 0 0-208 32 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-10.9 0z"/>
+                    </svg>
+                    Anchors
+                </button> 
+                <div style="display:flex;flex-direction: row;width: max-content;"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small KEYWORD_help-icon"
+                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Prompt used to generate titles and meta-descriptions">
+                        <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                    </svg>   
+                    <select id="KEYWORDS::titles-prompt" class="tw_input" style="width:130px;margin-left: 10px;">                        
+                    </select>      
+                </div>                                                    
+            </div> 
+
+            <div style='display:flex; flex-direction:column; width:33%; gap:6px;'>
+                <button id='KEYWORDS::entity-analysis' class='tw_button-alt'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="DASHBOARD_icon-small" style="fill:black">
+                        <path d="M0 80C0 53.5 21.5 32 48 32l96 0c26.5 0 48 21.5 48 48l0 16 192 0 0-16c0-26.5 21.5-48 48-48l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-16-192 0 0 16c0 1.7-.1 3.4-.3 5L272 288l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96c0-1.7 .1-3.4 .3-5L144 224l-96 0c-26.5 0-48-21.5-48-48L0 80z"/>
+                    </svg>
+                    Entity analysis
+                </button>   
+                <button id='KEYWORDS::export-entities' class='tw_button-alt' onclick="KEYWORDS.ExportEntities()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="DASHBOARD_icon-small" style="fill:black">
+                        <path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 128-168 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l168 0 0 112c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zM384 336l0-48 110.1 0-39-39c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l80 80c9.4 9.4 9.4 24.6 0 33.9l-80 80c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l39-39L384 336zm0-208l-128 0L256 0 384 128z"/>
+                    </svg>
+                    Export entities
+                </button> 
+                <button id='KEYWORDS::gen-facts' class='tw_button-alt' onclick="KEYWORDS.GenFacts()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DASHBOARD_icon-small" style="fill:black">
+                        <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zm-312 8l0 64c0 13.3 10.7 24 24 24s24-10.7 24-24l0-64c0-13.3-10.7-24-24-24s-24 10.7-24 24zm80-96l0 160c0 13.3 10.7 24 24 24s24-10.7 24-24l0-160c0-13.3-10.7-24-24-24s-24 10.7-24 24zm80 64l0 96c0 13.3 10.7 24 24 24s24-10.7 24-24l0-96c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/>
+                    </svg>
+                    Generate facts
+                </button>  
+                <button id='KEYWORDS::gen-titles-and-meta' class='tw_button-alt DASHBOARD_ellipsis'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DASHBOARD_icon-small" style="fill:black">
+                       <path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160L0 416c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-96c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 64z"/>
+                    </svg>
+                    Titles and meta-descriptions
+                </button> 
+                <div style="display:flex;flex-direction: row;width: max-content;"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="DASHBOARD_icon-small KEYWORD_help-icon"
+                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Prompt used to generate entities">
+                        <path d="M80 160c0-35.3 28.7-64 64-64l32 0c35.3 0 64 28.7 64 64l0 3.6c0 21.8-11.1 42.1-29.4 53.8l-42.2 27.1c-25.2 16.2-40.4 44.1-40.4 74l0 1.4c0 17.7 14.3 32 32 32s32-14.3 32-32l0-1.4c0-8.2 4.2-15.8 11-20.2l42.2-27.1c36.6-23.6 58.8-64.1 58.8-107.7l0-3.6c0-70.7-57.3-128-128-128l-32 0C73.3 32 16 89.3 16 160c0 17.7 14.3 32 32 32s32-14.3 32-32zm80 320a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/>
+                    </svg> 
+                    <select id="KEYWORDS::select-entities-prompt" class="tw_input" style="width:130px; margin-left: 10px;">                        
+                    </select>        
+                </div>                                        
+            </div> 
+        </div>
+        
+        {%include 'AdditionalKeywords.html' %}
+        {%include 'DomainKeywords.html' %}
+        <textarea id='KEYWORDS::ubuntu-console' class='DASHBOARD_ubuntu-console' style='width:100%;height:100%;margin: 0 0 0 0;' readonly='true'></textarea>
+    </div>
+</div> <!-- KEYWORDS_base-row -->
+
+<script> 
+   
+    function KEYWORDS_GetEntityPrompts(){
+        /* Caller must sync settings 1st */
+        let selected_prompt = document.getElementById('KEYWORDS::select-entities-prompt').value;
+        if (selected_prompt === "") {
+            alert("Please select a prompt")
+            return [false, []]
+        }
+
+        let prompts = DASHBOARD_OptionO('More Prompts');
+        if (false === Object.keys(prompts).includes('Entities')) {
+            alert("Prompt has no entities prompts, please update the prompt")
+            return [false, []]
+        }
+        if (false === Object.keys(prompts.Entities).includes(selected_prompt)) {
+            alert("Ther is no " + selected_prompt + " entities prompt, please update the prompt")
+            return [false, []]
+        }
+
+        prompts = prompts.Entities[selected_prompt]        
+        if (prompts.lenght < 4 || prompts.some((x) => x === "")){
+            alert("Prompt entities section is missing one or more entries, please update the prompt")
+            return [false, []]
+        }
+        return [true, {
+            "Generation"      : prompts[0],
+            "Analysis-OpenAI" : prompts[1],
+            "Analysis-System" : prompts[2],
+            "Analysis-User"   : prompts[3]
+        }]
+    }
+
+    async function KEYWORDS_EditCommonSpecialtructionsDialog(keyword){
+        let elements = bff(/*html*/`
+            <div class='tw_dialog-container' data-self='root'>
+                <div class="tw_dialog" 
+                    style="width:700px;height:500px;flex-direction:column;border-radius:8px">
+                    <div class='tw_Ctrl-Group' style='height:100%;width:100%;display:flex;flex-direction:column;'>
+                        <div class='tw_h3' style='margin-bottom:0px'> Special instructions</div>
+                        <p class='tw_h4'>Enter the special instructions for the keyword <i>${keyword.GetKeyWord()}</i><br>these intructions are send for all sections </p>
+                        <textarea class='tw_input' data-self='special_instructions' style='height:100%'></textarea>
+                        <div style="display:flex;flex-direction:row-reverse;height:max-content;width:100%;gap:16px;margin-bottom:-10px; margin-top:10px">
+                            <button class='tw_button-alt' style='margin-top:10px' data-self='save'>Save</button>
+                            <button class='tw_button' style='margin-top:10px' data-self='cancel'>Cancel</button>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+        `).AppendTo(document.body)
+
+        elements.root.style.display         = 'flex'
+        elements.special_instructions.value = keyword.GetCommonSpecialInstructions() || ''
+        elements.save.onclick = async function(){
+            keyword.SetCommonSpecialInstructions(elements.special_instructions.value)
+            elements.root.remove()
+        }
+        elements.cancel.onclick = function(){            
+            elements.root.remove()
+        }
+    }
+
+    async function KEYWORDS_SelectKeywordsComponent(clusters){        
+        let clusters_list = clusters.map(cluster => /*html*/`
+        <div class="form-check form-switch" style="margin-top:0px;margin-left:20px;">
+            <input class="form-check-input" type="checkbox" role="switch" id="improve-content::highlight" data-self="${cluster}">
+            <label class="tw_h4" data-self="${cluster}label" style="margin-top:0px;text-decoration:underline;cursor:pointer">${cluster}</label>
+        </div>
+        `).join('')        
+        console.log(clusters_list)
+        let elements = bff(/*html*/`
+            <div class='tw_dialog-container' data-self='root'>
+                <div class="tw_dialog tw_Groups-Container" 
+                    style="width:1200px;;height:650px;flex-direction:row;border-radius:8px">
+                    <div class='tw_Ctrl-Group' style='height:100%;width:33%;display:flex;flex-direction:column'>
+                        <div class='tw_h3' style='margin-bottom:0px'> Siblings</div>
+                        <p class='tw_h4'>Select the siblings you want to load. After select a sibling you'll have the choice to select keywords individually</p>
+                        <div style="display:flex;flex-direction:column;height:100%;width:100%;overflow-y:auto">
+                            ${clusters_list}        
+                        </div>    
+                    </div>   
+                    <div class='tw_Ctrl-Group' style='height:100%;width:33%;display:flex;flex-direction:column'>
+                        <div class='tw_h3' style='margin-bottom:0px'> Keywords</div>
+                        <div style="display:flex;flex-direction:row;height:max-content;width:100%">
+                            <p class='tw_h4'>Select the keywords you want to load</p>
+                            <div class="loader" style="margin-left:10px;width:1.5em;height:1.5em" data-self='KwordsSpinner'></div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;height:100%;width:100%;overflow-y:auto" data-self='KwordsContainer'>
+                        </div>    
+                    </div>
+                    <div class='tw_Ctrl-Group' style='height:100%;width:33%;display:flex;flex-direction:column'>
+                        <div class='tw_h3' style='margin-bottom:0px'>Domain keywords</div>
+                        <div style="display:flex;flex-direction:row;height:max-content;width:100%">
+                            <p class='tw_h4'>Select the domain keyyword you want to load</p>
+                            <div class="loader" style="margin-left:10px;width:1.5em;height:1.5em" data-self='DKwordsSpinner'></div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;height:100%;width:100%;overflow-y:auto" data-self='DKwordsContainer'>
+                        </div>
+                        <div style="display:flex;flex-direction:row-reverse;height:max-content;width:100%;gap:16px;margin-bottom:-16px">
+                            <button class='tw_button-alt' style='margin-top:10px' data-self='link'>Link</button>
+                            <button class='tw_button' style='margin-top:10px' data-self='cancel'>Cancel</button>
+                        </div>
+                    </div>    
+                </div>
+            <div>               
+        `).AppendTo(document.body)
+         
+        elements.root.style.display          = 'flex'
+        elements.KwordsSpinner.style.display = 'none'
+        elements.Selection                   = {}
+        for (let select of clusters){
+            elements[select].onchange = async function(){                      
+                console.log(this.checked)
+                elements.KwordsSpinner.style.display = 'flex'
+                elements.KwordsContainer.innerHTML   = ''
+                if (this.checked){
+                    elements.Selection[select] = []
+                    let fetch_options  = DASHBOARD_FetchOPtions()
+                    fetch_options.body = JSON.stringify({Clusters : [select]});
+                    let cluster_data   = await DASHBOARD_Fetch(
+                        '/client_owned_clusters_get-domain-clusters?Client=' + KEYWORDS.GetClient() + '&Domain=' + KEYWORDS.GetDomain(), 
+                        fetch_options
+                    );
+                    console.log(cluster_data, select)
+                    elements.Selection[select] = cluster_data.Reply.map(cluster => cluster.Keyword)
+                    for (let kword of cluster_data.Reply) {
+                        let kwords_list_item = bff(/*html*/`
+                        <div class="form-check form-switch" style="margin-top:0px;margin-left:20px;">
+                            <input class="form-check-input" type="checkbox" role="switch" id="improve-content::highlight" data-self="kword" checked>
+                            <div class="tw_h4 DASHBOARD_ellipsis" style="margin-top:0px;height:max-content">${kword.Keyword}</div>
+                        </div>`).AppendTo(elements.KwordsContainer)
+                        kwords_list_item.kword.onchange = function(){
+                            if (this.checked){
+                                elements.Selection[select].push(kword.Keyword)
+                            } else {
+                                elements.Selection[select].splice(elements.Selection[select].indexOf(kword.Keyword), 1)
+                            }
+                        }
+                    }
+                } else {
+                   if (select in elements.Selection) delete(elements.Selection[select]) 
+                }
+                elements.KwordsSpinner.style.display = 'none'
+            }
+            elements[`${select}label`].onclick =  async function(){   
+                elements[select].checked = 'true'
+                elements.KwordsSpinner.style.display = 'flex'
+                elements.KwordsContainer.innerHTML = ''                 
+                let fetch_options  = DASHBOARD_FetchOPtions()
+                fetch_options.body = JSON.stringify({Clusters : [select]});
+                let cluster_data   = await DASHBOARD_Fetch(
+                    '/client_owned_clusters_get-domain-clusters?Client=' + KEYWORDS.GetClient() + '&Domain=' + KEYWORDS.GetDomain(), 
+                    fetch_options
+                );
+                console.log(cluster_data, select)               
+                for (let kword of cluster_data.Reply) {
+                    if (false === Object.keys(elements.Selection).includes(select)) elements.Selection[select] = []
+                    let checked = elements.Selection[select] && elements.Selection[select].includes(kword.Keyword) ? "checked" : ""
+                    console.log(elements.Selection[select])
+                    let kwords_list_item = bff(/*html*/`
+                    <div class="form-check form-switch" style="margin-top:0px;margin-left:20px;">
+                        <input class="form-check-input" type="checkbox" role="switch" id="improve-content::highlight" data-self="kword" ${checked}>
+                        <div class="tw_h4 DASHBOARD_ellipsis" style="margin-top:0px;height:max-content">${kword.Keyword}</div>
+                    </div>`).AppendTo(elements.KwordsContainer)
+                    kwords_list_item.kword.onchange = function(){
+                        if (this.checked){
+                            elements.Selection[select].push(kword.Keyword)
+                        } else {
+                            elements.Selection[select].splice(elements.Selection[select].indexOf(kword.Keyword), 1)
+                        }
+                        console.log(elements.Selection[select])
+                    }
+                }
+                elements.KwordsSpinner.style.display = 'none'
+            }
+        } 
+
+        elements.DSelection = DOMAIN_OWNED_KEYWORS.GetFullList().map(dkword => dkword)
+        elements.DKwordsSpinner.style.display = 'flex'
+        await DOMAIN_OWNED_KEYWORS.Reset()
+        for (let dkword of DOMAIN_OWNED_KEYWORS.GetFullList()){
+            let dkwords_list_item = bff(/*html*/`
+            <div class="form-check form-switch" style="margin-top:0px;margin-left:20px;">
+                <input class="form-check-input" type="checkbox" role="switch" id="improve-content::highlight" data-self="dkword" checked>        
+                <label class="tw_h4" style="margin-top:0px">${dkword}</label>
+            </div>`).AppendTo(elements.DKwordsContainer)
+            dkwords_list_item.dkword.onchange = function(){                
+                if (this.checked){
+                    if (false === elements.DSelection.includes(dkword)) elements.DSelection.push(dkword)
+                } else {
+                    elements.DSelection.splice(elements.DSelection.indexOf(dkword), 1)
+                }
+            }
+        }
+        elements.DKwordsSpinner.style.display = 'none'
+        return elements
+    }
+
+    (async function(){
+        await DASHBOARD_UpdateSettings()
+        let select       = document.getElementById('KEYWORDS::titles-prompt')
+        select.innerHTML = ''        
+        for (const prompt in DASHBOARD_OptionO('More Prompts')['Titles']){            
+            let option      = document.createElement('option');
+            option.value    = prompt;
+            option.label    = prompt;              
+            select.appendChild(option);
+        }   
+        let facts_prompts = Object.keys( DASHBOARD_OptionO('More Prompts')['Facts'] )
+        select = document.getElementById('KEYWORDS::select-facts-prompt')
+        select.innerHTML = ''
+        for (let prompt of facts_prompts){
+            let option      = document.createElement('option');
+            option.value    = prompt;
+            option.label    = prompt;              
+            select.appendChild(option);
+        }
+        let entities_prompts = Object.keys( DASHBOARD_OptionO('More Prompts')['Entities'] )
+        select = document.getElementById('KEYWORDS::select-entities-prompt')
+        select.innerHTML = ''
+        for (let prompt of entities_prompts){
+            let option      = document.createElement('option');
+            option.value    = prompt;
+            option.label    = prompt;              
+            select.appendChild(option);
+        }
+    })()  
+    document.getElementById('KEYWORDS::create-article').onclick = function(event){event.stopPropagation(); CLUSTER_CONTENT_CREATOR_ListKwords();}
+    var KEYWORDS = {
+        __Exclusions : [],
+        __Siblings   : [],
+        __kwords     : [],
+        __CurrClient : "",
+        __CurrCluster: "",
+        __CurrDomain : "",
+        ClearLinks(){
+            for (const kword of this.__kwords) kword.ClearLinks();
+        },
+        async LoadSiblingKeywords(siblings){
+            try {
+                if (this.__CurrDomain === '') return;
+                if (siblings.length > 0) {
+                    let fetch_options  = DASHBOARD_FetchOPtions()
+                    fetch_options.body = JSON.stringify({Clusters : siblings});
+                    let cluster_data   = await DASHBOARD_Fetch(
+                        '/client_owned_clusters_get-domain-clusters?Client=' + this.GetClient() + '&Domain=' + this.GetDomain(), 
+                        fetch_options
+                    );
+                    console.log(cluster_data, siblings)
+                    DOMAIN_KEYWORS_V2.Set(cluster_data.Reply);
+                }
+                this.__Siblings = siblings;
+                CLUSTERCREATOR_msg('', "Siblings set: " + this.__Siblings);
+            }
+            catch (e) {
+                DASHBOARD_except(e);
+            }
+        },        
+        ClearNames(){
+            this.__CurrClient  = "";
+            this.__CurrCluster = "";
+            this.__CurrDomain = "";
+        },
+        SetCluster : function(cluster){
+            if (typeof cluster !== 'string' || cluster === '') 
+            throw 'KEYWORDS.__SetCluster: cluster is not a string or is an empty string';
+            this.__CurrCluster = cluster;
+            return;
+        },
+        GetCluster(){
+            return this.__CurrCluster
+        },
+        SetClient  : function(client){
+            if (typeof client !== 'string' || client === '') 
+            throw 'KEYWORDS.__SetClient: client is not a string or is an empty string';
+            this.__CurrClient = client;
+            return;
+        },
+        GetClient(){
+            return this.__CurrClient
+        },
+        GetDomain(){
+            return this.__CurrDomain
+        },
+        SetDomain : function(domain){
+            if (typeof domain !== 'string' || domain === '')
+            throw 'KEYWORDS.__SetDomain: domain is not a string or is an empty string';
+            this.__CurrDomain = domain; 
+            if (this.__Siblings.length > 0) this.LoadSiblingKeywords(this.__Siblings);
+            return
+        },
+        __IsKeyword  : function(new_kword){
+            for (const kword of this.__kwords) {               
+                if (String(kword.GetKeyword()).toLowerCase() === String(new_kword).toLowerCase())
+                return true;
+            }
+            return false;
+        }, 
+        __Clear : function(){
+            for (const kword of this.__kwords) {               
+                kword.ByBy();
+            }
+            this.__kwords = []
+        },  
+        SetBlackListExclusions(ex){
+            console.log(ex)
+            this.__Exclusions = ex;
+        },
+        GetBlackListExclusions(){
+            return this.__Exclusions;
+        },
+        GetKeywordCount(){return this.__kwords.length},
+        KeywordNameChanged(old_name, new_name){
+            for (const kword of this.__kwords) {
+                if (kword.GetKeyWord() === new_name) continue;
+                kword.KeywordNameChanged(old_name, new_name);
+            }
+            LINKS.KeywordNameChanged(old_name, new_name);
+        },
+        async __AGenFacts(){     
+            await DASHBOARD_UpdateSettings()       
+            let promisses = []
+            for (const k of this.__kwords){
+                if (k.GetFacts() === '' || CLUSTERCREATOR_SETTINGS.OverWrite())
+                    promisses.push(k.GenFacts(false)) 
+            }
+            for (const promisse of promisses){
+                await promisse;
+            }
+            CLUSTERCREATOR_msg('', `Done generating facts`);     
+        }, 
+        GenFacts(){
+            CLUSTERCREATOR_msg(`Generating facts`);        
+            this.__AGenFacts();            
+        }, 
+        ExportEntities(){
+            let html = `<div style='width:800px;'><h1>LIST OF ENTITIES</h1><br><h2>Keywords:</h2><br>`
+            for (const kword of this.__kwords){
+                html += `<b>${kword.GetKeyword()}</b><br>${kword.GetNums()}<br><br>`
+            }
+            html += `</div>`
+            let win                     = window.open()
+            win.document.body.innerHTML = html;
+        },
+        AddKeyWord  : function(kword, scroll=true){
+            if (true === this.__IsKeyword(kword)) {
+                alert(`keyword "${kword}" is already on the list`);
+                return;
+            }
+            var new_kword = KEYWORDS_keyword_widget(kword)
+            this.__kwords.push(new_kword);
+            if (scroll == false) return;
+            document.getElementById('KEYWORDS::list').scrollTo(0,  document.getElementById('KEYWORDS::list').scrollHeight);
+            return new_kword;
+        },
+        RemoveKeyword : function(kword){
+            kword.ByBy();
+            kwords = 
+            this.__kwords.splice(this.__kwords.indexOf(kword), 1)           
+        },
+        FromJson : function(json){ 
+            DOMAIN_KEYWORS.Set([])
+            DOMAIN_OWNED_KEYWORS.Reset();
+            this.ClearNames();
+            var data = null
+            if      ('Keywords' in json) data = json.Keywords;
+            else if ('keywords' in json) data = json.keywords;
+            if (data == null) {
+                alert('No keywords data');
+                return;
+            }
+            if ('KEYWORDS_BlackListExclusions' in json) this.SetBlackListExclusions(json.KEYWORDS_BlackListExclusions);
+            if ('KEYWORDS_BaseURL' in json) document.getElementById('KEYWORDS::url').value = json.KEYWORDS_BaseURL;
+            if ('SiblingClusters'  in json) this.__Siblings = json.SiblingClusters;
+            CLUSTERCREATOR_msg("", "Siblings loaded" + this.__Siblings);      
+            this.__Clear();
+            for (const keyword of data){
+                this.AddKeyWord(keyword.Keyword).FromJson(keyword);
+            }
+            OutlineGen.FromJson(json)
+            //ADDITIONAL_KEYWORDS.FromJson(json);
+            ADDITIONAL_KEYWORDS_V2.FromJson(json);
+            ADDITIONAL_KEYWORDS_V2.SetKeeppers(json.Keepers);
+            LINKS_SUMMARY.Clear();
+            LINKS.RenderLinks();
+            document.getElementById('CLUSTERCREATOR::tab-item-Links').style.color  = 'black';
+            document.getElementById('CLUSTERCREATOR::tab-item-Links').style.cursor = 'pointer';
+        },
+        ToDB(){
+            CLUSTERCREATOR_msg("", "Siblings saved " + this.__Siblings);   
+            var data = {Keywords : []}
+            for (const kword of this.__kwords){
+                data.Keywords.push(kword.Serialize())
+            }
+            data.KEYWORDS_BlackListExclusions = this.GetBlackListExclusions();
+            data.KEYWORDS_BaseURL       = document.getElementById('KEYWORDS::url').value;
+            data['Additional Keywords'] = ADDITIONAL_KEYWORDS.ToJson();
+            data['Keepers']             = ADDITIONAL_KEYWORDS.GetKeeppers();
+            data.Preferences            = CLUSTERCREATOR_SETTINGS.ToJson();
+            data['Outlines Model']      = OutlineGen.ToJson()['Outlines Model'];
+            data['Outlines Country']    = OutlineGen.ToJson()['Outlines Country'];
+            data['SiblingClusters']     = this.__Siblings;
+            return data;
+        },
+        ToJson(){
+            var json = {Keywords : []}
+            for (const kword of this.__kwords){
+                json.Keywords.push(kword.Serialize())
+            }
+            json.KEYWORDS_BlackListExclusions = this.GetBlackListExclusions();
+            json.KEYWORDS_BaseURL        = document.getElementById('KEYWORDS::url').value;
+            json['Additional Keywords']  = ADDITIONAL_KEYWORDS.ToJson();
+            json.Preferences             = CLUSTERCREATOR_SETTINGS.ToJson();
+            json['Outlines Model']       = OutlineGen.ToJson()['Outlines Model'];
+            json['Outlines Country']     = OutlineGen.ToJson()['Outlines Country'];
+            json['Outlines Intructions'] = OutlineGen.ToJson()['Outlines Intructions'];    
+            json['SiblingClusters']      = this.__Siblings;       
+            const a    = document.createElement('a');
+            const blob = new Blob([JSON.stringify(json,null,'\t')]);
+            a.href     = URL.createObjectURL(blob);
+            a.download = 'cluster.json';                     
+            a.click();
+            //console.log(json)
+        },
+        ApplyURL(url){
+            for (const keyword of this.__kwords)
+            keyword.SetURL(url)
+        },
+        Get1st(){
+            return this.__kwords.length == 0 ? null : this.__kwords[0];
+        },
+        GetKeyWord(keyword){
+            for (const kword of this.__kwords) {               
+                if (String(kword.GetKeyword()).toLowerCase() === String(keyword).toLowerCase())
+                return kword;
+            }
+            return null;
+        }, 
+        async GenEntities(){     
+            await DASHBOARD_UpdateSettings()        
+            let [success, prompts] = KEYWORDS_GetEntityPrompts()
+            if (success === false) {                
+                CLUSTERCREATOR_msg('', 'Done performing entity analysis');     
+                return   
+            }                   
+            let kwords         = []; 
+            for (const keyword of this.__kwords) {
+                if (keyword.GetCoreEntity() === '' || keyword.GetEntityContext() === '' || keyword.GetEntityAnalysis() === '' || CLUSTERCREATOR_SETTINGS.OverWrite())
+                kwords.push(keyword.GetKeyWord())
+            }
+            let fetch_options  = DASHBOARD_FetchOPtions()  
+            fetch_options.body = JSON.stringify({
+                Request : kwords, 
+                Model   : CLUSTERCREATOR_SETTINGS.GetModelFor('Entities'),
+                Prompts : prompts
+            }); 
+            let replys         = await DASHBOARD_Fetch('/cluster_creator-entities', fetch_options);
+            for (const reply of replys.Reply) {
+                this.GetKeyWord(reply.Keyword).SetEntityData(reply); 
+            } 
+            CLUSTERCREATOR_msg('', 'Done performing entity analysis');           
+        },
+        ListKeywordsNames(){
+            var names = []; for (const keyword of this.__kwords) names.push(keyword.GetKeyWord());
+            return names;
+        },
+        async GenAnchors(){   
+            CLUSTERCREATOR_msg(`Generating anchors`);  
+            await DASHBOARD_UpdateSettings()          
+            var option       = []
+            for (const keyword of this.__kwords){
+                if (keyword.GetCoreEntity() === ''){
+                    CLUSTERCREATOR_msg(`Generating anchors`, `Skiping keyword ${keyword.GetKeyWord()}: missing the Core entity`);   
+                    continue;
+                }
+                if (keyword.GetAnchors().length > 0 && (false == CLUSTERCREATOR_SETTINGS.OverWrite())){
+                    CLUSTERCREATOR_msg(`Generating anchors`, `Skiping keyword ${keyword.GetKeyWord()}: already has anchors`);   
+                    continue;                
+                }
+                option.push({Keyword : keyword.GetKeyWord(), CoreEntity : keyword.GetCoreEntity(), Anchors : keyword.GetAnchors(), Model : CLUSTERCREATOR_SETTINGS.GetModelFor('Anchors')})  
+            }
+
+            var fetch_options  = DASHBOARD_FetchOPtions()              
+            fetch_options.body = JSON.stringify({Request : option});    
+            var reply          = await DASHBOARD_Fetch('/cluster_creator-anchors', fetch_options);
+            //console.log(reply)                   
+            for (const anchor of reply.Reply) {
+                this.GetKeyWord(anchor.Keyword).AddAnchors(anchor.Anchors); 
+            }               
+            CLUSTERCREATOR_msg('', 'Done generating anchors');     
+        },
+        GroupKeyWords(){
+            console.log('Grouping keywords');
+            for (const kword of this.__kwords) kword.ClearGroups();
+            let group = 0;
+            for (const kword of this.__kwords){
+                //if (kword.GetGroups().length === 0){                    
+                    group = KEYWORDS_GroupKeyword(kword, group);;
+                    continue;
+                //}
+            }
+            console.log(`${group} groups`)
+        },
+        GetMaxGroupIndex(){
+            let max = 0;
+            for (const kword of this.__kwords){
+                let kword_max = kword.GetMaxGroupIndex();
+                if (kword_max > max) max = kword_max;
+            }
+            return max;
+        },
+        ClearGroups(){
+            for (const kword of this.__kwords) kword.ClearGroups();
+        },        
+        async ListClusters(){
+            if (this.GetClient() === '') return []
+            try {
+                let clusters =  await DASHBOARD_Fetch(
+                    `/client_owned_clusters-list_clusters?client=${this.GetClient()}&domain=${this.GetDomain()}`,
+                    DASHBOARD_FetchOPtions()
+                )
+                console.log(clusters, this.GetCluster(), this.GetClient(), this.GetDomain())
+                // remove the current cluster from the list
+                return clusters.Clusters.filter(cluster => cluster !== this.GetCluster())
+            }
+            catch (e) {
+                DASHBOARD_except(e);
+            }      
+        }
+    } 
+
+    function KEYWORDS_AreKeywordsGrouped(src, trgt){
+        for (let gropup of src.GetGroups()){
+            if (trgt.GetGroups().includes(gropup)) return true;
+        }
+        return false
+    }    
+
+    function KEYWORDS_GetKeywordtargetsThree(kword, targets_list){
+        for (let link of kword.GetLinks()){
+            let target_kword = KEYWORDS.GetKeyWord(link.Target);
+            if (target_kword === null){
+                //The target is an additional keyword, so not an eror. Ignore and continue          
+                if (ADDITIONAL_KEYWORDS.GetKeyWord(link.Target) != false) continue;      
+                if (DOMAIN_KEYWORS.GetKeyWord(link.Target) != false) continue;              
+                if (DOMAIN_OWNED_KEYWORS.GetKeyWord(link.Target) != false) continue;   
+                alert(`Error: KEYWORDS_GetKeywordtargetsThree(): KEYWORDS.GetKeyWord(${link.Target}) returned null`)
+                continue
+            } 
+            if (targets_list.includes(target_kword.GetKeyWord()) === false) 
+            {
+                targets_list.push(target_kword.GetKeyWord());
+                KEYWORDS_GetKeywordtargetsThree(target_kword, targets_list);
+            }
+        }
+    }
+
+    function KEYWORDS_GroupKeyword(kword, group){   
+        if (kword.GetGroups().length > 0) return group;            
+        let targets    = []
+        KEYWORDS_GetKeywordtargetsThree(kword, targets)
+        if (targets.length === 0) return group;
+        for (let target of targets){ /* ensure that no keywords will never belong to the same group */
+            if (KEYWORDS.GetKeyWord(target).GetGroups().length > 0) {
+                return group
+            }
+        }
+        for (let target of targets){
+            kword.AddToGroup(group+1, true);
+            KEYWORDS.GetKeyWord(target).AddToGroup(group+1);
+        }
+        return group + 1;
+
+        //kword.AddToGroup(group);
+        for (let link of kword.GetLinks()) {
+            let target_kword = KEYWORDS.GetKeyWord(link.Target);
+            if (target_kword === null){
+                //The target is an additional keyword, so not an eror. Ignore and continue          
+                if (ADDITIONAL_KEYWORDS.GetKeyWord(link.Target) != false) continue;      
+                if (DOMAIN_KEYWORS.GetKeyWord(link.Target) != false) continue;              
+                if (DOMAIN_OWNED_KEYWORS.GetKeyWord(link.Target) != false) continue;   
+                alert(`Error: KEYWORDS_GroupKeyword(): KEYWORDS.GetKeyWord(${link.Target}) returned null`)
+                continue
+            } 
+            if (KEYWORDS_AreKeywordsGrouped(kword, target_kword) === false){
+                kword.AddToGroup(group, true);
+                target_kword.AddToGroup(group);
+                one_offset = 1;
+            }            
+        }
+        return group + one_offset;
+    }
+    document.getElementById('KEYWORDS::gen-titles-and-meta').onclick = function(){
+        CLUSTERCREATOR_msg(`Generating titles and meta-descriptions`); 
+        try {
+            let prompts = DASHBOARD_OptionO('More Prompts')['Titles'][document.getElementById("KEYWORDS::titles-prompt").value];
+            if (prompts.length < 6) {
+                alert("The seleted prompt is missing the cluster creator system and user sections");
+                return 
+            }
+            let sys   = prompts[4];
+            let user  = prompts[5];    
+            let today = new Date().toDateString().split(' ').slice(1, 4).toString().replace(',', ' ').replace(',', ', ');     
+            (async function a_func(){      
+                console.log('syncing settings')      
+                await DASHBOARD_UpdateSettings()   
+                console.log('done')        
+                let promisses = []
+                for (const name of KEYWORDS.ListKeywordsNames()){
+                    console.log('Processing keyword: ', name)
+                    let k        = KEYWORDS.GetKeyWord(name);
+                    if ((k.GetTitlesAndMetaDesctiptions() !== '') &&  (false !== CLUSTERCREATOR_SETTINGS.OverWrite())) continue;
+                    let options  = DASHBOARD_FetchOPtions()
+                    options.body = JSON.stringify({
+                        Model            : DASHBOARD_GetModel('Titles'),
+                        System           : sys,
+                        User             : user,
+                        Today            : today,
+                        Keyword          : k.GetKeyWord(),
+                        Outline          : k.GetOutline(),
+                        'Search Intent'  : k.GetIntent()     
+                    }); 
+                    promisses.push({
+                        Keyword  : k,
+                        Promisse : fetch('content-creator_titles-and-meta', options)
+                    })            
+                }
+                console.log(promisses.length, ' promisses')    
+                for (const promisse of promisses){
+                    console.log('=====================================================')
+                    console.log('Sending request for: ', promisse.Keyword.GetKeyWord())
+                    let response = await promisse.Promisse;
+                    let json     = await response.json()
+                    console.log('Reply: ', json)
+                    console.log('=====================================================\nn')
+                    promisse.Keyword.SetTitlesAndMetaDesctiptions( json.Reply )
+                }
+                CLUSTERCREATOR_msg('', `Finished generating titles and meta-descriptions`);  
+            })()
+        } catch (error) {
+            DASHBOARD_except(error)
+            CLUSTERCREATOR_msg('', `Finished generating titles and meta-descriptions`);
+        } 
+    }
+    document.getElementById('KEYWORDS::clipboard-all').onclick = async function(event){     
+        let text = ''
+        for (const kword of KEYWORDS.ListKeywordsNames()){
+            text += kword + "\n"
+        }
+        navigator.clipboard.writeText(text).then(function() {
+            alert('Copied keywords to clipboard');
+        }, function(err) {
+            console.error('ould not copy text: ', err);
+        });
+    }   
+    document.getElementById('KEYWORDS::gdoc-all').onclick = async function(event){
+        let promisses = []
+        await DASHBOARD_UpdateSettings()
+        for (const name of KEYWORDS.ListKeywordsNames()){
+            let kword = KEYWORDS.GetKeyWord(name);
+            promisses.push(kword.GetGdoc(true))
+        }
+        let output = ''
+        for (const [index, promisse] of promisses.entries()){
+            output += index == 0 ? '<br><br>' + await promisse: '<br><br>' + (await promisse).replace("<h1>Keyword's data</h1>", '');
+        }
+        let win                     = window.open()
+        win.document.body.innerHTML = output  
+    }
+    document.getElementById('KEYWORDS::entity-analysis').onclick = function(event){
+        CLUSTERCREATOR_msg('Performing entity analysis');
+        KEYWORDS.GenEntities();        
+    } 
+    document.getElementById('KEYWORDS::gen-anchors').onclick = function(event){
+        CLUSTERCREATOR_msg('Generating anchors');
+        KEYWORDS.GenAnchors();        
+    }    
+    document.getElementById('KEYWORDS::add').onkeypress = function(event){
+        if (event.key === 'Enter'){
+            KEYWORDS.AddKeyWord(this.value);
+            this.value = '';
+        }
+    }    
+    document.getElementById('KEYWORDS::apply-url').onclick = function(){       
+        var url = document.getElementById('KEYWORDS::url').value;
+        CLUSTERCREATOR_msg('', `Assigning URL "${url}" to all keywords`)
+        KEYWORDS.ApplyURL(document.getElementById('KEYWORDS::url').value)
+        CLUSTERCREATOR_msg('', 'Done assigning URLs')
+    }
+    document.getElementById('KEYWORDS::gen-links').onclick = async function(){               
+        let gen_links = async function(){       
+            CLUSTERCREATOR_msg('Computing section to keyword similarity and generating links')
+            KEYWORDS.ClearLinks();
+            var query = {};
+            var kword = null;
+            for (const name of ADDITIONAL_KEYWORDS.ListKeywords()){
+                query[name] = '';
+            }
+            for (const name of DOMAIN_KEYWORS.ListKeywords()){
+                query[name] = '';
+            }
+            for (const name of DOMAIN_OWNED_KEYWORS.ListKeywords()){
+                query[name] = '';
+            }
+            for (const name of KEYWORDS.ListKeywordsNames()){
+                kword       = KEYWORDS.GetKeyWord(name);
+                //console.log(name)
+                query[name] = kword.GetOutline();
+            }
+            console.log(ADDITIONAL_KEYWORDS.ListKeywords())
+            var fetch_options  = DASHBOARD_FetchOPtions()         
+            fetch_options.body = JSON.stringify({Query : query});    
+            var reply          = await DASHBOARD_Fetch('/links_generate', fetch_options);
+            console.log(reply)    
+            for (const [key, value] of Object.entries(reply.Reply)) {
+                kword =  KEYWORDS.GetKeyWord(key);
+                if (kword === null) continue;
+                //console.log(key)
+                //console.log(value)
+                kword.SetSimilarity(value)
+            }
+            CLUSTERCREATOR_msg('', 'Finished computing section to keyword similarity and generating links') ;   
+            console.log(reply)   
+            LINKS.LinkKeyWords();   
+            document.getElementById('CLUSTERCREATOR::tab-item-Links').style.color  = 'black';
+            document.getElementById('CLUSTERCREATOR::tab-item-Links').style.cursor = 'pointer';
+            //LINKS.RenderLinks();   
+        }      
+        let clusters = await KEYWORDS.ListClusters();
+        console.log(clusters)
+        if (clusters.length === 0){
+            DOMAIN_KEYWORS.Set([])
+            return await gen_links()
+        }
+
+        let elements = await KEYWORDS_SelectKeywordsComponent(clusters)
+        console.log(elements)
+        elements.link.onclick = async function(event){
+            console.log(elements.Selection)
+            let selected = Object.keys(elements.Selection)
+            let keepers  = []
+            for (let sel of selected){
+                for (let keeper of elements.Selection[sel]){
+                    keepers.push(keeper)
+                }
+            }
+            console.log("keepers", keepers)
+            CLUSTERCREATOR_msg('Loading sibling clusters');
+            console.log(selected)
+            elements.root.remove()
+            await KEYWORDS.LoadSiblingKeywords(selected);
+            CLUSTERCREATOR_msg('');           
+            //document.getElementById('KEYWORDS::select-cluster-dialog').style.display = 'none';
+            ADDITIONAL_KEYWORDS_V2.SetKeeppers(keepers)
+            DOMAIN_OWNED_KEYWORS.SetKeeppers(elements.DSelection)
+            gen_links() 
+        }
+        elements.cancel.onclick = function(event){
+            elements.root.remove()
+        }
+        return;
+        
+        document.getElementById('KEYWORDS::select-cluster-dialog').style.display = 'flex';
+        let checkbox_container       = document.getElementById('KEYWORDS::select-cluster-items');
+        checkbox_container.innerHTML =  ""
+        for (cluster of clusters){
+            let html =  /*html*/ `
+                <div style='display:flex;flex-direction:row;border-bottom:1px solid lightgray'>
+                    <input id="KEYWORDS::select-cluster-dialog${cluster}" type="checkbox" class='tw-input'>
+                    <label class="tw_h4" style="margin-top:10px; margin-left:10px;">${cluster}</label>
+                </div>    
+            ` 
+            checkbox_container.innerHTML += html;
+        }
+        document.getElementById('KEYWORDS::select-cluster-apply').onclick = async function(event){
+            let selected = []
+            for (cluster of clusters){
+                if (document.getElementById(`KEYWORDS::select-cluster-dialog${cluster}`).checked === true)
+                selected.push(cluster)
+            }
+            CLUSTERCREATOR_msg('Loading sibling clusters');
+            KEYWORDS.LoadSiblingKeywords(selected);
+            CLUSTERCREATOR_msg('');           
+            document.getElementById('KEYWORDS::select-cluster-dialog').style.display = 'none';
+            gen_links() 
+        }       
+    }
+    function KEYWORDS_Test() {
+        var k_container = document.getElementById('KEYWORDS::list');
+        for (let i=0; i<2; i++){
+            var k  = `Keyword ${i+1}`;           
+            KEYWORDS.AddKeyWord(k, false)
+        }  
+    }
+    KEYWORDS_Test();
+
+    function KEYWORD_gen_button(caption, extra_styles){
+        var element         = document.createElement('button');
+        element.className   = 'tw_button-alt';
+        element.innerHTML   = caption;  
+        if (extra_styles != '') {
+            element.style = extra_styles;
+        }   
+        element.style += ";padding-top:6px;padding-right:8px;padding-left:8px"         
+        return element;       
+    }
+
+    function KEYWORDS_keyword_widget(kword){   
+        //console.log('Creating keyword' + kword)     
+        var self  = {
+            __Article                 : '',
+            __ListItemContainer       : document.createElement('div'),       
+            __Container               : document.createElement('div'),
+            __BaseContainer           : document.createElement('div'),
+            __Kword                   : document.createElement('div'), 
+            __GroupsContainer         : DASHBOARD_AziaSubtitle('', 'margin-bottom:0px;margin-top:12px;margin-left:-4px'), 
+            __ListItemKword           : DASHBOARD_AziaSubtitle(kword, 'margin-bottom:6px'),         
+            __Outline                 : document.createElement('textarea'),   
+            __Intent                  : document.createElement('textarea'),  
+            __Facts                   : DASHBOARD_AziaForm(), 
+            __Entities                : DASHBOARD_AziaForm(),  
+            __Edit                    : DASHBOARD_AziaForm('input', '', 'height:20px; width:200px; display:None'),  
+            __TitlesAndMeta           : DASHBOARD_AziaForm(),  
+            __AnchorIndex             : -1,
+            __AnchorsSelect           : DASHBOARD_Multichoice([]),
+            __AddAnchor               : DASHBOARD_AziaForm('input', 'Type the anchor text and hit enter', 'border:none; border-bottom:1px solid lightgray; height:40px;'),   
+            __CoreEntity              : DASHBOARD_AziaForm('input', 'Core entity', 'border:none; border-bottom:1px solid lightgray; width:40%; height:40px'), 
+            __CntxFrame               : DASHBOARD_AziaForm('input', 'Contextual frame', 'border:none; border-bottom:1px solid lightgray; width:60%; height:40px'), 
+            __Anchors_list            : [],
+            __GenOutline              : KEYWORD_gen_button('outline', 'height:22px;'),
+            __GenEntities             : KEYWORD_gen_button('Entities', 'height:22px'),
+            __GenAnchors              : KEYWORD_gen_button('anchors', 'height:22px'),                
+            __BaseURL                 : DASHBOARD_AziaForm('input', 'Full URL', 'border:none; border-bottom:1px solid lightgray; height:40px;'), 
+            __DontAppendKword         : document.createElement('input'),
+            __Similarity              : [],
+            __Links                   : [],
+            __SpecialInstructions     : {},
+            __CommonSpecialInstructions : '',
+            __OutlineWidgetProgress   : {
+                URLs          : [], 
+                URLsSelection : [],
+                intent        : '',
+                Outlines      : {URLs : [{Outline : '', URL : ''}]},
+                Outline       : {Outline : ''}
+            }, 
+            __ArticleSections       : [],
+            __Groups                : [],   // zero means not group
+            __Chat                  : [],
+            __IChat                 : [],
+            __CTA                   : {},
+            __AICTAS                : {},
+            __CTASectionIntructions : {},  
+            SetCommonSpecialInstructions(instructions){
+                this.__CommonSpecialInstructions = instructions;
+            },
+            GetCommonSpecialInstructions(){
+                return this.__CommonSpecialInstructions;
+            },
+            ApendCTAInstructions(index, instructions){
+                this.__CTASectionIntructions[index] = instructions;
+            },
+            GetCTAInstructions(index){
+                if (index in this.__CTASectionIntructions)
+                return this.__CTASectionIntructions[index];
+                return '';
+            },
+            AppendCTA(index, CTA){
+                this.__CTA[index] = CTA;
+            },
+            GetCTA(index){
+                if (index in this.__CTA)
+                return this.__CTA[index];
+                return '';
+            },
+            GetCTAs(index){
+                return JSON.parse(JSON.stringify(this.__CTA));
+            },
+            DeleteCTA(index){
+                delete this.__CTA[index];
+            },
+            ApendAICTA(index, CTA){
+                this.__AICTAS[index] = CTA;
+            },
+            GetAICTA(index){
+                if (index in this.__AICTAS)
+                return this.__AICTAS[index];
+                return '';
+            },
+            UpdateChatReply(index, Content){
+                this.__Chat[index].Assistant    = Content;
+                // Article sections have one less element (the inital prompt reply, except on the legacy prompt)
+                this.__ArticleSections[index-1] = Content; 
+                let article = ''
+                for (let section of this .__ArticleSections){
+                    article += section + '\n'
+                }
+                this.SetArticle(article, this.__ArticleSections)
+            },
+            UpdateImprovedSection(index, content){
+                try {
+                    this.__IChat[index].Assistant   = content;
+                    let old_section                 = this.__ArticleSections[index+1]
+                    this.__ArticleSections[index+1] = content
+                    this.__Article                  = this.__Article.replace(old_section, content)
+                }
+                catch(err){
+                    DASHBOARD_except(err)
+                }
+                this.__CTA = {};
+            },
+            UpdateChat(chat){
+                this.__IChat = []
+                this.__Chat  = []
+                for (let [index, msg] of chat.entries()){
+                    if (msg.role === "assistant"){
+                        this.__Chat.push({
+                            System    : chat[index-2].content,
+                            User      : chat[index-1].content,
+                            Assistant : chat[index].content
+                        })
+                    }
+                }
+            },
+            GetChat(){
+                return JSON.parse(JSON.stringify(this.__Chat));
+            },
+            UpdateIChat(chat){
+                this.__IChat = JSON.parse(JSON.stringify(chat));
+                this.__CTA   = {};
+            },
+            GetIChat(){
+                return JSON.parse(JSON.stringify(this.__IChat));
+            },           
+            GetImprovedSections(){
+                let improved_article = '';
+                for (let message of this.GetIChat()){                    
+                    improved_article += "\n" + message.Assistant
+                }
+                let lvl0 = 0;
+                let lvl1 = 0;
+                let lvl2 = 0;
+                let lvl3 = 0;
+                let secs = [{'index': "Intro", 'text': '', 'CTA' : ''}]
+                for (let line of improved_article.split('\n')){                
+                    trimed_line = line.trim().split('\n')[0].trim();
+                    if (false === trimed_line.includes('#')) 
+                    {
+                        if (secs.length === 0)
+                        continue;
+                        secs.at(-1).text += '\n' + line
+                        continue;
+                    }                
+                    if (trimed_line.startsWith('#####')) 
+                    {
+                        lvl3 += 1;
+                    }
+                    else if (trimed_line.startsWith('####'))  
+                    {
+                        lvl2 += 1;
+                        lvl3  = 0;
+                    }
+                    else if (trimed_line.startsWith('###'))   
+                    {
+                        lvl1 += 1;
+                        lvl2  = 0;
+                        lvl3  = 0;
+                    }
+                    else if (trimed_line.startsWith('##'))  
+                    {
+                        lvl0 += 1;
+                        lvl1  = 0;
+                        lvl2  = 0;
+                        lvl3  = 0;
+                    } 
+                    let sec = `${lvl0}.`
+                    if (lvl1 > 0) sec += `${lvl1}.`
+                    if (lvl2 > 0) sec += `${lvl2}.`
+                    if (lvl3 > 0) sec += `${lvl3}.`
+                    secs.push({'index': sec, 'text': line, 'CTA' : this.GetCTA(sec)})  
+                }
+                return secs     
+            },
+            GetImprovedSectionsWithCTAS(){
+                let improved_secs = [];
+                for (let sec of this.GetImprovedSections()){
+                    if (sec.CTA !== ''){
+                        improved_secs.push(sec);
+                    }
+                }
+                return improved_secs
+            },
+            GetGroups(){return this.__Groups},
+            AddToGroup(Group, IsOwner=false){
+                if (this.__Groups.includes(Group)) return;
+                if (IsOwner) this.__Groups.unshift(Group) 
+                else {
+                    if (this.__Groups.length === 0) this.__Groups.push("*")
+                    this.__Groups.push(Group)
+                }                    
+                let html = '';
+                for (let [index, group] of Object.entries(this.__Groups)){
+                    html += index == 0 ? group === "*" ? "" : 
+                    `<sup style="color:red">${group}</sup>` : `<sup>${group}</sup>`;
+                }
+                this.__GroupsContainer.innerHTML = html;
+            },
+            ClearGroups(){this.__Groups = [], this.__GroupsContainer.innerHTML = "";},
+            GetMaxGroupIndex(){
+                let max = 0;
+                for (let group of this.__Groups){
+                    if (group > max) max = group;
+                }
+                return max;
+            },
+            GetSectionSpecialInstructions(section){
+                if (section in this.__SpecialInstructions){
+                    return this.__SpecialInstructions[section];
+                }
+                return '';
+            },
+            SetSectionSpecialInstructions(section, instructions){
+                this.__SpecialInstructions[section] = instructions;
+            },           
+            SetArticleSections(sections){this.__ArticleSections = sections},
+            GetArticleSections(){return this.__ArticleSections},
+            GetArticle() {
+                if (this.GetArticleSections().length != 0) {
+                    this.SetArticle(this.GetArticleSections().join('\n\n'))
+                }
+                return this.__Article
+            },
+            GetArticleWithCTAs(){
+                // Never call this when saving, to keep CTA data separated
+                let imp_sections = this.GetImprovedSections();                    
+                if (imp_sections.length <= 1) return this.GetArticle()
+                article = ''
+                for (let section of imp_sections)
+                {
+                    article += section.text + '\n\n'
+                    let cta = this.GetAICTA(section.index)
+                    if (cta !== '') {
+                        matches = cta.matchAll(/<CTA>(.*?)<\/CTA>/gs);
+                        cta     = ''
+                        for (let match of matches) {
+                            cta +=  match[1] + '\n\n'
+                        }                        
+                        article += cta 
+                    }
+                }
+                return article.trim("\n")
+            },
+            GetTitlesAndMetaDesctiptions(){return this.__TitlesAndMeta.value},
+            SetTitlesAndMetaDesctiptions(val){this.__TitlesAndMeta.value = val},
+            SetArticle(article, sections) {
+                this.__Article = article
+                if (sections === undefined) return
+                this.SetArticleSections(sections)   
+            },
+            UpdateLinkAnchor(target_name, new_anchor){
+                for (const sim of this.__Links){
+                    if (sim.Target === target_name){
+                        sim.Anchor = new_anchor;
+                    }
+                }
+            },
+            UpdateLinkSection(target_name, new_sec){
+                for (const sim of this.__Links){
+                    if (sim.Target === target_name){
+                        sim.OriginSection = new_sec;
+                    }
+                }
+            },
+            ListPossibleTargets(){
+                targets = []
+                for (const sim of this.__Similarity){
+                    targets.push({
+                        Target     : sim.Target,
+                        Similarity : parseFloat(sim.Max),
+                        IsTarget   : this.__IsTarget(sim.Target)                        
+                    })
+                }
+                return targets;
+            },
+            ListSimilarityWithKeyWord(kword_name){
+                for (const sim of this.__Similarity){
+                    if (sim.Target === kword_name){
+                        return sim.Sections;
+                    }
+                }
+                return [];
+            },
+            DeleteLinkTo(target){
+                links = []
+                for (const link of this.__Links){
+                    if (link.Target !== target){
+                        links.push(link)
+                    }
+                }
+                this.__Links = links;
+            },
+            ClearLinks(){this.__Links = [];},
+            AppendLink(target, section){
+                let anchor       = 'No target keyword';
+                let target_kword = KEYWORDS.GetKeyWord(target);
+                if (target_kword !== null) anchor = target_kword.NextAnchor();
+                else { anchor =
+                    DOMAIN_KEYWORS.GetKeyWord(target)       ? DOMAIN_KEYWORS.NextAnchorForKeyword(target) : 
+                    DOMAIN_OWNED_KEYWORS.GetKeyWord(target) ? DOMAIN_OWNED_KEYWORS.NextAnchorForKeyword(target) :
+                    ADDITIONAL_KEYWORDS.GetKeyWord(target)  ? ADDITIONAL_KEYWORDS.NextAnchorForKeyword(target) : null;
+                }
+                this.__Links.push({                    
+                    Target        : target,
+                    OriginSection : section,
+                    Anchor        : anchor,
+                })
+                return {
+                    Origin        : this.GetKeyWord(),
+                    Target        : target,
+                    OriginSection : section,
+                    Anchor        : anchor,
+                }
+            },
+            NextAnchor(){
+                if (this.__AnchorsSelect.Selection().length == 0){
+                    return `No anchors for ${this.GetKeyWord()}`
+                }
+                this.__AnchorIndex += 1
+                if (this.__AnchorIndex > this.__AnchorsSelect.Selection().length-1){
+                    this.__AnchorIndex = 0;
+                } 
+                return this.__AnchorsSelect.Selection()[this.__AnchorIndex];              
+            },
+            GetLinksCoount(){
+                return this.__Links.length
+            },
+            GetLinks(){
+                var links = []
+                for (const link of this.__Links){
+                    links.push({
+                        Origin        : this.GetKeyWord(),
+                        OriginSection : link.OriginSection,
+                        Target        : link.Target,                       
+                        Anchor        : link.Anchor,
+                    })
+                }
+                return links;
+            },
+            IsLinkedWith(target){
+                for (const link of this.__Links){
+                    if (link.Target === target){
+                        return true;
+                    }
+                }
+                return false;
+            },
+            GetSimilarity(){
+                return this.__Similarity;
+            },
+            SetSimilarity(sim){                
+                this.__Similarity = sim;
+                return;               
+            },
+            GetOutlines(){
+                var outlines = [];
+                for (outline of this.__OutlineWidgetProgress.Outlines.URLs)
+                    outlines.push(outline.Outline)
+                return outlines;
+            },
+            GetSemanticAnalysis(){      
+                if (this.__Entities.value.includes('Searcher Considerations: ')){                                       
+                    let analysis = 'Searcher Considerations: ' + this.__Entities.value.split('Searcher Considerations:')[1].split('Attributes:')[0].trim(); 
+                    analysis    += '\n\nAttributes: ' + this.__Entities.value.split('Attributes:')[1].split('Perspectives:')[0].trim(); 
+                    analysis    += '\n\nCharacteristics: ' + this.__Entities.value.split('Characteristics:')[1].split('Semantic Relationships:')[0].trim(); 
+                    return analysis;   
+                }     
+                let analysis = 'Searcher Considerations: ' + this.__Entities.value.split('Searcher Considerations:')[1].split('Attributes:')[0].trim(); 
+                analysis    += '\n\nAttributes: ' + this.__Entities.value.split('Attributes:')[1].split('Characteristics:')[0].trim(); 
+                analysis    += '\n\nCharacteristics: ' + this.__Entities.value.split('Characteristics:')[1].split('Semantic Relationships:')[0].trim(); 
+                return analysis;                  
+            },
+            GetNums(){
+                try {
+                    if (this.__Entities.value.includes('Verbs: ')) 
+                    return this.__Entities.value.split('Nouns:')[1].split('Verbs:')[0].trim().toLowerCase();  
+                    return this.__Entities.value.split('Nouns:')[1].split('Subject-Object-Predicates:')[0].trim().toLowerCase();       
+                } catch(err){
+                    return err
+                }
+            },
+            async GetGdoc(no_sync){
+                let re  = /([0-9]+\.)+/g
+                return `
+                <style>
+                    .hightlight{
+                        color           : white;
+                        background-color: #333333;                        
+                        padding         : 10 4 10 4;                        
+                        border          : none;                        
+                        flex-direction  : column;
+                        word-wrap       : break-word;
+                        margin-top    : 4px;
+                        margin-bottom : -14px;                        
+                    }
+                    th{
+                        width         : 800px;
+                        padding-left  : 6;  
+                        margin-left   : 6;        
+                        text-align    : justify;  
+                        min-height    : 0px;        
+                        font-weight   : 200;  
+                        padding-top   : 0px;
+                        padding-bottom: 0px;  
+                        margin-top    : 0px;
+                        margin-bottom : 0px;
+                    }     
+                    h1, h2, h3, table{
+                        margin-top    : 8px;
+                        margin-bottom : 4px;
+                        padding-top   : 0px;
+                        padding-bottom: 0px;
+                    }                               
+                </style>
+                <div style="font-size:14; font-family:Roboto Mono; width:800px; padding-top:0px">     
+                    <h1>Keyword's data</h1>               
+                    <H2 style="width:100%; background-color:#fce5cd; text-transform: capitalize;margin-bottom : -14px">                      
+                        ${self.GetKeyWord().replaceAll('\n', '').replaceAll('\r', '')}                       
+                    </h2>
+                    <h3>
+                        <br><strong>Permalink</strong>
+                    </h3>
+                    <table class="hightlight" style="width:100%">   
+                        <th>${(await self.GetPemalink(no_sync)).replaceAll('\n', '<br>').replaceAll('\r', '')}</th>  
+                    </table>    
+                    <h3>
+                        <br><strong>Outline</strong>
+                    </h3>
+                    <table class="hightlight" style="width:100%">   
+                        <th style="color:#fcc28c">
+                            ${self.GetOutline().replaceAll('\n', '<br>').replaceAll('\r', '').replaceAll(' ', '&ensp;').replaceAll(
+                            re, '<span style="color:white">$&</span>')}</th>  
+                    </table>   
+                    <h3>
+                        <br><strong>Search Intent</strong>
+                    </h3>
+                    <table class="hightlight" style="width:100%">   
+                        <th>${self.GetIntent().replaceAll('\n', '<br>').replaceAll('\r', '').replaceAll(' ', '&ensp;')}</th>
+                    </table>       
+                </div>`
+            },
+            OutlineWidgetProgress_Reset(){
+                //console.log(`${this.GetKeyWord()} Reset`)
+                this.__OutlineWidgetProgress = {
+                    URLs          : [], 
+                    URLsSelection : [],
+                    intent        : '',
+                    Outlines      : {URLs : [{Outline : '', URL : ''}]},
+                    Outline       : {Outline : ''}
+                }            
+            },
+            OutlineWidgetProgress_SetURL(urls){
+                this.OutlineWidgetProgress_Reset()
+                this.__OutlineWidgetProgress.URLs          = urls.URLs;
+                this.__OutlineWidgetProgress.URLsSelection = JSON.parse(JSON.stringify(urls.URLs)); 
+                this.__OutlineWidgetProgress.intent        = urls.intent;
+                this.__Setintent(urls.intent);
+                //console.log(`${this.GetKeyWord()} Set Url`)
+                //console.log(this.__OutlineWidgetProgress)
+            },            
+            OutlineWidgetProgress_HasURLs(){
+                //console.log(`${this.GetKeyWord()} Has Url`)  
+                //console.log(this.__OutlineWidgetProgress)              
+                if (this.__OutlineWidgetProgress.URLs.length == 0) return null;
+                return this.__OutlineWidgetProgress; 
+            },
+            OutlineWidgetProgress_GetSelection(){
+                return this.__OutlineWidgetProgress.URLsSelection;
+            },
+            OutlineWidgetProgress_UpdateURLSelection(altered_url, state){               
+                if (state == false) {
+                    var new_selection = []
+                    for (const url of this.__OutlineWidgetProgress.URLsSelection){
+                        if (url !== altered_url){                           
+                            new_selection.push(url)
+                        }
+                    }
+                    this.__OutlineWidgetProgress.URLsSelection = new_selection;
+                } else {
+                    this.__OutlineWidgetProgress.URLsSelection.push(altered_url);
+                }
+            },
+            OutlineWidgetProgress_SetOutlines(outlines){                
+                this.__OutlineWidgetProgress.Outlines = JSON.parse(JSON.stringify(outlines));               
+                //console.log(`${this.GetKeyWord()} Set Outlines`)
+                //console.log(outlines)
+                //console.log(this.__OutlineWidgetProgress)
+            },
+            OutlineWidgetProgress_HasOutlines(){
+                //console.log(`${this.GetKeyWord()} Has HasOutlines`)
+                //console.log(this.__OutlineWidgetProgress)
+                if (JSON.stringify(self.__OutlineWidgetProgress.Outlines) === JSON.stringify({URLs : [{Outline : '', URL : ''}]})) return null;                
+                return this.__OutlineWidgetProgress.Outlines; 
+            },
+            OutlineWidgetProgress_OutlineChanged(url, newoutine){
+                for (const outline of this.__OutlineWidgetProgress.Outlines.URLs){                   
+                    if (outline.URL === url){
+                        outline.Outline = newoutine;                        
+                    }
+                }
+            },
+            OutlineWidgetProgress_DiscardOutline(discard){
+                var newurls = []                
+                for (const url of this.__OutlineWidgetProgress.Outlines.URLs){
+                    if (url.URL !== discard){
+                        newurls.push(url)
+                    }
+                }
+                this.__OutlineWidgetProgress.Outlines.URLs = newurls;
+            },
+            OutlineWidgetProgress_SetOutline(outline){
+                this.__OutlineWidgetProgress.Outline = {Outline : outline.Outline}; // filter out the search intent field
+                this.__SetOutline(outline.Outline);
+                return;
+                if (!(outline.SearchIntent === undefined))
+                this.__Setintent(outline.SearchIntent)  
+            },
+            OutlineWidgetProgress_HasOutline(){
+                if (this.__OutlineWidgetProgress.Outline.Outline === '') return null;
+                return this.__OutlineWidgetProgress.Outline;
+            },
+            GetKeyWord(){return this.__Kword.innerHTML}, 
+            GetOutline(){return this.__Outline.value},
+            GetIntent(){return this.__Intent.value},
+            GetEntityAnalysis(){return this.__Entities.value},
+            GetCoreEntity(){return this.__CoreEntity.value}, 
+            GetEntityContext(){return this.__CntxFrame.value}, 
+            GetBaseURL(){return this.__BaseURL.value}, 
+            GetAnchors(){
+                return self.__AnchorsSelect.Selection()
+            },
+            SetEntityData(data, individual=false){                
+                this.__SetEntityAnalyis(data.EntityAnalysis); 
+                if (individual === false) {
+                    this.__SetEntityContext(data.ContextualFrame);     
+                    this.__SetCoreEntity(data.CoreEntity);
+                    return;
+                } 
+                if (this.GetEntityContext() === '') this.__SetEntityContext(data.ContextualFrame);     
+                if (this.GetCoreEntity()    === '') this.__SetCoreEntity(data.CoreEntity);
+            },      
+            AddAnchors(anchors){
+                for (anchor of anchors){
+                    self.__AnchorsSelect.AddOption(anchor)
+                }     
+            },  
+            __IsTarget(target){
+                for (const link of this.__Links){
+                    if (link.Target === target){
+                        return true;
+                    }
+                }
+                return false;
+            },
+            __SetOutline(new_outline){
+                this.__Outline.value = new_outline;
+            },
+            __Setintent(new_intent) {
+                this.__Intent.value = new_intent;
+            },
+            __SetKeyword(new_kword){
+                this.__ListItemKword.innerHTML = new_kword;
+                this.__Kword.innerHTML         = new_kword;
+            },
+            __SetEntityAnalyis(new_analyis){
+                this.__Entities.value = new_analyis;
+            },
+            __SetCoreEntity(new_core_entity){
+                this.__CoreEntity.value = new_core_entity;
+            },
+            __SetEntityContext(new_context){
+                this.__CntxFrame.value = new_context;
+            },
+            __SetAnchors(anchors) {
+                for (const anchor of anchors){
+                    self.__AnchorsSelect.AddOption(anchor);
+                }
+            },
+            __SetFacts(facts){this.__Facts.value = facts;},
+            GetFacts(){return this.__Facts.value},
+            __KeywordNamechanged      : function(){                          
+                if (event.key === 'Enter'){
+                    old_name = this.GetKeyWord();
+                    this.__SetKeyword(this.__Edit.value)       
+                    this.__Edit.style.display = 'None';
+                    KEYWORDS.KeywordNameChanged(old_name, this.GetKeyWord())
+                }                
+            },  
+            KeywordNameChanged(old_name, new_name){
+                // Called when the name of ANOTHER keyword in the cluster changes
+                for (const link of this.__Links){                    
+                    if (link.Target === old_name){
+                        link.Target = new_name
+                    }
+                }
+                for (const sim of this.__Similarity){                    
+                    if (sim.Target === old_name){
+                        sim.Target = new_name;
+                    }
+                }
+            },
+            async __GenerateAnchors(){
+                //console.log(self.GetAnchors());
+                CLUSTERCREATOR_msg(`Generating anchors for keyword ${this.GetKeyWord()}`);
+                await DASHBOARD_UpdateSettings()
+                var fetch_options  = DASHBOARD_FetchOPtions()  
+                var options        = {Keyword : this.GetKeyWord(), CoreEntity : this.GetCoreEntity(), Anchors : self.GetAnchors(), 
+                    Model : CLUSTERCREATOR_SETTINGS.GetModelFor('Anchors')}
+                fetch_options.body = JSON.stringify({Request : [options]});    
+                var reply          = await DASHBOARD_Fetch('/cluster_creator-anchors', fetch_options);
+                reply              = reply.Reply[0];                
+                self.AddAnchors(reply.Anchors);               
+                CLUSTERCREATOR_msg('', 'Done generating anchors');     
+            },
+            async __GenerateEntities(){                
+                CLUSTERCREATOR_msg(`Performing entity analysis for keyword ${this.GetKeyWord()}`);  
+                await DASHBOARD_UpdateSettings()      
+                let [success, prompts] = KEYWORDS_GetEntityPrompts()
+                if (success === false) {                
+                    CLUSTERCREATOR_msg('', 'Done performing entity analysis');     
+                    return   
+                }   
+                try {        
+                    var fetch_options  = DASHBOARD_FetchOPtions()  
+                    fetch_options.body = JSON.stringify({
+                        Request : [this.GetKeyWord()], 
+                        Model   : CLUSTERCREATOR_SETTINGS.GetModelFor('Entities'),
+                        Prompts : prompts
+                    });    
+                    var reply          = await DASHBOARD_Fetch('/cluster_creator-entities', fetch_options);
+                    reply              = reply.Reply[0];   
+                    console.log(reply);  // removing this breaks all. =( =(           
+                    this.SetEntityData(reply, individual=true);   
+                    CLUSTERCREATOR_msg('', 'Done performing entity analysis');   
+                } catch(err){
+                    CLUSTERCREATOR_msg('', 'Done performing entity analysis');   
+                    DASHBOARD_except(err)
+                }                              
+            },
+            async GenFacts(msgs=true){
+                if (msgs) CLUSTERCREATOR_msg(`Generating facts for keyword ${this.GetKeyWord()}`);  
+                console.log("=================", DASHBOARD_GetModel('Facts'))           
+                await DASHBOARD_UpdateSettings()
+                let [system, user] =  DASHBOARD_OptionO('More Prompts')["Facts"][document.getElementById('KEYWORDS::select-facts-prompt').value]
+                user = user.replaceAll('{KEYWORD}', this.GetKeyWord())
+                console.log(system, user)
+                
+                let fetch_options  = DASHBOARD_FetchOPtions()  
+                fetch_options.body = JSON.stringify({Request : {
+                    Keyword : this.GetKeyWord(), 
+                    "Model" : DASHBOARD_GetModel('Facs'),
+                    System  : system,
+                    User    : user
+                }});    
+                let reply          = await DASHBOARD_Fetch('/cluster_creator-gen-facts', fetch_options); 
+                console.log(reply)                            
+                this.__SetFacts(reply.Reply);     
+                if (msgs) CLUSTERCREATOR_msg('', 'Done generating facts');     
+            },
+            GetKeywordForPermalink(){
+                let blacklists = DASHBOARD_OptionO("BlackLists")
+                let kword      = this.GetKeyword().replaceAll(' ', '-');
+                if ('Stop Words' in blacklists) {
+                    for (let word of blacklists['Stop Words']) {
+                        kword = kword.replaceAll(`-${word}`, '')                       
+                    }
+                }
+                return kword
+            },
+            SYNC_GetPemalink(){               
+                let url       = self.GetBaseURL();  
+                let permalink =  ''  
+                while (url.endsWith('\\') || url.endsWith('/')){
+                    url = url.substring(0, url.length - 1);
+                }         
+                if (url == '') {
+                    url = document.getElementById('KEYWORDS::url').value;
+                    while (url.endsWith('\\') || url.endsWith('/')){
+                        url = url.substring(0, url.length - 1);
+                    }  
+                    if (true === this.__DontAppendKword.checked)
+                    return `${url}${CLUSTERCREATOR_SETTINGS.GetURLTerminator()}`
+                    return `${url}/${this.GetKeywordForPermalink()}${CLUSTERCREATOR_SETTINGS.GetURLTerminator()}`;
+                }
+                if (true === this.__DontAppendKword.checked) 
+                return `${url}${CLUSTERCREATOR_SETTINGS.GetURLTerminator()}`;       
+                return `${url}/${this.GetKeywordForPermalink()}${CLUSTERCREATOR_SETTINGS.GetURLTerminator()}`;               
+            },
+            async GetPemalink(no_sync){
+                if (no_sync === undefined)
+                await DASHBOARD_UpdateSettings()  
+                let kword     = DASHBOARD_OptionB('Remove Dots') ? this.GetKeyWord().replaceAll('.', '') : this.GetKeyWord();
+                let url       = self.GetBaseURL();                   
+                let permalink =  ''  
+                while (url.endsWith('\\') || url.endsWith('/')){
+                    url = url.substring(0, url.length - 1);
+                }         
+                if (url == '') {
+                    url = document.getElementById('KEYWORDS::url').value;                    
+                    while (url.endsWith('\\') || url.endsWith('/')){
+                        url = url.substring(0, url.length - 1);
+                    }  
+                    if (true === this.__DontAppendKword.checked) 
+                    return `${url}${CLUSTERCREATOR_SETTINGS.GetURLTerminator()}`;         
+                    return `${url}/${this.GetKeywordForPermalink()}${CLUSTERCREATOR_SETTINGS.GetURLTerminator()}`;
+                }
+                if (true === this.__DontAppendKword.checked) 
+                return `${url}${CLUSTERCREATOR_SETTINGS.GetURLTerminator()}`;        
+                return `${url}/${this.GetKeywordForPermalink()}${CLUSTERCREATOR_SETTINGS.GetURLTerminator()}`;                   
+            },
+            SetURL(new_url){
+                this.__BaseURL.value = new_url;
+            },
+            ByBy: function(){ 
+                this.__ListItemContainer.parentElement.removeChild(this.__ListItemContainer);
+                this.__BaseContainer.parentElement.removeChild(this.__BaseContainer); 
+            },    
+            GetKeyword(){
+                return this.__Kword.innerHTML;
+            },
+            Serialize(){
+                return {
+                    Keyword                        : this.GetKeyWord(),
+                    Outline                        : this.GetOutline(),
+                    'Search Intent'                : this.GetIntent(),
+                    'Entities Analysis'            : this.GetEntityAnalysis(),
+                    'Core Entity'                  : this.GetCoreEntity(),
+                    'Entity Context'               : this.GetEntityContext(),
+                    'Anchors'                      : this.GetAnchors(),
+                    'BaseURL'                      : this.GetBaseURL(),
+                    'OutlineProgress'              : this.__OutlineWidgetProgress,
+                    'Similarity'                   : this.__Similarity,
+                    'Links'                        : this.GetLinks(),
+                    'Article'                      : this.GetArticle(),
+                    'Facts'                        : this.GetFacts(),
+                    'Titles and meta-descriptions' : this.GetTitlesAndMetaDesctiptions(),
+                    'Article Sections'             : this.GetArticleSections(),
+                    'Special instructions'         : this.__SpecialInstructions,
+                    'DontAppendKword'              : this.__DontAppendKword.checked,
+                    'Groups'                       : this.GetGroups(),
+                    'Chat'                         : this.GetChat(),
+                    'Improve Chat'                 : this.GetIChat(),
+                    'CTAs'                         : this.GetCTAs(),
+                    'AICTAs'                       : this.__AICTAS,
+                    'Common Spacial Instructions'  : this.GetCommonSpecialInstructions(),
+                    'Section CTA Instructions'     : this.__CTASectionIntructions
+                }
+            },
+            FromJson: function(json){                
+                if      ('Keyword' in json)           this.__SetKeyword(json.Keyword);
+                if      ('Outline' in json)           this.__SetOutline(json.Outline);
+                else if ('outline' in json)           this.__SetOutline(json.outline);
+                if      ('Search Intent' in json)     this.__Setintent(json['Search Intent']);
+                else if ('search_intent' in json)     this.__Setintent(json['search_intent']);
+                if      ('Entities Analysis' in json) this.__SetEntityAnalyis(json['Entities Analysis']);
+                if      ('Core Entity' in json)       this.__SetCoreEntity(json['Core Entity']);
+                if      ('Entity Context' in json)    this.__SetEntityContext(json['Entity Context']);
+                else if ('Entity context' in json)    this.__SetEntityContext(json['Entity context']);
+                if      ('Anchors' in json)           this.__SetAnchors(json.Anchors);
+                if      ('BaseURL' in json)           this.SetURL(json.BaseURL);
+                if      ('Similarity' in json)        this.SetSimilarity(json.Similarity);
+                if      ('Links' in json)             this.__Links = json.Links;
+                if      ('Article' in json)           this.SetArticle(json.Article);
+                if      ('Facts' in json)             this.__SetFacts(json.Facts);                
+                if      ('Titles and meta-descriptions'in json) this.SetTitlesAndMetaDesctiptions(json['Titles and meta-descriptions']);
+                if      ('Article Sections'in json) this.SetArticleSections(json['Article Sections']);
+                if      ('Special instructions' in json) this.__SpecialInstructions = json['Special instructions'];   
+                if      ('Chat' in json)                 this.__Chat                = json.Chat;
+                if      ('Improve Chat' in json)         this.__IChat               = json['Improve Chat'];
+                if      ('OutlineProgress' in json)   {
+                    this.__OutlineWidgetProgress = json.OutlineProgress;
+                    if (! ('URLsSelection' in this.__OutlineWidgetProgress)) {                       
+                        this.__OutlineWidgetProgress.URLsSelection = [];
+                    }                    
+                }  
+                if     ('DontAppendKword' in json)    this.__DontAppendKword.checked = json.DontAppendKword;       
+                if     ('Groups'          in json)    {
+                    for (let group of json.Groups){
+                        this.AddToGroup(group);
+                    }
+                }      
+                if     ('CTAs' in json)                        this.__CTA    = json.CTAs;      
+                if     ('AICTAs' in json)                      this.__AICTAS = json.AICTAs;       
+                if     ('Common Spacial Instructions' in json) this.SetCommonSpecialInstructions(json['Common Spacial Instructions']);   
+                if     ('Section CTA Instructions'    in json) this.__CTASectionIntructions  = json['Section CTA Instructions'];                    
+            }    
+        }        
+        var labels_div                         = document.createElement('div');
+        var inputs_div                         = document.createElement('div');       
+        var spacer                             = document.createElement('div');       
+        labels_div.style                       = 'display:flex; gap:6px;';
+        inputs_div.style                       = 'display:flex; gap:6px;';          
+        labels_div.appendChild(DASHBOARD_AziaSubtitle('Core entity', 'margin-bottom:0px; width:40%'));
+        labels_div.appendChild(DASHBOARD_AziaSubtitle('Contextual frame', 'margin-bottom:0px; width:60%'));
+        inputs_div.appendChild(self.__CoreEntity);
+        inputs_div.appendChild(self.__CntxFrame);              
+
+        var gen_container        = document.createElement('div');          
+        gen_container.style      = 'display:flex; flex-direction:row-reverse; gap:6px; width:100%; margin-top:8px; margin-bottom:-10px;font-size:12px';    
+        let gen_facts            = KEYWORD_gen_button('facts', 'height:22px');     
+        let gen_titles           = KEYWORD_gen_button('Titles and meta-descriptions', 'height:22px');  
+        let gen_intent           = KEYWORD_gen_button('Search Intent', 'height:22px');     
+        gen_titles.classList     += ' DASHBOARD_ellipsis' 
+        gen_intent.classList     += ' DASHBOARD_ellipsis'      
+        gen_container.appendChild(self.__GenAnchors);         
+        gen_container.appendChild(self.__GenEntities);
+        gen_container.appendChild(self.__GenOutline);
+        gen_container.appendChild(gen_facts);
+        gen_container.appendChild(gen_titles);
+        gen_container.appendChild(gen_intent);
+        //gen_container.appendChild(DASHBOARD_AziaSubtitle('', 'margin-top:2px; margin-right:12px')); 
+
+        let div                                = document.createElement('div');        
+        let label                              = document.createElement('p');
+        self.__DontAppendKword.type            = 'checkbox';
+        self.__DontAppendKword.style           = "margin-top:-18px;margin-left:10px";
+        label.style                            = "border-bottom:1px solid #000000aa; color:#000000aa";
+        label.innerHTML                        = 'Do Not Append Keyword';
+        div.style                              = 'display:flex; gap:6px;';
+        self.__BaseURL.style.width             = '50%'
+        div.appendChild(self.__BaseURL)
+        div.appendChild(self.__DontAppendKword);
+        div.appendChild(label);
+        
+        self.__Container.style                   = 'display:flex; flex-direction:column; gap:6px; margin-bottom:0px; background-color:white; padding:0px; overfloaw:hidden';
+        self.__BaseContainer.style               = 'display:flex; flex-direction:column; gap:0px; margin-bottom:10px; background-color:white; padding:20px; overfloaw:hidden';
+        self.__BaseContainer.className           = 'tw_Ctrl-Group';
+        self.__Outline.style                     = 'width:100%;height:120px'
+        self.__Intent.style                      = 'width:100%;height:120px'        
+        self.__Entities.style                    = 'width:100%;height:120px'   
+        self.__TitlesAndMeta.tyle                = 'width:100%;height:120px'           
+        self.__Facts.style                       = 'width:100%;height:120px'   
+        self.__Outline.className                 = 'tw_input'
+        self.__Intent.className                  = 'tw_input'
+        self.__Kword.className                   = 'tw_h3'  
+        self.__Kword.style                       = 'border-bottom: 1px solid black; margin-bottom:14px'
+        self.__Kword.innerHTML                   =  kword    
+        self.__GroupsContainer.className         = 'DASHBOARD_ClicableText'     
+        //for (let group of self.__Groups){self.__GroupsContainer.innerHTML += `<sup>${group}</sup>`;};           
+        self.__ListItemKword.className           = 'DASHBOARD_ClicableText';
+        self.__Edit.name                         = 'DASHBOARD::hide-me';
+        self.__BaseContainer.appendChild(self.__Kword);
+        self.__BaseContainer.appendChild(self.__Container);
+        self.__Container.appendChild(DASHBOARD_AziaSubtitle('Outline', 'margin-bottom:0px'));    
+        self.__Container.appendChild(self.__Outline);
+        self.__Container.appendChild(DASHBOARD_AziaSubtitle('Search Intent', 'margin-bottom:0px'));    
+        self.__Container.appendChild(self.__Intent);    
+        self.__Container.appendChild(DASHBOARD_AziaSubtitle('Facts','margin-bottom:0px'));
+        self.__Container.appendChild(self.__Facts);       
+        self.__Container.appendChild(DASHBOARD_AziaSubtitle('Entity Analysis','margin-bottom:0px'));
+        self.__Container.appendChild(self.__Entities);   
+        self.__Container.appendChild(DASHBOARD_AziaSubtitle('Titles and meta-descriptions','margin-bottom:0px'));
+        self.__Container.appendChild(self.__TitlesAndMeta);              
+        self.__Container.appendChild(labels_div);    
+        self.__Container.appendChild(inputs_div);  
+        self.__Container.appendChild(DASHBOARD_AziaSubtitle('Full URL','margin-bottom:0px'));
+        self.__Container.appendChild(div);
+        self.__Container.appendChild(DASHBOARD_AziaSubtitle('Anchors', 'margin-bottom:0px'));        
+        self.__Container.appendChild(self.__AnchorsSelect.Container());
+        self.__Container.appendChild(DASHBOARD_AziaSubtitle('Add anchors', 'margin-bottom:0px'));
+        self.__Container.appendChild(self.__AddAnchor);
+        self.__Container.appendChild(gen_container);          
+        document.getElementById('KEYWORDS::views').appendChild(self.__BaseContainer);
+
+        self.__ListItemContainer.style  = 'display:flex; gap:6px; width:100%';
+        var ListItemSpacer              = document.createElement('div');  
+        var icons_div                   = document.createElement('div');    
+        icons_div.style                 = 'display:flex; gap:6px;';
+        ListItemSpacer.className        = 'spacer'; 
+        self.__ListItemContainer.appendChild(DASHBOARD_AziaSubtitle(KEYWORDS.GetKeywordCount(),'margin-bottom:0px'));
+        self.__ListItemContainer.appendChild(self.__ListItemKword);
+        self.__ListItemContainer.appendChild(self.__GroupsContainer);
+        self.__ListItemContainer.appendChild(ListItemSpacer);  
+        self.__ListItemContainer.appendChild(self.__Edit); 
+        let copy   = '<svg xmlns="http://www.w3.org/2000/svg" class="DASHBOARD_icon-small" viewBox="0 0 448 512"><path d="M384 336H192c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16l140.1 0L400 115.9V320c0 8.8-7.2 16-16 16zM192 384H384c35.3 0 64-28.7 64-64V115.9c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1H192c-35.3 0-64 28.7-64 64V320c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H256c35.3 0 64-28.7 64-64V416H272v32c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192c0-8.8 7.2-16 16-16H96V128H64z"/></svg>'               
+        let copyB  = '<svg xmlns="http://www.w3.org/2000/svg" class="DASHBOARD_icon-small" viewBox="0 0 448 512"><path d="M208 0H332.1c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9V336c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V48c0-26.5 21.5-48 48-48zM48 128h80v64H64V448H256V416h64v48c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V176c0-26.5 21.5-48 48-48z"/></svg>'
+        let thrash = '<svg xmlns="http://www.w3.org/2000/svg" name="KEYWORD_delete" class="DASHBOARD_icon-small" viewBox="0 0 448 512"><path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>'
+        let max    = '<svg xmlns="http://www.w3.org/2000/svg" name="KEYWORD_show" class="DASHBOARD_icon-small" viewBox="0 0 512 512"><path d="M200 32H56C42.7 32 32 42.7 32 56V200c0 9.7 5.8 18.5 14.8 22.2s19.3 1.7 26.2-5.2l40-40 79 79-79 79L73 295c-6.9-6.9-17.2-8.9-26.2-5.2S32 302.3 32 312V456c0 13.3 10.7 24 24 24H200c9.7 0 18.5-5.8 22.2-14.8s1.7-19.3-5.2-26.2l-40-40 79-79 79 79-40 40c-6.9 6.9-8.9 17.2-5.2 26.2s12.5 14.8 22.2 14.8H456c13.3 0 24-10.7 24-24V312c0-9.7-5.8-18.5-14.8-22.2s-19.3-1.7-26.2 5.2l-40 40-79-79 79-79 40 40c6.9 6.9 17.2 8.9 26.2 5.2s14.8-12.5 14.8-22.2V56c0-13.3-10.7-24-24-24H312c-9.7 0-18.5 5.8-22.2 14.8s-1.7 19.3 5.2 26.2l40 40-79 79-79-79 40-40c6.9-6.9 8.9-17.2 5.2-26.2S209.7 32 200 32z"/></svg>'
+        let min    = '<svg xmlns="http://www.w3.org/2000/svg" name="KEYWORD_hide" class="DASHBOARD_icon-small" viewBox="0 0 640 512"><path d="M9.4 9.4C21.9-3.1 42.1-3.1 54.6 9.4L160 114.7V96c0-17.7 14.3-32 32-32s32 14.3 32 32v96c0 4.3-.9 8.5-2.4 12.2c-1.6 3.7-3.8 7.3-6.9 10.3l-.1 .1c-3.1 3-6.6 5.3-10.3 6.9c-3.8 1.6-7.9 2.4-12.2 2.4H96c-17.7 0-32-14.3-32-32s14.3-32 32-32h18.7L9.4 54.6C-3.1 42.1-3.1 21.9 9.4 9.4zM256 256a64 64 0 1 1 128 0 64 64 0 1 1 -128 0zM114.7 352H96c-17.7 0-32-14.3-32-32s14.3-32 32-32h96 0l.1 0c8.8 0 16.7 3.6 22.5 9.3l.1 .1c3 3.1 5.3 6.6 6.9 10.3c1.6 3.8 2.4 7.9 2.4 12.2v96c0 17.7-14.3 32-32 32s-32-14.3-32-32V397.3L54.6 502.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L114.7 352zM416 96c0-17.7 14.3-32 32-32s32 14.3 32 32v18.7L585.4 9.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3L525.3 160H544c17.7 0 32 14.3 32 32s-14.3 32-32 32H448c-8.8 0-16.8-3.6-22.6-9.3l-.1-.1c-3-3.1-5.3-6.6-6.9-10.3s-2.4-7.8-2.4-12.2l0-.1v0V96zM525.3 352L630.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L480 397.3V416c0 17.7-14.3 32-32 32s-32-14.3-32-32V320v0c0 0 0-.1 0-.1c0-4.3 .9-8.4 2.4-12.2c1.6-3.8 3.9-7.3 6.9-10.4c5.8-5.8 13.7-9.3 22.5-9.4c0 0 .1 0 .1 0h0 96c17.7 0 32 14.3 32 32s-14.3 32-32 32H525.3z"/></svg>'
+        let pen    = '<svg xmlns="http://www.w3.org/2000/svg" name="KEYWORD_edit" class="DASHBOARD_icon-small" viewBox="0 0 512 512"><path d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"/></svg>'
+        let edit   = '<svg xmlns="http://www.w3.org/2000/svg" name="KEYWORD_edit_intructions" class="DASHBOARD_icon-small" viewBox="0 0 512 512"><path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160L0 416c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-96c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 64z"/></svg>'
+        icons_div.innerHTML += edit + pen + thrash + max + min + copy + copyB;
+        self.__ListItemContainer.appendChild(icons_div);  
+        [edit, pen, thrash, max, min, copy, copyB] = Array.from(icons_div.children);
+        document.getElementById('KEYWORDS::list').appendChild(self.__ListItemContainer);
+        max.style.display = 'none'            
+        pen.onclick = function(event){
+            self.__Edit.value         = self.__Kword.innerHTML;
+            self.__Edit.style.display = 'block';
+            event.stopPropagation();
+        } 
+        thrash.onclick = function(){
+            KEYWORDS.RemoveKeyword(self);
+        }  
+        max.onclick = function(){
+            self.__Container.style.display      = 'flex';            
+            min.style.display = 'block';
+            max.style.display = 'none';
+            self.__BaseContainer.scrollIntoView(false)
+        }  
+        min.onclick = function(){
+            self.__Container.style.display      = 'none';
+            max.style.display = 'block';
+            min.style.display = 'none';
+            self.__BaseContainer.scrollIntoView(false)
+        }   
+        copy.onclick = async function(){
+            let url = `<pre><div style="font-size:14; font-family:Inter"><h2 style="text-transform:capitalize; background-color:#f5f5f5"><strong>${self.GetKeyWord().trim('\n').trim('\r')}</strong></h2><br><br>`
+            url    += `<h3><strong>Permalink</strong></h3><br><br>`
+            url    += `${(await self.GetPemalink()).trim('\n').trim('\r')}<br><br><h3><strong>Outline</strong></h3><br><br>${self.GetOutline()}<br><br>`;
+            url    += `<h3><strong>Search Intent</strong></h3><br><br>${self.GetIntent().trim('\n').trim('\r')}<br></div></pre>`
+            let win                     = window.open()
+            win.document.body.innerHTML = url.replaceAll('\n', '<br>');                  
+        }   
+        copyB.onclick = async function(){           
+            let url                     = await self.GetGdoc()
+            let win                     = window.open()
+            win.document.body.innerHTML = url         
+        }   
+        edit.onclick = function(event){
+            event.stopPropagation();
+            KEYWORDS_EditCommonSpecialtructionsDialog(self)
+        }
+        self.__GenOutline.onclick     = function(){CLUSTERCREATOR_SelectTab(document.getElementById(`CLUSTERCREATOR::tab-item-Outlines`), self)}
+        self.__GenEntities.onclick    = function(){self.__GenerateEntities();} 
+        self.__GenAnchors.onclick     = function(){self.__GenerateAnchors();} 
+        gen_facts.onclick             = function(){self.GenFacts();} 
+        self.__ListItemKword.onclick  = function(){self.__BaseContainer.scrollIntoView(false);}
+        self.__Edit.onkeypress        = function(event){self.__KeywordNamechanged(event);} 
+        self.__Edit.onclick           = function(event){event.stopPropagation();}
+        self.__AddAnchor.onkeypress   = function(event){
+            if (event.key === 'Enter'){                                            
+                self.__AnchorsSelect.AddOption(self.__AddAnchor.value)
+                self.__AddAnchor.value = '';
+            }
+        }  
+        self.__Outline.onkeydown = function(){self.OutlineWidgetProgress_SetOutline({'Outline' : self.__Outline.value})};
+        self.__Outline.onchange  = function(){self.OutlineWidgetProgress_SetOutline({'Outline' : self.__Outline.value})};
+        gen_titles.onclick = function(){
+            CLUSTERCREATOR_msg('Generating titles and metadescription');  
+            try {
+                let prompts = DASHBOARD_OptionO('More Prompts')['Titles'][document.getElementById("KEYWORDS::titles-prompt").value];
+                if (prompts.length < 6) {
+                    alert("The seleted prompt is missing the cluster creator system and user sections");
+                    return 
+                }
+                let sys   = prompts[4];
+                let user  = prompts[5];     
+                let today = new Date().toDateString().split(' ').slice(1, 4).toString().replace(',', ' ').replace(',', ', ');            
+                (async function a_func(){   
+                    let fetch_options  = DASHBOARD_FetchOPtions();   
+                    await DASHBOARD_UpdateSettings()          
+                    fetch_options.body = JSON.stringify({
+                        Model            : DASHBOARD_GetModel('Titles'),
+                        System           : sys,
+                        User             : user,
+                        Today            : today,
+                        Keyword          : self.GetKeyWord(),
+                        Outline          : self.GetOutline(),
+                        'Search Intent'  : self.GetIntent()     
+                        }); 
+                    self.SetTitlesAndMetaDesctiptions( (await DASHBOARD_Fetch('content-creator_titles-and-meta', fetch_options)).Reply )  
+                    CLUSTERCREATOR_msg('', 'Finished generating titles and metadescription');                 
+                })()  
+            } catch(err){
+                DASHBOARD_except(err)
+                CLUSTERCREATOR_msg('', 'Finished generating titles and metadescription');   
+            } 
+        }
+        gen_intent.onclick = function(){
+            CLUSTERCREATOR_msg(`Generating search intent for ${self.GetKeyWord()}`);  
+            (async function(){
+                const model    = OutlineGen.__GetSearchIntentModel();
+                const country  = document.getElementById('OUTLINEGEN::Country').value;
+                const kword    = document.getElementById('OUTLINEGEN::Keyword').value;
+                const options  = {method : 'POST', headers : {'Content-Type': 'application/json', 'Accept' : 'application/json'}};                
+                let  reply     = await DASHBOARD_Fetch(`/outlinegen-gen-intent?country_code=${country}&keyword=${kword}&model=${model}`, options);                                
+                self.__Setintent(reply.Reply)  
+                CLUSTERCREATOR_msg('', 'Finished generating search intent');   
+            })()
+        }
+        return self;     
+    };   
+    (async function(){
+        let args = String(window.location).split('?')[1].replaceAll('%20', ' ').split('&');
+        args     = Object.fromEntries( args.map(arg => arg.split('=')) )
+        if (true === ("Client"  in args) &&
+            true === ('Domain'  in args) &&
+            true === ('Cluster' in args) ){
+            try
+            {    
+                CLUSTERCREATOR_msg(`Loading clusters ${args.Cluster}`);
+                let cluster_data = await ClusterCreatorUsersDomains_Load(args.Client, args.Domain, args.Cluster);
+                console.log(cluster_data)
+                console.log(cluster_data)
+                KEYWORDS.FromJson(cluster_data);
+                KEYWORDS.SetClient(args.Client);									
+                KEYWORDS.SetCluster(args.Cluster);
+                KEYWORDS.SetDomain(args.Domain);
+                DOMAIN_OWNED_KEYWORS.Reset();
+                CLUSTERCREATOR_msg(`Loading domain clusters`);
+                return; // don't load other clusters anchors now                
+            } 
+            catch(err)
+            {
+                DASHBOARD_except(err)
+            }
+            finally
+            {
+                CLUSTERCREATOR_msg('');
+            }   
+        }     
+    })()    
+</script>

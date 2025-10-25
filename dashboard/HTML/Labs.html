@@ -1,0 +1,228 @@
+{% extends 'dashboard.html' %}
+
+{% block breadcrumbs %}  
+<div style='display:flex; flex-direction: column; width:100%; margin-right:20px; margin-bottom:-16px;'>
+    <div style='display:flex; margin-bottom:20px; text-transform: uppercase;'> 
+        <span>SEO Tools</span>
+        <span>Labs</span>   
+    </div>        
+    <h1 class='az-content-title'>Labs</h1>
+</div>    
+{% endblock %}    
+
+{% block tool_content %} 
+<style>   
+.LABS_root{
+    display         : flex;
+    background-color: var(--theme-clr-weak);    
+    width           : calc(100% - 10px);
+    height          : calc(100% - 40px);
+    overflow-y      : auto;
+    margin-right    : 10px;
+    margin-bottom   : 10px ;
+}
+.LABS_list-container-container{
+    display          : flex;
+    flex-direction   : column;
+    width            : 30%;
+    background-color : white;
+    margin           : 10 100 10 10;
+    padding          : 10 10 10 10;
+    gap              : 6px;
+}
+</style>    
+
+<div class='LABS_root'>
+    <div class='LABS_list-container-container'>
+        <button id='LABS-outline-fix-text::load-cluster' class='btn btn-az-secondary btn-rounded'>Load cluster</button>
+        <button id='LABS-outline-fix-text::improve-outlines' class='btn btn-az-secondary btn-rounded' style='display:flex;' onclick='CLUSTER_CONTENT_CREATOR.Improve()'>        
+            <div id='LABS-outline-fix-text::improve-outlines-label'>Fix outlines</div> 
+            <div id='LABS-outline-fix-text::improve-outlines-spinner' class='DASHBOARD_Loader' style='width:26px; height:26px; margin-top:-4px;'></div>             
+        </button> 
+
+        <div id='LABS-outline-fix-text::keyword-list' style='overflow-y:auto;height:auto'></div>
+    </div>   
+    <div style='display:flex;flex-direction:column;width:70%;overflow:auto;margin-top:10px;'>    
+        <table id='LABS::outlines-blacklist-table' style='overflow:auto;'>
+            <tr style='font-weight:bold;'>
+                <td style='width:auto; resize:horizontal; overflow:auto'> <div style='resize:both;'>Original</div></td>
+                <td style='width:auto; resize:horizontal; overflow:auto'> <div style='resize:both;'>Fixed</div></td>                                               
+            </tr>
+            <tr style='font-weight:normal;'>
+                <td style='width:auto; resize:horizontal; overflow:auto'> <div id='LABS::orig-outline' style='resize:both;'></div></td>
+                <td style='width:auto; resize:horizontal; overflow:auto'> <div id='LABS::fixed-outline' style='resize:both;'></div></td>                                               
+            </tr>
+        </table>    
+    </div>    
+</div>
+
+<script>
+// let the server initialize it's internal list
+(async function (){
+    let options = DASHBOARD_FetchOPtions();
+    let list    = await DASHBOARD_Fetch('content_creator-get_blacklisted_words?list=Outlines', options);     
+})();
+var LABS = {
+    __ClusterData       : {},
+    __Selected_Outlines : [],
+    GetOutlines(){
+        let selected = []
+        for (const outline of this.__Selected_Outlines) {
+            if (outline.Selected === true)
+                selected.push(outline)
+        }
+        return selected
+    },
+    Reset(data){
+        this.__ClusterData       = JSON.parse(data);
+        this.__Selected_Outlines = []
+        return JSON.parse(data)
+    },
+    GetOutlineFromKword(k){
+        for (const kword of this.__ClusterData.Keywords){
+                if (kword.Keyword === k){
+                    if      ('Outline' in kword) return kword.Outline;
+                    else if ('outline' in kword) return kword.outline;
+            }
+        }  
+        return null;      
+    },
+    GetFixFromKword(k){
+        for (let kword of this.__Selected_Outlines){
+            if (kword.Keyword === k){
+                return kword.Fix; 
+            }
+        }
+        return ''
+    },
+    GetReplacements(k){
+        for (let kword of this.__Selected_Outlines){
+            if (kword.Keyword === k){
+                return kword.Replacements; 
+            }
+        }
+        return []
+    },
+    SetFix(k, fix, Replacements){
+        for (let kword of this.__Selected_Outlines){
+            if (kword.Keyword === k){
+                kword.Fix          = fix;
+                kword.Replacements = Replacements;
+                continue;
+            }
+        }
+    },
+    GetKeyword(k){
+        let outline   = this.GetOutlineFromKword(k)
+        if (outline === null){
+            return;
+        }
+        for (let kword of this.__Selected_Outlines){
+            if (kword.Keyword === k){
+                return kword
+            }
+        } 
+        item =  {
+            Keyword      : k,
+            Outline      : outline,
+            Fix          : '',
+            Replacements : [],
+            Selected     : false
+        }
+        this.__Selected_Outlines.push(item);
+        return item;
+    },
+    SelectOutline(checkbox, label){        
+        let kword   = this.GetKeyword(label.innerHTML)
+        if (kword === null){
+            return;
+        }
+        kword.Selected  = checkbox.checked;    
+    },
+    Display(kword, reply){
+        let orig_slot   = document.getElementById('LABS::orig-outline')
+        let fixed_slot  = document.getElementById('LABS::fixed-outline')  
+        let orig  = this.GetOutlineFromKword(kword)
+        let fixed = this.GetFixFromKword(kword)        
+        for (const rep of this.GetReplacements(kword)){
+            orig = orig.replace(rep.Og,`<span style='background-color:LightGreen';>${rep.Og}</span>`)
+            fixed = fixed.replace(rep.Fix,`<span style='background-color:LightGreen';>${rep.Fix}</span>`)
+        }
+        orig_slot.innerHTML  = orig.replaceAll('\n', '<br>');
+        fixed_slot.innerHTML = fixed.replaceAll('\n', '<br>'); // new WikEdDiff().diff(orig, fixed).replaceAll('\n', '<br>');      
+    }
+} 
+document.getElementById('LABS-outline-fix-text::load-cluster').onclick = function(){
+    DASHBOARD_Load(function(contents){
+        let cluster = LABS.Reset(contents);        
+        if (false == 'Keywords' in cluster){
+            return alert('Not a cluster file');
+        }   
+        let parent       = document.getElementById('LABS-outline-fix-text::keyword-list');
+        parent.innerHTML = ''
+        for (const kword of cluster.Keywords) {
+            let div           = document.createElement('div');
+            let box           = document.createElement('input');
+            let label         = document.createElement('p');
+            box.type          = 'checkbox'
+            div.style.display = 'flex'
+            label.innerHTML   = kword.Keyword;
+            label.className   = 'DASHBOARD_ClicableText';
+            label.style       = 'margin: 2 0 0 0'
+            box.style         = 'margin: 2 2 0 0'
+            div.appendChild(box);
+            div.appendChild(label);
+            parent.appendChild(div);
+            box.onchange  = function(){LABS.SelectOutline(box, label);}
+            label.onclick = function(){
+                LABS.Display(label.innerHTML);
+            }
+        }  
+    },'.json')
+}
+document.getElementById('LABS-outline-fix-text::improve-outlines').onclick = function(){
+    document.getElementById('LABS-outline-fix-text::improve-outlines').classList              = 'btn btn-danger btn-rounded'
+    document.getElementById('LABS-outline-fix-text::improve-outlines-label').innerHTML        = 'Working'
+    document.getElementById('LABS-outline-fix-text::improve-outlines-spinner').style.display  = 'flex';  
+    (async function (){
+        await DASHBOARD_UpdateSettings()
+        let promisses  = []
+        let todo_count = 0 
+        for (const outline of LABS.GetOutlines()){
+            let options  = DASHBOARD_FetchOPtions()
+            options.body = JSON.stringify({
+                Outline : outline.Outline,
+                Model   : DASHBOARD_GetModel('outline-black-list') 
+            })
+            promisses.push({
+                Promisse     : fetch('content_creator-remove-outline-bad-words', options),
+                Options      : options,
+                Complete     : false,
+                Reply        : '',
+                Kword        : outline.Keyword,
+                Outline      : outline.Outline,
+                Replacements : []
+            })
+            todo_count += 1;
+        }
+        while (todo_count > 0) {                       
+            for (let promisse of promisses){
+                if (promisse.Complete === true) continue;
+                let reply = await (await promisse.Promisse).json();      
+                console.log(reply)                          
+                promisse.Complete     = true;
+                promisse.Reply        = reply.Reply    
+                promisse.Replacements = reply.Replacements                                                            
+                todo_count           -= 1;
+                LABS.SetFix(promisse.Kword, promisse.Reply, promisse.Replacements)
+            } 
+            await new Promise(r => setTimeout(r, 1000));
+        }
+        document.getElementById('LABS-outline-fix-text::improve-outlines').classList              = 'btn btn-az-secondary btn-rounded'
+        document.getElementById('LABS-outline-fix-text::improve-outlines-label').innerHTML        = 'Fix outlines'
+        document.getElementById('LABS-outline-fix-text::improve-outlines-spinner').style.display   = 'none'  
+    })()        
+}
+</script>    
+    
+{% endblock %}

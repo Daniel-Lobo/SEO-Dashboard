@@ -1,0 +1,135 @@
+As an expert content writer, your task is to create an engaging and informative introductory paragraph for an article on the topic "{KEYWORD}". Carefully review the provided search intent data, outline, target audience, desired tone(s), and factual information to guide your writing.
+
+Search intent data (to understand user intent):
+{INTENT}
+
+Outline (to grasp the article's structure):
+{OUTLINE}
+
+Target audience (to tailor content appropriately):
+{AUDIENCE}
+
+Desired tone(s) (to set the right voice):
+{TONES}
+
+Factual information (to enrich the article's content sections with relevant facts):
+{FACTS}
+
+Here is the list of instructions to follow:
+
+1. Craft an attention-grabbing introduction that immediately engages the reader and addresses the key themes and questions identified in the search intent analysis. Avoid starting with overused phrases like "Have you...".
+
+2. Set the article's tone(s) to "{TONES}", ensuring it matches the "{AUDIENCE}" audience's expectations. 
+
+3. Structure the introduction using the AIDA (Attention, Interest, Desire, Action) framework to maximize reader engagement.
+
+4. Do not explain the reasoning behind your writing strategy.
+
+5. After completing the introduction, stop and wait for further instructions for the next section of the article.
+
+6. The provided factual information is intended to be strategically incorporated throughout the article's content sections, which will be generated after the introduction. In the introduction, you may briefly mention 1-2 key facts that are central to the article's main theme, but avoid delving into details. The main goal is to distribute the facts meaningfully and contextually across the relevant content sections.
+
+Prioritize satisfying the search intent while captivating readers.'''
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Keyword (topic): {KEYWORD}
+
+Search intent data:
+{INTENT}
+
+Audience: {AUDIENCE}
+
+Tone(s): {TONES}
+
+Outline:
+{OUTLINE}
+
+Please provide the requested content without additional commentary.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+As an expert content writer, now focus on the exact section “{SECTION}” of the article.
+
+Here is the list of instructions to follow:
+
+Consult the article outline to gauge the depth required for covering each topic within this section. If a topic has its own subsection later, provide an overview without going into detail, as these points will be explored in-depth separately. For topics without specific subsections, cover them comprehensively within this section. This approach ensures a balanced and informed presentation that respects the article's structure.
+
+Format the entire content using Markdown syntax to enhance readability and structure. Use headings (e.g., '##' for H2, '###' for H3) to organize the content hierarchically. Bold key points for important emphasis, but use this sparingly to maintain effectiveness.
+
+Employ tables when presenting information that requires direct comparison, such as numerical data, feature comparisons, or pros and cons. Tables should be used judiciously and only when they significantly enhance the reader's understanding of the content.
+
+Use bullet lists for unordered items or key points that don't require a specific sequence. Numbered lists should be used when the order of the items is important, such as in a step-by-step guide or ranking. Both bullet and numbered lists should be used to break up long paragraphs and improve readability, but avoid overusing them, as excessive lists can be counterproductive.
+
+The goal is to create a balanced, engaging, and easy-to-read article that maximizes reader comprehension and minimizes cognitive overload. Prioritize the use of paragraphs for most information, and employ tables, bullet lists, and numbered lists strategically to support the content.
+
+Write comprehensively about “{}” and format the entire content using Markdown syntax.{}"
+
+{NLINKS==1}Integrate the internal linking data into this section as specified. Here are the internal link(s) to add in the content:{@NLINKS==1}  
+{NLINKS==2+}Integrate the internal linking data into this section as specified. Here are the internal link(s) to add in the content:{@NLINKS==2+}  
+{INTERNAL_LINKS}
+
+Apply the AIDA (Attention, Interest, Desire, Action) engagement strategy. Do not explain the reasoning behind your writing strategy.
+
+Ensure the content seamlessly connects with the previously written sections, maintaining coherence and logical flow.
+
+Tailor the style and tone(s) to suit the audience “{}”, ensuring the article remains consistent and engaging.
+
+Conclude the section without referencing or hinting at the content of the following sections or using phrases that suggest a final summary or conclusion, such as 'in summary' or 'in conclusion'. This approach is to maintain focus and relevance on the current section, considering there are additional sections to follow.
+
+Once this section is complete, stop and wait for further instructions for the next section of the article.'''
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Section: “{SECTION}”
+
+{NLINKS==1}Internal Linking:{@NLINKS==1}  
+{NLINKS==2+}Internal Linking:{@NLINKS==2+}  
+"{INTERNAL_LINKS}""
+
+Remember, only provide the content, do not add any additional commentary or insights.'''
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+As an expert content writer, now focus on the exact section "{SECTION}" of the article, which is dedicated to FAQs.
+
+Here is the list of instructions to follow:
+
+1. Format the FAQ section using Markdown syntax. Use headings (e.g., '##' for H2) for the section {SECTION}. Present each question as a bullet point, beginning with the question, followed by a paragraph with its concise, factual answer. Use the following format for the question/answer:
+
+- Question #1 (bullet list)
+
+The answer for the question #1 (paragraph)
+
+- Question #2 (bullet list)
+
+The answer for the question #2 (paragraph)
+...
+
+2. Write concise, NLP-friendly answers. For each question in "{SECTION}", provide answers that are factual and straightforward. Aim for clarity and simplicity to ensure the content is easily processed by Natural Language Processing (NLP) systems.
+
+3. Conclude the FAQ section appropriately. Do not reference or hint at future content. Ensure the FAQ stands on its own, maintaining focus and relevance within this specific section.
+
+4. Pause upon completion. Once you have addressed all questions in the FAQ section, stop and await further instructions for the next section of the article.
+
+Note: The goal is to craft each answer in a manner that is both reader-friendly and optimized for NLP, aiding in the clear understanding and processing of the information provided.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Section: "{SECTION}"
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+As an expert content writer, now focus on the exact section "{SECTION}" of the article, which is the conclusion.
+
+Here is the list of instructions to follow:
+
+1. Begin by summarizing the key points of the article. Concisely reiterate the main arguments or points made in the article to remind the reader of the most important takeaways. Use Markdown format for headings (e.g., '##' for H2, '###' for H3) according to the outline's hierarchy.
+
+2. Reflect on the initial question or thesis statement posed at the beginning of the article. Ensure that the conclusion provides a clear and definitive answer or resolution to this.
+
+3. Discuss the broader implications, significance, or consequences of the findings or arguments presented in the article. This helps to show the relevance of the article's content beyond its immediate context.
+
+4. Offer a personal reflection or insight to add depth to the conclusion, making it more engaging and memorable for the reader.
+
+5. Apply the AIDA (Attention, Interest, Desire, Action) engagement strategy. Do not explain the reasoning behind your writing strategy.
+
+6. Ensure the content seamlessly connects with the previously written sections, maintaining coherence and logical flow.
+
+7. Tailor the style and tone to suit the audience "{AUDIENCE}", ensuring the article remains consistent and engaging.
+
+8. End with a strong, thought-provoking statement or quotation that encapsulates the essence of the article.
+
+9. The conclusion must be short, and do not exceed 8 sentences.
+
+10. Once this section is complete, stop and wait for further instructions.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Section: "{SECTION}"

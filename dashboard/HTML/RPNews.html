@@ -1,0 +1,330 @@
+{% extends 'dashboard.html' %}
+
+{% block breadcrumbs %}  
+<div style='display:flex; flex-direction: column; width:100%; margin-right:20px; margin-bottom:-16px;'>
+    <div style='display:flex; margin-bottom:20px; text-transform: uppercase;'> 
+        <span>SEO Tools</span>
+        <span>RP News</span>           
+    </div>        
+    <h1 class='az-content-title'>RP News</h1>
+    
+</div>    
+{% endblock %}    
+
+{% block tool_content %} 
+<style>  
+.RPNEWS_root{
+    display       : flex;  
+    flex-direction: column;
+    height        : calc(100% - 0px);
+    width         : 100%;
+    overflow      : hidden;   
+    box-sizing    : border-box;
+    gap           : 10px;
+}
+</style>    
+
+<div class='RPNEWS_root tw_Groups-Container'>
+   <div style='display:flex;gap:10px'>   
+        <div style='display:flex;flex-direction:column;flex-grow:1;' class='tw_Ctrl-Group'>   
+            <h3 class='tw_h3'>Keyword</h3> 
+            <input id='RPNEWS::Keyword' class="tw_input" placeholder='Keyword' type="text">  
+        </div>     
+        <div style='display:flex;flex-direction:column;flex-grow:1;' class="tw_Ctrl-Group">   
+            <h3 class='tw_h3'>Country</h3>                          
+            <select id='RPNEWS::Country' class="tw_input">
+                <option value='US' label="United States"></option>                    
+                <option value="CA" data-select2-id="26">Canada</option>
+                <option value="UK" data-select2-id="27">United Kingdom</option>
+                <option value="AU" data-select2-id="28">Australia</option>
+                <option value="NL" data-select2-id="29">Netherlands</option>
+            </select>  
+        </div> 
+        <div style='display:flex;flex-direction:column;flex-grow:1;' class="tw_Ctrl-Group">  
+            <h3 class='tw_h3'>News count</h3>   
+            <input type="number" class="tw_input" value="25" id="RPNEWS::count" name="Neews count" min="1" max="100">
+        </div>     
+    </div>
+    <div style="display:flex;width:100%;gap:6px;flex-grow:1;">
+        <div style="display:flex;flex-direction:column;width:50%" class="tw_Ctrl-Group">
+            <h3 class='tw_h3'>News</h3>  
+            <textarea id='RPNEWS::news' style="height:100%" class="tw_input" placeholder="News"></textarea>            
+        </div>   
+        <div style="display:flex;flex-direction:column;width:50%" class="tw_Ctrl-Group">   
+            <h3 class='tw_h3'>Story ideas</h3>         
+            <div id='RPNEWS::container' style="display:flex;flex-direction:column;width:100%;max-height:400px;overflow-y:auto;">             
+            </div>   
+        </div>     
+    </div>
+    <!--<div class="spacer"></div>-->
+    <div style='display:flex;flex-direction:row-reverse;gap:6px;margin-top:-4px;'>
+        <div style="display:flex;flex-direction:column;width:50%;padding-left:2px;" class="tw_Ctrl-Group">
+            <textarea id="RPNEWS::user-prompt" rows="4" class="tw_input" style="width:100%;height:100%"></textarea>
+            <div style="flex-grow: 1;"></div>
+            <div style="display:flex;flex-direction:row-reverse;">
+                <button onclick="RPNEWS.Chat()" id="RPNEWS::send" disabled class="tw_button" 
+                style="margin-top:4px;padding:6 20 2 20;display:flex;flex-direction:row;gap:6px">
+                    <div id='RPNEWS::send-spinner' class='DASHBOARD_Loader' style='width:26px; height:26px; margin-top:-2px;'></div>             
+                    Send
+                </button>
+            </div>    
+        </div>        
+        <div style="display:flex;flex-direction:row-reverse;width:50%">
+            <div style="display:flex;flex-direction:row;width:50%;gap:20px" class="tw_Ctrl-Group">
+                <button id="RPNEWS::scrape" class="tw_Button" style="margin:0 0 0 0;height:40px">Scrape news</button>                 
+                <button id="RPNEWS::gen-ideas" class="tw_Button" style="margin:0 0 0 0;height:40px;display:flex;gap:6px;padding-top:10px;">
+                    <div id='RPNEWS::ideas-spinner' class='DASHBOARD_Loader' style='width:26px; height:26px; margin-top:-3px;'></div>  
+                    Get story ideas
+                </button>
+            </div>             
+            <div style="display:flex;flex-direction:column;width:50%;" class="tw_Ctrl-Group">
+                <h3 class='tw_h3'>Prompt</h3>   
+                <select id='RPNEWS::prompts' class="tw_input" style="height: 40px;" 
+                style="width:200px;height:40px" onclick="event.stopPropagation()">                             
+                </select>                 
+            </div>    
+        </div>  
+    </div>    
+</div>
+
+<script>
+    var RPNEWS = {
+        __preface : [],
+        __chat    : [],    
+        __AppendMessage(origin, message){
+            let index   = this.__chat.length - 1;
+            let chat    = document.getElementById('RPNEWS::container');
+            let div     = document.createElement('div');
+            let texarea = document.createElement('textarea');
+            let count   = message.split("\n").length - 1
+            texarea.style             = 'background-color:transparent;border:none;outline:none;resize:none;width:100%;padding:4px;';
+            texarea.rows              = count > 1 ? count : 1;
+            texarea.disabled          = true;
+            div.style.display         = 'flex';
+            div.style.flexDirection   = 'column';
+            div.style.padding         = '4px';
+            div.style.margin          = '2px';
+            div.style.borderRadius    = '4px';
+            div.style.backgroundColor = origin === 'user' ? 'lightblue' : 'lightgreen';
+            //div.style.width           = 'fit-content';
+            //div.style.maxWidth        = '100%';
+            div.style.width           = '99%';
+            div.style.wordWrap        = 'break-word';
+            div.style.wordBreak       = 'break-all';
+            div.style.whiteSpace      = 'pre-wrap';
+            div.style.alignSelf       = origin === 'user' ? 'flex-start' : 'flex-start';
+            div.innerHTML             = `<b>${origin}</b>`;
+            texarea.innerHTML         = message;
+            div.appendChild(texarea)
+            let buts_div              = document.createElement('div');
+            buts_div.style            = 'display:flex;flex-direction:row-reverse;gap:0px;margin-top:10px;margin-right:20px;';
+            let del_but               = document.createElement('button');
+            del_but.style             = 'background-color:transparent;border:none;cursor:pointer;outline:none;';           
+            del_but.innerHTML         = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-small">
+            <path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0L284.2 0c12.1 0 23.2 6.8 28.6 17.7L320 32l96 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 96C14.3 96 0 81.7 0 64S14.3 32 32 32l96 0 7.2-14.3zM32 128l384 0 0 320c0 35.3-28.7 64-64 64L96 512c-35.3 0-64-28.7-64-64l0-320zm96 64c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16z"/>
+            </svg>`
+            let edit_but              = document.createElement('button');
+            edit_but.style            = 'background-color:transparent;border:none;cursor:pointer;outline:none;';           
+            edit_but.innerHTML        = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DASHBOARD_icon-small">
+            <path d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160L0 416c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-96c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 96c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 64z"/>
+            </svg>`;
+            let cancel_but              = document.createElement('button');
+            cancel_but.style            = 'background-color:transparent;border:none;cursor:pointer;outline:none;display:none;';           
+            cancel_but.innerHTML        = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DASHBOARD_icon-small">
+            <path d="M367.2 412.5L99.5 144.8C77.1 176.1 64 214.5 64 256c0 106 86 192 192 192c41.5 0 79.9-13.1 111.2-35.5zm45.3-45.3C434.9 335.9 448 297.5 448 256c0-106-86-192-192-192c-41.5 0-79.9 13.1-111.2 35.5L412.5 367.2zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/>
+            </svg>`;
+            let send_but              = document.createElement('button');
+            send_but.style            = 'background-color:transparent;border:none;cursor:pointer;outline:none;display:none;';           
+            send_but.innerHTML        = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-small">
+            <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
+            </svg>`;
+            let spinner              = document.createElement('div');
+            spinner.className        = 'DASHBOARD_Loader';
+            spinner.style            = 'display:none;width:14px; height:14px; margin-top:0px;border-width:1px;margin-right:6px';
+            if (origin === 'user') {
+                buts_div.appendChild(del_but);
+                buts_div.appendChild(edit_but);
+                buts_div.appendChild(send_but);
+                buts_div.appendChild(cancel_but);
+                buts_div.appendChild(spinner);
+                div.appendChild(buts_div);
+            }
+            chat.appendChild(div);
+            chat.scrollTop            = chat.scrollHeight;
+            del_but.onclick           = function(){
+                let remove_flag = false
+                let to_remove   = []
+                for (const child of chat.children){
+                    if (child === div) remove_flag = true
+                    if (remove_flag) to_remove.push(child)
+                }
+                for (const child of to_remove) chat.removeChild(child);                
+                RPNEWS.__chat.splice(index);
+                console.log(RPNEWS.GetChat())
+            }
+            cancel_but.onclick  = function(){
+                texarea.disabled         = true;
+                texarea.style.resize     = 'none';
+                send_but.style.display   = 'none';
+                cancel_but.style.display = 'none';
+                edit_but.style.display   = 'flex';
+            }
+            edit_but.onclick = function(){
+                texarea.disabled         = false;
+                texarea.style.resize     = 'vertical';
+                send_but.style.display   = 'flex';
+                cancel_but.style.display = 'flex';
+                send_but.onclick       = function(){      
+                    try {    
+                        RPNEWS.__chat.splice(index);      
+                        div.disabled          = true;
+                        spinner.style.display = 'flex';
+                        let user_prompt = texarea.value;                               
+                        let msgs        = RPNEWS.GetChat();
+                        msgs.push({role:"user", content:user_prompt});
+                        let model       = DASHBOARD_GetModel("story ideas");
+                        let options     = DASHBOARD_FetchOPtions();
+                        options.body    = JSON.stringify({Messages:msgs, Model:model});
+                        (async function(){
+                            let reply = await DASHBOARD_Fetch('/RTNews-ideas', options);
+                            let remove_flag = false
+                            let to_remove   = []
+                            for (const child of chat.children){
+                                if (child === div) remove_flag = true
+                                if (remove_flag) to_remove.push(child)
+                            }
+                            for (const child of to_remove) chat.removeChild(child);      
+                            RPNEWS.AppendMessage("user", user_prompt);
+                            RPNEWS.AppendMessage("assistant", reply.Reply);
+                        })()
+                    } catch (error) {
+                        DASHBOARD_except(error)
+                    }  
+                }           
+            }
+        },
+        AppendMessage(origin, message){
+            this.__chat.push({role:origin, content:message});
+            return this.__AppendMessage(origin, message);
+        },
+        InitChat(sys, user, assistant){
+            document.getElementById('RPNEWS::container').innerHTML = '';
+            this.__preface = [{role:"system", content:sys}, {role:"user", content:user}, {role:"assistant", content:assistant}];
+            this.__AppendMessage("assitant", assistant)
+        },
+        GetChat(){            
+            return this.__preface.concat(this.__chat);
+        },
+        Chat(){
+            try {
+                document.getElementById('RPNEWS::send').disabled              = true;
+                document.getElementById('RPNEWS::scrape').disabled            = true;
+                document.getElementById('RPNEWS::gen-ideas').disabled         = true;
+                document.getElementById('RPNEWS::send-spinner').style.display = 'flex'
+                let user_prompt = document.getElementById('RPNEWS::user-prompt').value;       
+                if (user_prompt === '') return alert('Please enter a message');     
+                let chat        = this.GetChat();
+                chat.push({role:"user", content:user_prompt});
+                let model       = DASHBOARD_GetModel("story ideas");
+                let options     = DASHBOARD_FetchOPtions();
+                options.body    = JSON.stringify({Messages:chat, Model:model});
+                (async function(){
+                    let reply = await DASHBOARD_Fetch('/RTNews-ideas', options);
+                    RPNEWS.AppendMessage("user", user_prompt);
+                    RPNEWS.AppendMessage("assistant", reply.Reply);
+                    document.getElementById('RPNEWS::user-prompt').value          = '';
+                    document.getElementById('RPNEWS::send').disabled              = false;
+                    document.getElementById('RPNEWS::scrape').disabled            = false;
+                    document.getElementById('RPNEWS::gen-ideas').disabled         = false;    
+                    document.getElementById('RPNEWS::send-spinner').style.display = 'none'    
+                })()
+            } catch (error) {
+                DASHBOARD_except(error)
+                document.getElementById('RPNEWS::user-prompt').value          = '';
+                document.getElementById('RPNEWS::send').disabled              = false;
+                document.getElementById('RPNEWS::scrape').disabled            = false;
+                document.getElementById('RPNEWS::gen-ideas').disabled         = false;    
+                document.getElementById('RPNEWS::send-spinner').style.display = 'none'    
+            } finally {                        
+            }
+        }        
+    };
+    (async function(){        
+        await DASHBOARD_UpdateSettings()
+        let select       = document.getElementById('RPNEWS::prompts')
+        select.innerHTML = ''           
+        for (const prompt in DASHBOARD_OptionO('More Prompts')['Rp news']){     
+            console.log(prompt)       
+            let option      = document.createElement('option');
+            option.value    = prompt;
+            option.label    = prompt;              
+            select.appendChild(option);
+        }     
+    })()    
+    document.getElementById("RPNEWS::scrape").onclick = function() {
+        //RPNEWS.AppendMessage("user", "This is a message from the user")
+        //RPNEWS.AppendMessage("assistant", "This is the AI reply")
+        //RPNEWS.AppendMessage("user", "Then the user says another thing")
+        //return RPNEWS.AppendMessage("assistant", "Another AI reply")
+        document.getElementById('RPNEWS::container').innerHTML = '';
+        document.getElementById("RPNEWS::scrape").disabled     = true;
+        try {
+            document.getElementById('RPNEWS::send').disabled = true;
+            let kword    = document.getElementById("RPNEWS::Keyword").value;
+            if (kword === '') return alert('Please enter a keyword');
+            let country  = DASHBOARD_GetOptions("RPNEWS::Country")[0];
+            let count    = document.getElementById("RPNEWS::count").value;
+            let options  = DASHBOARD_FetchOPtions();
+            options.body = JSON.stringify({Keyword:kword, Country:country, Count:count});            
+            (async function(){
+                replies      = await DASHBOARD_Fetch('/RTNews-get', options);
+                let news     = ''
+                for (let [index, reply] of replies.Reply.entries()){
+                    news += `News ${index}
+                    Title: ${reply.title}
+                    Date: ${reply.date}
+                    Source: ${reply.link}
+                    Context: ${reply.snippet}\n`
+                }                
+                document.getElementById('RPNEWS::news').value = news.replaceAll('\t', '');
+                document.getElementById("RPNEWS::scrape").disabled = false;
+            })()   
+        } catch (error) {
+            DASHBOARD_except(err)
+            document.getElementById("RPNEWS::scrape").disabled = false;
+        } finally {            
+        }
+    }
+    document.getElementById("RPNEWS::gen-ideas").onclick = async function() {
+        try {
+            document.getElementById('RPNEWS::ideas-spinner').style.display = 'flex'
+            document.getElementById('RPNEWS::gen-ideas').disabled = true;
+            let kword    = document.getElementById("RPNEWS::Keyword").value;
+            let news     = document.getElementById('RPNEWS::news').value;
+            if (kword === '') return alert('Please enter a keyword');
+            if (news  === '') return alert('Please scrape news first');
+            let country  = DASHBOARD_GetOptions("RPNEWS::Country")[0];            
+            let template = DASHBOARD_OptionO('More Prompts')['Rp news'][document.getElementById('RPNEWS::prompts').value];
+            let sys      = template[0]
+            let user     = template[1].replaceAll('{KEYWORD}', kword).replaceAll('{COUNTRY}', country).replaceAll('{NEWS}', news);
+            let model    = DASHBOARD_GetModel("story ideas")
+            let options  = DASHBOARD_FetchOPtions();
+            options.body = JSON.stringify({
+                Messages : [
+                    {role:"system", content:sys}, 
+                    {role:"user" ,  content:user}
+                ],
+                Model : model});
+            reply = await DASHBOARD_Fetch('/RTNews-ideas', options);
+            RPNEWS.InitChat(sys, user, reply.Reply)            
+        } catch (error) {
+            DASHBOARD_except(error)
+        } finally {
+            document.getElementById('RPNEWS::send').disabled = false;
+            document.getElementById('RPNEWS::ideas-spinner').style.display = 'none'
+            document.getElementById('RPNEWS::gen-ideas').disabled = false;
+        }
+    }
+</script>    
+    
+{% endblock %}

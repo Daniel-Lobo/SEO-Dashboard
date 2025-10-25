@@ -1,0 +1,225 @@
+{% extends 'dashboard.html' %}
+
+{% block breadcrumbs %}  
+<div style='display:flex; flex-direction: column; width:100%; margin-right:20px; margin-bottom:-16px;'>
+    <div style='display:flex; margin-bottom:20px; text-transform: uppercase;'> 
+        <span>SEO Tools</span>
+        <span>Improve content</span>           
+    </div>        
+    <h1>Improve content</h1>    
+</div>    
+{% endblock %}    
+
+{% block tool_content %} 
+<style>
+.improve-content-root {
+    display       : flex;  
+    flex-direction: column;
+    height        : calc(100% - 0px);
+    width         : 100%;
+    overflow      : auto;   
+    box-sizing    : border-box;
+}
+
+	.tooltip.show p {text-align:justify;}
+    .tooltip.show p {text-align:justify;margin-right: 18px; margin-top: 12px;}
+    .tooltip p {text-align:justify;}
+    .tooltip {text-align:justify;margin-right: 18px; margin-top: 18px;}
+   
+    .tooltip-inner {
+        width: 800px !important;
+    }
+
+</style>
+
+<div class="improve-content-root tw_Groups-Container">   
+	<div id="improve-contet::settings" style="display:flex;flex-direction:row;height:50%;gap:10px"></div>
+	<div id="improve-content::io" style="display:flex;flex-direction:row;height:50%;gap:10px"></div>
+</div>
+
+<script>
+	function Improve_Content_Audience(){
+		let setttings = document.getElementById('improve-contet::settings');
+		let elements  = bff(/*html*/`
+		<div class="tw_Ctrl-Group" style="width:50%">
+			<div class=tw_h3>Model</div>
+			
+			<select class="tw_input" data-self="ModelSelect" style="width:100%;margin-top:0px"></select>
+			<div style="height:30px"></div>
+
+			<div class=tw_h3>Prompt</div>
+			<select class="tw_input" data-self="PromptSelect" style="width:100%;margin-top:0px"
+			data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="<p>This lists all prompts in the default
+			profile, but only expands the tags:<br>{CONTENT} - or {SECTION}<br>{TONES}<br>{TONES_FULL}<br>{AUDIENCE} and<br> {AUDIENCE_FULL}<br>The
+			{@NTONES==1} and {@NTONES==2} tags are also respected</p>" data-bs-html="true"></select>
+
+			<div style="height:30px"></div>
+
+			<div class=tw_h3>Audience</div>
+			<select class="tw_input" data-self="select" style="width:100%;margin-top:0px"></select>
+
+			<div class="form-check form-switch" style="margin-top:30px;margin-left:20px;display:none">
+				<input class="form-check-input" type="checkbox" role="switch" id="improve-content::highlight" data-self="highlight" checked>
+				<label class="tw_h4" for="improve-content::highlight" style="margin-top:1px">Hightlight important terms</label>
+			</div>
+
+		</div>
+		`).AppendTo(setttings)
+		DASHBOARD_PopulateAudienceSelect(elements.select)
+		DASHBOARD_PopulateModelSelect(elements.ModelSelect)
+		DASHBOARD_PopulatePromptSelect(elements.PromptSelect, 'Prompts')
+		return elements
+	};
+
+	function Improve_Content_Tones(){
+		let setttings = document.getElementById('improve-contet::settings');
+		let elements  = bff(/*html*/`
+		<div class="tw_Ctrl-Group" style="width:50%">
+			<div class=tw_h3>Tones</div>
+			<p class="tw_h4">Select one or two</p>
+			<select class="tw_input" data-self="select" multiple style="height:280px;width:100%"></select>
+		</div>
+		`).AppendTo(setttings)
+		DASHBOARD_PopulateTonesSelect(elements.select)
+		return elements
+	}
+
+	function Improve_Content_IO(){		
+		let io = document.getElementById('improve-content::io');
+		let i_elements = bff(/*html*/`
+		<div class="tw_Ctrl-Group" style="width:50%">
+			<div class=tw_h3>Input</div>
+			<p style="margin-bottom:8px" class="tw_h4">Enter the content to be improved</p>
+			<textarea class="tw_input" data-self="input" style="width:100%;margin-top:0px;height:calc(100% - 50px)"></textarea>
+		</div>`).AppendTo(io)
+
+		let o_elements = bff(/*html*/`
+		<div class="tw_Ctrl-Group" style="width:50%">
+			<div class=tw_h3>Output</div>
+			<p style="margin-bottom:8px" class="tw_h4">The improved content</p>
+			<textarea class="tw_input" data-self="output" style="width:100%;margin-top:0px;height:calc(100% - 90px)" readonly></textarea>
+			<div style="display:flex;flex-direction:row-reverse;">
+				<button class="tw_button-alt" style="margin-top:10px;display:flex;flex-direction:row;" data-self="improve">
+					Improve
+					<div class="loader" style="width:26px;height:26px;margin-top:-4px;" data-self="spinner"></div>             
+				</button>
+			</div>
+		</div>`).AppendTo(io)
+		o_elements.spinner.style.display = 'none';
+
+		return [i_elements, o_elements]
+	}
+
+	function Improve_Content_ExpandPrompt(content, prompt, selected_tones, tones, full_tones, audience, full_audience){
+		if (selected_tones.length >= 2){
+            while (prompt.includes('{@NTONES==2}') && prompt.includes('{NTONES==2}') 
+                && prompt.indexOf('{NTONES==2}') < prompt.indexOf('{@NTONES==2}')){
+                prompt = prompt.replace('{NTONES==2}', '').replace('{@NTONES==2}', '');
+            } 
+            while (prompt.includes('{@NTONES==1}') && prompt.includes('{NTONES==1}') 
+                && prompt.indexOf('{NTONES==1}') < prompt.indexOf('{@NTONES==1}')){
+                prompt = prompt.split('{NTONES==1}', 1)[0] + prompt.split('{@NTONES==1}', 1)[1];
+            }
+        } else if (selected_tones.length === 1){            
+            while (prompt.includes('{@NTONES==2}') && prompt.includes('{NTONES==2}') 
+                && prompt.indexOf('{NTONES==2}') < prompt.indexOf('{@NTONES==2}')){
+                prompt = prompt.split('{NTONES==2}', 1)[0] + prompt.split('{@NTONES==2}', 1)[1];
+            }             
+            while (prompt.includes('{@NTONES==1}') && prompt.includes('{NTONES==1}') 
+                && prompt.indexOf('{NTONES==1}') < prompt.indexOf('{@NTONES==1}')){
+                prompt = prompt.replace('{NTONES==1}', '').replace('{@NTONES==1}', '');
+            }
+        }
+
+		/*
+		while (prompt.includes('{@NLINKS==1}') && prompt.includes('{NLINKS==1}') 
+                && prompt.indexOf('{NLINKS==1}') < prompt.indexOf('{@NLINKS==1}'))
+			{
+                prompt = DASHBOARD_SpliceString(prompt, 'NLINKS==1')
+            }
+           
+		while (prompt.includes('{@NLINKS==2+}') && prompt.includes('{NLINKS==2+}') 
+			&& prompt.indexOf('{NLINKS==2+}') < prompt.indexOf('{@NLINKS==2+}'))
+			{
+				prompt = DASHBOARD_SpliceString(prompt, 'NLINKS==2+')
+			}
+		*/
+		
+		prompt = prompt.replace('{CONTENT}', content);
+		prompt = prompt.replace('{SECTION}', content);
+		prompt = prompt.replace('{TONES}', tones);
+		prompt = prompt.replace('{TONES_FULL}', full_tones);
+		prompt = prompt.replace('{AUDIENCE}', audience);
+		prompt = prompt.replace('{AUDIENCE_FULL}', full_audience);
+		let __index = 1;
+		while (prompt.includes('{N}')){
+            prompt = prompt.replace('{N}', __index)
+            __index ++;
+        }   
+		return prompt
+	}
+
+	(async function () {		
+		let settings   = Improve_Content_Audience();
+		let tones      = Improve_Content_Tones();	
+		let [_in, out] = Improve_Content_IO();
+		out.improve.onclick = async ()=>{
+			try
+			{
+				out.spinner.style.display = 'flex'
+
+				let content = _in.input.value;
+				if (content === '') {
+					alert("Please enter some content");
+					return
+				}
+
+				let selected_tones = DASHBOARD_GetOptions(tones.select).map(e=>JSON.parse(e));
+				if (selected_tones.length === 0) {
+					alert("Please select at least one tone");
+					return
+				}
+				let _tones     = selected_tones.map(e=>e.Name).join(',');
+				let full_tones = '';
+				for (let tone of selected_tones) {
+					full_tones += tone.Name + ':\n' + tone.Description + '\n\n';
+				}
+
+				let audience = DASHBOARD_GetOptions(settings.select).map(e=>JSON.parse(e));		
+				let _aud     = audience.map(e=>e.Name).join(',');
+				let full_aud = '';
+				for (let aud of audience) {
+					full_aud += aud.Name + ':\n' + aud.Description + '\n\n';
+				}				
+				
+				let prompts  = DASHBOARD_OptionO("Prompts")[settings.PromptSelect.value];
+				if (prompts["Improve SYSTEM"] === '' || prompts["Improve USER"] === '') {
+					alert("Selected prompt is missing the improve sections");
+					return
+				}
+				let [system, user] = [prompts["Improve SYSTEM"], prompts["Improve USER"]];
+				system = Improve_Content_ExpandPrompt(content, system, selected_tones, _tones, full_tones, _aud, full_aud);
+				user   = Improve_Content_ExpandPrompt(content, user, selected_tones, _tones, full_tones, _aud, full_aud);
+
+				let options = DASHBOARD_FetchOPtions();
+				options.body = JSON.stringify({
+					"Messages"   : [{'role': 'system', 'content': system}, {'role': 'user', 'content': user}],
+					"Model"      : settings.ModelSelect.value,
+					"Temperature": 0.5
+				});
+				let reply = await DASHBOARD_Fetch('/chat-route', options);
+				out.output.value = reply.Assistant
+				//out.output.value = system + '\n\n' + user;
+			}
+			catch (e) {
+				out.output.value = e.message
+			}
+			finally {
+				out.spinner.style.display = 'none'
+			}
+			//out.output.value = system + '\n\n' + user;
+		}
+	})();
+</script>	
+
+{% endblock %}

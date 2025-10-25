@@ -1,0 +1,55 @@
+<style>   
+    .out_node_sections_container
+    {
+        position: absolute;   
+        display : none;    
+        z-index : 1;        
+        background-color: lightgrey;
+        white-space:nowrap;
+        border-radius: 4px; 
+        border: 1px solid black;        
+        gap: 10px;  
+        padding:5px;               
+    }   
+    .out_node_section:hover 
+    {
+        border-radius: 4px;
+        background-color: #0072b5;
+        color:white;
+        cursor: pointer;
+    }
+    .out_node_score:hover 
+    {
+        border-radius: 4px;
+        background-color: lightgrey;
+        color:black;
+    }
+    .master_div 
+    {
+        cursor : default;
+        margin-top:2px;        
+        place-self: stretch stretch;
+        border-radius: 4px; 
+        border: 1px solid gray; 
+        width: 400px;
+        padding:2px 1px 1px 1px;   
+    }
+</style>  
+<meta charset="UTF-8"></meta>
+<div id=${_domid} onmouseenter="{script('show')}" onmouseleave="{script('hide')}" onclick="{script('click')}" class="master_div">
+    <div class="out_node_label">${_label}</div>  
+    <div class="out_node_sections_container">
+        <div id=${_list_container_id}>
+            {% for _section in _sections %}
+                <div class="out_node_section">${_section}</div>            
+            {% endfor %}    
+        </div>  
+        <div id=${_score_container_id}  onclick="{script('score_clicked')}">
+            {% for _score in _scores %}
+                <div class="out_node_score">${_score}</div>            
+            {% endfor %}    
+        </div>     
+    </div>      
+</div> 
+
+

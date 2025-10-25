@@ -1,0 +1,760 @@
+<style>
+.SETTINGS-MORE-PROMPTS_tabs-button{
+    border-radius    : 12px ;
+    background-color : white;   
+    color            : black;             
+    border           : none;    
+    padding          : 10 10 10 10;      
+    margin-bottom    : 0px;        
+    height           : 40px;     
+    text-align       : right;       
+}
+.SETTINGS-MORE-PROMPTS_tabs-button-selected{
+    border-radius    : 12px ;
+    background-color : lightgray;   
+    color            : black;             
+    border           : none;    
+    padding          : 10 10 10 10;      
+    margin-bottom    : 0px;        
+    height           : 40px;     
+    text-align       : right;   
+}    
+</style>    
+
+<div id='SETTINGS-MORE-PROMPTS::fix-content-root' style='display:none;height:100%;margin-top:20px;'>
+    <div class='SETTINGS-PROMPTS_tabs-header' id='SETTINGS-MORE-PROMPTS::tabs-header-fix-content'>   
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>AI Words System</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>AI Words User</button>        
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Self referencing System</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Self referencing User</button>  
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Bold words System</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Bold words User</button>  
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Links System</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Links User</button>   
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>CTA System</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>CTA User</button>                     
+    </div>    
+    <div class='SETTINGS-PROMPTS_editor_column' style='width:800px;'>          
+        <div class='SETTINGS-PROMPTS_editor-variables'>   
+            <div style='margin-top:10px;padding:0;border-radius:10px;height:160px;margin-left:10px;margin-right:10px;margin-bottom:20px;'>                               
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-tones' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{TONES}<sup>1</sup></button> 
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-tones-full' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{TONES_FULL}<sup>1</sup></button> 
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-audience' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{AUDIENCE}<sup>1</sup></button>                             
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTSS::tag-content' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{FULL_PROHIBITED_WORDS_LIST}<sup>2</sup></button>  
+                <button class='tw_button-alt'
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{PREV_SENTENCE}<sup>2</sup></button>  
+                <button class='tw_button-alt'
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{NEXT_SENTENCE}<sup>2</sup></button>   
+                <button class='tw_button-alt'
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{CONTENT}<sup>12345</sup></button> 
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-removals' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{REMOVALS}<sup>3</sup></button>  
+                <button class='tw_button-alt'
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{INTERNAL_LINKS}<sup>14</sup></button>    
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::client-name' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{KEYWORD}<sup>5</sup></button>  
+                <button class='tw_button-alt'
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{COMPANY_NAME}<sup>5</sup></button>  
+                <button class='tw_button-alt'
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{SERVICE_NAME}<sup>5</sup></button>   
+                <button class='tw_button-alt'
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{SERVICE_DESCRIPTION}<sup>5</sup></button> 
+                <button class='tw_button-alt'
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{SERVICE_INSTRUCTIONS}<sup>5</sup></button> 
+                <div style="display:flex;font-size:12px;">  
+                    <div style="margin-top:10px; margin-left:10px; width:244px"><sup>1</sup> Valid for AI\self referencing\bold words</div>  
+                    <div style="margin-top:10px; margin-left:10px;"><sup>2</sup> Valid for AI words</div>                     
+                </div>
+                <div style="display:flex;font-size:12px">  
+                    <div style="margin-left:10px; width:244px;"><sup>3</sup> Valid for AI\self referencing words</div>    
+                    <div style="margin-left:10px;"><sup>4</sup> Valid for links insertion</div> 
+                    <div style="margin-left:10px;"><sup>5</sup> Valid for CTA insertion</div>                       
+                </div>  
+                <div style="display:flex;font-size:12px">  
+                                         
+                </div>                                          
+            </div>                           
+        </div>
+        <div class='SETTINGS-PROMPTS_editor_row' id='SETTINGS-MORE-PROMPTS::editor-row-fix-content' style='width:800px'>    
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:flex" class='tw_input'></textarea>
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>    
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>  
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>  
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>  
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>  
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>  
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>  
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>         
+        </div>    
+    </div>    
+    <div id='SETTINGS-MORE-PROMPTS::input-container-fix-content' style='display:flex;flex-direction:column;margin-left:30px;width:580px; gap:10px'>
+        <input class='tw_input' placeholder='type a new profile name and hit enter' 
+        onkeydown='SETTINGS_MORE_PROMPTS_NewPrompt(this, event, "fix-content")'></input>
+        <div class="tw_Ctrl-Group" style="height:100%;">
+        </div>
+    </div>
+    <div style='display:flex;flex-direction: column;gap:10px;margin-left:10px;'>             
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em' onclick='SETTINGS_MORE_PROMPTS_Save()' viewBox="0 0 448 512">
+            <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/>
+        </svg>       
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em;' onclick='SETTINGS_MORE_PROMPTS_Load()' viewBox="0 0 576 512">
+            <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
+        </svg>                
+    </div>  
+</div>
+
+<div id='SETTINGS-MORE-PROMPTS::guest-posting-root' style='display:none;height:100%;margin-top:20px;'>
+    <div class='SETTINGS-PROMPTS_tabs-header tw_Ctrl-Group' id='SETTINGS-MORE-PROMPTS::tabs-header-guest-posting'>              
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Outline System</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Outline User</button>   
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Content System</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Content User</button>                     
+    </div>    
+    <div class='SETTINGS-PROMPTS_editor_column' style='width:800px;'>          
+        <div class='SETTINGS-PROMPTS_editor-variables'>   
+            <div style='margin-top:10px;padding:0;border-radius:10px;height:100px;margin-right:40px;margin-left:40px'>         
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-gp-topic' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{TOPIC}</button>      
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-gp-title' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{TITLE}</button>                       
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-gp-cosiderations' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{CONSIDERATIONS}</button>                
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-gp-tones' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{TONES}</button>                 
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-gp-instructions' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{INSTRUCTIONS}</button> 
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-gp-audience' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{AUDIENCE}</button>                  
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-gp-date' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{DATE}</button>   
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-gp-meta' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{META}</button> 
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-gp-outline' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{OUTLINE}</button>                  
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-url' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{URL}</button>   
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-anchor' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{ANCHOR}</button>  
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-analysis' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{SEMANTIC_ANALYSIS}</button>                                    
+            </div>                           
+        </div>
+        <div class='SETTINGS-PROMPTS_editor_row' id='SETTINGS-MORE-PROMPTS::editor-row-guest-posting' style='width:800px'>    
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:flex;" class='tw_input'></textarea>
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:none;" class='tw_input'></textarea>    
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:none;" class='tw_input'></textarea>  
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:none;" class='tw_input'></textarea>  
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:none;" class='tw_input'></textarea>  
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:none;" class='tw_input'></textarea>          
+        </div>    
+    </div>    
+    <div id='SETTINGS-MORE-PROMPTS::input-container-guest-posting' style='display:flex;flex-direction:column;margin-left:30px;width:580px; gap:10px'>
+        <input class='tw_input' placeholder='type a new profile name and hit enter' 
+        onkeydown='SETTINGS_MORE_PROMPTS_NewPrompt(this, event, "guest-posting")'></input>
+        <div class="tw_Ctrl-Group" style="height:100%;">
+        </div>
+    </div>
+    <div style='display:flex;flex-direction: column;gap:10px;margin-left:10px;'>             
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em' onclick='SETTINGS_MORE_PROMPTS_Save()' viewBox="0 0 448 512">
+            <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/>
+        </svg>       
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em;' onclick='SETTINGS_MORE_PROMPTS_Load()' viewBox="0 0 576 512">
+            <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
+        </svg>                
+    </div>  
+</div>
+
+<div id='SETTINGS-MORE-PROMPTS::entities-root' style='display:none;height:100%;margin-top:20px;'>
+    <div class='SETTINGS-PROMPTS_tabs-header tw_Ctrl-Group' id='SETTINGS-MORE-PROMPTS::tabs-header-entities'>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Generation</button>               
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Analisys - OpenAI</button>        
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Analisys - System</button>  
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Analisys - User</button>                   
+    </div>    
+    <div class='SETTINGS-PROMPTS_editor_column' style='width:800px;'>          
+        <div class='SETTINGS-PROMPTS_editor-variables'>   
+            <div style='margin-top:10px; padding:0;border-radius:10px;height:30px;margin-left:50px;margin-right:200px;'>         
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-entities-keyword' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{KEYWORD}</button> 
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-entities-entitie' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{CORE_ENTITY}</button>                     
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-entities-context' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{CONTEXTUAL_FRAME}</button>   
+            </div>                          
+        </div>
+        <div class='SETTINGS-PROMPTS_editor_row' id='SETTINGS-MORE-PROMPTS::editor-row-entities' style='width:800px'>    
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:flex" class='tw_input'></textarea>
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea> 
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>           
+        </div>    
+    </div>    
+    <div id='SETTINGS-MORE-PROMPTS::input-container-entities' style='display:flex;flex-direction:column;margin-left:30px;width:580px; gap:10px'>
+        <input class='tw_input' placeholder='type a new profile name and hit enter'
+         onkeydown='SETTINGS_MORE_PROMPTS_NewPrompt(this, event, "entities")'></input>
+         <div class="tw_Ctrl-Group" style="height:100%;"></div>
+    </div>
+    <div style='display:flex;flex-direction: column;gap:10px;margin-left:10px;'>             
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em' onclick='SETTINGS_MORE_PROMPTS_Save()' viewBox="0 0 448 512">
+            <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/>
+        </svg>       
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em;' onclick='SETTINGS_MORE_PROMPTS_Load()' viewBox="0 0 576 512">
+            <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
+        </svg>                
+    </div>     
+</div>
+
+<div id='SETTINGS-MORE-PROMPTS::outlines-root' style='display:none;height:100%;margin-top:20px;'>
+    <div class='SETTINGS-PROMPTS_tabs-header tw_Ctrl-Group' id='SETTINGS-MORE-PROMPTS::tabs-header-outlines'>        
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Search Intent</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' style='display:none'
+        onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Search Intent - reserved</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Outline System</button>  
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>Outline User</button>                    
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>CleanUp System</button>  
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>CleanUp User</button>                    
+    </div>    
+    <div class='SETTINGS-PROMPTS_editor_column' style='width:800px;'>          
+        <div class='SETTINGS-PROMPTS_editor-variables'>   
+            <div style='margin-top:10px; padding:0;border-radius:10px;height:100px;margin-left:50px;margin-right:50px;'>         
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-ol-keyword' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{KEYWORD}</button>                   
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-ol-snipet' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{FEATURED_SNIPPET}</button>                
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-ol-qanda' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{QAndA}</button> 
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-ol-competitors' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{COMPETITORS_OUTLINES}</button> 
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-ol-aud' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{AUDIENCE}</button>                  
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-ol-tones' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{TONES}</button>  
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-ol-semanalysis' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{SEMANTIC_ANALYSIS}</button>                  
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-gp-facts' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{FACTS}</button>       
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-gp-intent' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{INTENT}</button>   
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-gp-intruct' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{SPECIAL_INTRUCTIONS}</button>    
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-gp-date' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{DATE}</button>    
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-ol-outline' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{OUTLINE}</button>                          
+            </div>                           
+        </div>
+        <div class='SETTINGS-PROMPTS_editor_row' id='SETTINGS-MORE-PROMPTS::editor-row-outlines' style='width:800px'>    
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:flex" class='tw_input'></textarea>
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>       
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>     
+        </div>    
+    </div>    
+    <div id='SETTINGS-MORE-PROMPTS::input-container-outlines' style='display:flex;flex-direction:column;margin-left:30px;width:580px; gap:10px'>
+        <input class='tw_input' placeholder='type a new profile name and hit enter'
+         onkeydown='SETTINGS_MORE_PROMPTS_NewPrompt(this, event, "outlines")'></input>
+         <div class="tw_Ctrl-Group" style="height:100%;"></div>
+    </div>
+    <div style='display:flex;flex-direction: column;gap:10px;margin-left:10px;'>             
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em' onclick='SETTINGS_MORE_PROMPTS_Save()' viewBox="0 0 448 512">
+            <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/>
+        </svg>       
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em;' onclick='SETTINGS_MORE_PROMPTS_Load()' viewBox="0 0 576 512">
+            <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
+        </svg>                
+    </div>     
+</div>
+
+<div id='SETTINGS-MORE-PROMPTS::titles-root' style='display:none;height:100%;margin-top:20px;'>
+    <div class='SETTINGS-PROMPTS_tabs-header tw_Ctrl-Group' id='SETTINGS-MORE-PROMPTS::tabs-header-titles'>        
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>System - meta only</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>User - meta only</button>    
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>System</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>User</button>   
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' style='width:214px;' 
+        onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>System - cluster creator</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>User- cluster creator</button>                   
+    </div>    
+    <div class='SETTINGS-PROMPTS_editor_column' style='width:800px;'>          
+        <div class='SETTINGS-PROMPTS_editor-variables'>   
+            <div style='margin-top:10px; padding:0; border-radius: 10px; height:120px; margin-left: 60px;'>         
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-tt-topic' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{TOPIC}<sup>1</sup></button>                   
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-tt-title' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{TITLE}<sup>1</sup></button>       
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-tt-date' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{DATE}<sup>1</sup><sup>2</sup></button>    
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-tt-kword' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{KEYWORD}<sup>2</sup></button>                   
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-tt-outline' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{OUTLINE}<sup>2</sup></button>       
+                <button class='tw_button-alt'  id='SETTINGS-MORE-PROMPTS::tag-tt-intent' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{SEARCH_INTENT}<sup>2</sup></button>  
+                <div style="margin-top:10px;margin-left:10px"><sup>1</sup>Tag valid for the guest posting prompts</div>  
+                <div style="margin-left:10px;"><sup>2</sup>Tag valid for the cluster creator prompts</div>                                                   
+            </div>                           
+        </div>
+        <div class='SETTINGS-PROMPTS_editor_row' id='SETTINGS-MORE-PROMPTS::editor-row-titles' style='width:800px'>    
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:flex" class='tw_input'></textarea>
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>             
+        </div>    
+    </div>
+    <div id='SETTINGS-MORE-PROMPTS::input-container-titles' style='display:flex;flex-direction:column;margin-left:30px;width:580px; gap:10px'>
+        <input class='tw_input' placeholder='type a new profile name and hit enter' 
+        onkeydown='SETTINGS_MORE_PROMPTS_NewPrompt(this, event, "titles")'></input>
+        <div class="tw_Ctrl-Group" style="height:100%;">
+        </div>
+    </div>
+    <div style='display:flex;flex-direction: column;gap:10px;margin-left:10px;'>             
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em' onclick='SETTINGS_MORE_PROMPTS_Save()' viewBox="0 0 448 512">
+            <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/>
+        </svg>       
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em;' onclick='SETTINGS_MORE_PROMPTS_Load()' viewBox="0 0 576 512">
+            <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
+        </svg>                
+    </div>   
+</div>
+
+<div id='SETTINGS-MORE-PROMPTS::fine-tuning-root' style='display:none;height:100%;margin-top:20px;'>
+    <div class='SETTINGS-PROMPTS_tabs-header tw_Ctrl-Group' style="font-size:13px; overflow-y: auto; height:620px" id='SETTINGS-MORE-PROMPTS::tabs-header-fine-tuning'>        
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>System</button>
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>User</button>    
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>System - image</button>
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>User - image</button>  
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>System SFT</button>
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>User SFT</button>    
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>System SFT - image</button>
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>User SFT - image</button>  
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>System SFT Original</button>
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>User SFT Original</button>    
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>System SFT Original image</button>
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>User SFT Original image</button> 
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>System OpenAI</button>
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>User OpenAI</button>    
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>System OpenAI image</button>
+        <button class='SETTINGS-MORE-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>User OpenAI image</button>                           
+    </div>    
+    <div class='SETTINGS-PROMPTS_editor_column' style='width:800px;'>          
+        <div class='SETTINGS-PROMPTS_editor-variables'>   
+            <div style='margin-top:10px; padding:0; border-radius: 10px; height:40px; margin-right:260px;'>        
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-ft-data' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{DATA}</button>                   
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-ft-file' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{FILENAME}</button>                                                                     
+            </div>                           
+        </div>
+        <div class='SETTINGS-PROMPTS_editor_row' id='SETTINGS-MORE-PROMPTS::editor-row-fine-tuning' style='width:800px'>    
+            <textarea contenteditable style='display:flex; width:100%;height:100%;margin: 10 10 10 10' class='tw_input'></textarea>
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>      
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>  
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>      
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>  
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>  
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>  
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;" class='tw_input'></textarea>                        
+        </div>    
+    </div>
+    <div id='SETTINGS-MORE-PROMPTS::input-container-fine-tuning' style='display:flex;flex-direction:column;margin-left:30px;width:570px; gap:10px'>
+        <input class='tw_input' placeholder='type a new profile name and hit enter' 
+        onkeydown='SETTINGS_MORE_PROMPTS_NewPrompt(this, event, "fine-tuning")'></input>
+        <div class="tw_Ctrl-Group" style="height:100%;">
+        </div>
+    </div>
+    <div style='display:flex;flex-direction: column;gap:10px;margin-left:10px;'>             
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em' onclick='SETTINGS_MORE_PROMPTS_Save()' viewBox="0 0 448 512">
+            <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/>
+        </svg>       
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em;' onclick='SETTINGS_MORE_PROMPTS_Load()' viewBox="0 0 576 512">
+            <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
+        </svg>                
+    </div>   
+</div>
+
+<div id='SETTINGS-MORE-PROMPTS::rp-news-root' style='display:none;height:100%;margin-top:20px;'>
+    <div class='SETTINGS-PROMPTS_tabs-header tw_Ctrl-Group' id='SETTINGS-MORE-PROMPTS::tabs-header-rp-news'>        
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>System</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>User</button>                                    
+    </div>    
+    <div class='SETTINGS-PROMPTS_editor_column' style='width:800px;'>          
+        <div class='SETTINGS-PROMPTS_editor-variables'>   
+            <div style='margin-top:10px; padding:0; border-radius: 10px; height:40px; margin-right: 290px;'>         
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-rp-kword' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{KEYWORD}</button>                   
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-rp-country' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{COUNTRY}</button>         
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-rp-news' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{NEWS}</button>                                                                     
+            </div>                           
+        </div>
+        <div class='SETTINGS-PROMPTS_editor_row' id='SETTINGS-MORE-PROMPTS::editor-row-rp-news' style='width:800px'>    
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:flex" class='tw_input'></textarea>
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:none" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:none" class='tw_input'></textarea> 
+        </div>    
+    </div>
+    <div id='SETTINGS-MORE-PROMPTS::input-container-rp-news' style='display:flex;flex-direction:column;margin-left:30px;width:580px; gap:10px'>
+        <input class='tw_input' placeholder='type a new profile name and hit enter' 
+        onkeydown='SETTINGS_MORE_PROMPTS_NewPrompt(this, event, "rp-news")'></input>
+        <div class="tw_Ctrl-Group" style="height:100%;">
+        </div>
+    </div>
+    <div style='display:flex;flex-direction: column;gap:10px;margin-left:10px;'>             
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em' onclick='SETTINGS_MORE_PROMPTS_Save()' viewBox="0 0 448 512">
+            <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/>
+        </svg>       
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em;' onclick='SETTINGS_MORE_PROMPTS_Load()' viewBox="0 0 576 512">
+            <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
+        </svg>                
+    </div>   
+</div>
+
+<div id='SETTINGS-MORE-PROMPTS::Facts-root' style='display:none;height:100%;margin-top:20px;'>
+    <div class='SETTINGS-PROMPTS_tabs-header tw_Ctrl-Group' id='SETTINGS-MORE-PROMPTS::tabs-header-Facts'>        
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>System</button>
+        <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_MORE_PROMPTS_SelectEditor(this)'>User</button>                                    
+    </div>    
+    <div class='SETTINGS-PROMPTS_editor_column' style='width:800px;'>          
+        <div class='SETTINGS-PROMPTS_editor-variables'>   
+            <div style='margin-top:10px; padding:0; border-radius: 10px; height:40px; margin-right: 290px;'>         
+                <button class='tw_button-alt' id='SETTINGS-MORE-PROMPTS::tag-Facts-kword' 
+                name='DASHBOARD_tool-tip' onclick='SETTINGS_MORE_PROMPTS.AppendTag(this)'>{KEYWORD}</button> 
+            </div>                           
+        </div>
+        <div class='SETTINGS-PROMPTS_editor_row' id='SETTINGS-MORE-PROMPTS::editor-row-Facts' style='width:800px'>    
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:flex" class='tw_input'></textarea>
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:none" class='tw_input'></textarea>   
+            <textarea style="width:100%;height:100%;margin: 10 10 10 10;display:none" class='tw_input'></textarea> 
+        </div>    
+    </div>
+    <div id='SETTINGS-MORE-PROMPTS::input-container-Facts' style='display:flex;flex-direction:column;margin-left:30px;width:580px; gap:10px'>
+        <input class='tw_input' placeholder='type a new profile name and hit enter' 
+        onkeydown='SETTINGS_MORE_PROMPTS_NewPrompt(this, event, "Facts")'></input>
+        <div class="tw_Ctrl-Group" style="height:100%;">
+        </div>
+    </div>
+    <div style='display:flex;flex-direction: column;gap:10px;margin-left:10px;'>             
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em' onclick='SETTINGS_MORE_PROMPTS_Save()' viewBox="0 0 448 512">
+            <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/>
+        </svg>       
+        <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em;' onclick='SETTINGS_MORE_PROMPTS_Load()' viewBox="0 0 576 512">
+            <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
+        </svg>                
+    </div>   
+</div>
+
+
+<script>
+    var SETTINGS_MORE_PROMPTS = {
+        __curr_editor : null,
+        __curr_prompt : null,
+        __Prompts : {
+            'Fix content'     : {},  
+            'Guest posting'   : {},            
+            'Outlines'        : {},
+            'Titles'          : {},
+            "Fine tuning"     : {},
+            "Rp news"         : {},
+            "Facts"           : {},
+            "Entities"        : {}, 
+        },
+        GetPrompts : function(){
+            return this.__Prompts;
+        },
+        SetPrompts(prompts){
+            this.__Prompts = {
+                'Fix content'     : {},  
+                'Guest posting'   : {},            
+                'Outlines'        : {},
+                'Titles'          : {},
+                "Fine tuning"     : {},
+                "Rp news"         : {},
+                "Facts"           : {},
+                "Entities"        : {},
+            }
+            this.__curr_prompt = null;
+            this.__curr_editor = null;
+            console.log(prompts)            
+            for (const [key, prompt] of Object.entries(prompts)){
+                who        = key.replace(' ', '-').toLowerCase();
+                let parent = document.getElementById('SETTINGS-MORE-PROMPTS::input-container-'+who);
+                if (parent === null){
+                    who    = key.replace(' ', '-')
+                    parent = document.getElementById('SETTINGS-MORE-PROMPTS::input-container-'+who);
+                }
+                console.log(who, parent) 
+                parent.children[1].innerHTML = '';
+                for (const [prompt_name, values] of Object.entries(prompt)){
+                    SETTINGS_MORE_PROMPTS_NewPrompt({'value': prompt_name, parentElement : parent}, {'key': 'Enter'}, who);
+                }
+            }
+            for (const [key, prompt] of Object.entries(prompts)){
+                this.__Prompts[key] = prompt
+            }            
+        },        
+        InvalidadePrompt : function(){
+            console.log('no prompts selected')
+            this.__curr_prompt = null;
+        },
+        SetCurrentEditor : function(editor){
+            this.__curr_editor = editor;
+            let _this          = this;
+            editor.onkeydown   = function(event){                
+                if (_this.__curr_prompt === null){
+                    return
+                }
+                values = []
+                for (const ed of editor.parentElement.children){                    
+                        values.push(ed.value)                   
+                }
+                //console.log(_this.__curr_prompt)
+                //console.log(values)
+                _this.__Prompts[_this.__curr_prompt[0]][_this.__curr_prompt[1]] = values;
+            }
+            editor.onkeydownup = function(event){
+                editor.onkeydown(event)
+            }
+            editor.onmouseleave = function(event){
+                editor.onkeydown(event)
+            }
+        },
+        AppendTag(tag){
+            if (this.__curr_editor === null){
+                return alert('this.__curr_editor === null')
+            }
+            this.__curr_editor.value += tag.innerText.split("}")[0]+"}";           
+        },
+        AddPrompt(prompt_name, who){
+            let key = who.replace('-', ' ').replace(who[0], who[0].toUpperCase());                
+            if (true === prompt_name in this.__Prompts[key]){
+                return alert(`Prompt "${prompt_name}" already exists`)                 
+            }       
+            this.__Prompts[key][prompt_name] = []          
+            for (const editor of SETTINGS_MORE_PROMPTS_GetEditors(who)){
+                this.__Prompts[key][prompt_name].push(editor.value);
+            }
+            this.__curr_prompt = [key, prompt_name]
+            //console.log('current prompt:', this.__curr_prompt)
+            return 'S_OK';
+        },
+        PromptClicked(who, prompt_name){            
+            let key    = who.replace('-', ' ').replace(who[0], who[0].toUpperCase());            
+            let prompt = this.__Prompts[key][prompt_name];
+            for (const [index, editor] of SETTINGS_MORE_PROMPTS_GetEditors(who).entries()){
+                editor.value = prompt[index];
+            }
+            this.__curr_prompt = [key, prompt_name];
+        },  
+        RenamePrompt(_edit, _label, who){
+            let key = who.replace('-', ' ').replace(who[0], who[0].toUpperCase());            
+            if (true === _edit.value in this.__Prompts[key]){
+                return alert(`Prompt "${prompt_name}" already exists`)                 
+            }  
+            this.__Prompts[key][_edit.value]  = this.__Prompts[key][_label.innerHTML];  
+            delete this.__Prompts[key][_label.value];
+            _label.innerHTML = _edit.value
+            return 'S_OK';
+        },  
+        DeletePrompt(who, prompt_name){           
+            let key = who.replace('-', ' ').replace(who[0], who[0].toUpperCase());            
+            delete this.__Prompts[key][prompt_name];
+            SETTINGS_MORE_PROMPTS_ClearEditors(who)
+            SETTINGS_MORE_PROMPTS_Select1st(who)
+            return 'S_OK';
+        }   
+    }
+    function SETTINGS_MORE_PROMPTS_Save(){
+        return document.getElementById('SETTINGS-PROMPTS::save').onclick()
+        const a     = document.createElement('a');
+        let prompts = SETTINGS_MORE_PROMPTS.GetPrompts();       
+        const blob  = new Blob([JSON.stringify({Prompts : prompts}, null,'\t')]);
+        a.href      = URL.createObjectURL(blob);
+        a.download  = 'Prompts.json';                     
+        a.click();
+    }    
+    function SETTINGS_MORE_PROMPTS_Load(){
+        return document.getElementById('SETTINGS-PROMPTS::load').onclick()
+        const input  = document.createElement('input');
+        input.type   = 'file';
+        input.accept = '.json';
+        input.onchange = e => {
+            const file     = e.target.files[0];
+            const reader   = new FileReader();
+            reader.onload  = function(e) {
+                const json = JSON.parse(e.target.result);
+                SETTINGS_MORE_PROMPTS.SetPrompts(json.Prompts);
+            }
+            reader.readAsText(file);
+        }
+        input.click();
+    }
+    function SETTINGS_MORE_PROMPTS_Select1st(who){
+        let parent = document.getElementById('SETTINGS-MORE-PROMPTS::input-container-'+who);
+        for (const child of parent.children[1].children){           
+            child.children[0].click();
+            break;
+        }
+    }
+    function SETTINGS_MORE_PROMPTS_GetEditors(who){
+        console.log('SETTINGS-MORE-PROMPTS::'+who+'-root')
+        let parent  = document.getElementById('SETTINGS-MORE-PROMPTS::'+who+'-root');
+        let editors = parent.children[1].children[1].children;
+        return Array.from(editors);
+    }
+    function SETTINGS_MORE_PROMPTS_ClearEditors(who){
+        for (const editor of SETTINGS_MORE_PROMPTS_GetEditors(who)){
+            editor.value = '';
+        }
+        // TODO: select the 1st prompt;
+    }
+    function SETTINGS_MORE_PROMPTS_SelectTab(src){
+        SETTINGS_MORE_PROMPTS.InvalidadePrompt();
+        let tabs    = []
+        let buttons = []
+        for (const _id of ['SETTINGS-PROMPTS::root', 'SETTINGS-MORE-PROMPTS::outlines-root', 'SETTINGS-MORE-PROMPTS::titles-root', 
+        'SETTINGS-MORE-PROMPTS::guest-posting-root', 'SETTINGS-MORE-PROMPTS::fix-content-root', 'SETTINGS-MORE-PROMPTS::fine-tuning-root',
+        'SETTINGS-MORE-PROMPTS::rp-news-root', 'SETTINGS-MORE-PROMPTS::Facts-root', 'SETTINGS-MORE-PROMPTS::entities-root']){
+            tabs.push(document.getElementById(_id))
+        }
+        for (const _id of 
+        ['Articles', 'Outlines', 'Titles-and-meta', 'Guest-posting', 'Fix-content', 'Fine-Tuning', 'Rp-News', "Facts", "Entities"]){
+            buttons.push(document.getElementById('SETTINGS-PROMPTS::tab-item-'+_id))
+        }
+        for (const [index, tab] of tabs.entries()){
+            if (src === buttons[index]){
+                tab.style.display            = 'flex'
+                buttons[index].style         = 'border-bottom:2px solid black; margin-bottom:-2px'
+                if (tab.id === 'SETTINGS-PROMPTS::root'){
+                    continue;
+                } else if (tab.id === 'SETTINGS-MORE-PROMPTS::outlines-root'){
+                    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-outlines').children[0]);
+                    SETTINGS_MORE_PROMPTS_ClearEditors('outlines');
+                    SETTINGS_MORE_PROMPTS_Select1st('outlines')
+                } else if (tab.id === 'SETTINGS-MORE-PROMPTS::titles-root'){
+                    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-titles').children[0]);
+                    SETTINGS_MORE_PROMPTS_ClearEditors('titles');
+                    SETTINGS_MORE_PROMPTS_Select1st('titles')
+                } else if (tab.id === 'SETTINGS-MORE-PROMPTS::guest-posting-root'){
+                    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-guest-posting').children[0]);
+                    SETTINGS_MORE_PROMPTS_ClearEditors('guest-posting');
+                    SETTINGS_MORE_PROMPTS_Select1st('guest-posting')
+                } else if (tab.id === 'SETTINGS-MORE-PROMPTS::fix-content-root'){
+                    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-fix-content').children[0]);
+                    SETTINGS_MORE_PROMPTS_ClearEditors('fix-content');
+                    SETTINGS_MORE_PROMPTS_Select1st('fix-content')
+                } else if (tab.id === 'SETTINGS-MORE-PROMPTS::fine-tuning-root'){
+                    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-fine-tuning').children[0]);
+                    SETTINGS_MORE_PROMPTS_ClearEditors('fine-tuning');
+                    SETTINGS_MORE_PROMPTS_Select1st('fine-tuning')
+                } else if (tab.id === 'SETTINGS-MORE-PROMPTS::rp-news-root'){
+                    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-rp-news').children[0]);
+                    SETTINGS_MORE_PROMPTS_ClearEditors('rp-news');
+                    SETTINGS_MORE_PROMPTS_Select1st('rp-news')
+                } else if (tab.id === 'SETTINGS-MORE-PROMPTS::Facts-root'){
+                    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-Facts').children[0]);
+                    SETTINGS_MORE_PROMPTS_ClearEditors('Facts');
+                    SETTINGS_MORE_PROMPTS_Select1st('Facts')
+                } else if (tab.id === 'SETTINGS-MORE-PROMPTS::entities-root'){
+                    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-entities').children[0]);
+                    SETTINGS_MORE_PROMPTS_ClearEditors('entities');
+                    SETTINGS_MORE_PROMPTS_Select1st('entities')
+                }                
+            } else {        
+                console.log(tab.id)        
+                tab.style.display            = 'none'
+                buttons[index].style.border  = 'none';
+            }
+        }             
+    }
+    function SETTINGS_MORE_PROMPTS_SelectEditor(_this){
+        let buttons     = _this.parentElement.children;   
+        let tabs_row_id = _this.parentElement.id.replace('tabs-header', 'editor-row');         
+        let editors     =  document.getElementById(tabs_row_id).children;           
+        for (i=0; i<buttons.length; i++){
+            let child  = buttons[i];
+            let editor = editors[i];
+            let curr_class = String(child.classList);
+            console.log(curr_class)
+            if (child === _this) {
+                child.classList      = 
+                curr_class.search("-selected") > -1 ? "tw_button-alt DASHBOARD_Toobar-Button" : 'tw_button-alt DASHBOARD_Toobar-Button-selected'
+                editor.style.display = 'flex';                
+                SETTINGS_MORE_PROMPTS.SetCurrentEditor(editor);
+            } else {
+                child.classList      = 
+                curr_class.search("-selected") > -1 ? "tw_button-alt DASHBOARD_Toobar-Button" : 'tw_button-alt DASHBOARD_Toobar-Button'
+                editor.style.display = 'none';
+            }             
+        }
+    }
+    function SETTINGS_MORE_PROMPTS_Rename(_this, who, event){
+        event.stopPropagation();
+        let _input           = _this.parentElement.children[1];        
+        let _who             = who  
+        _input.style.display = 'flex';   
+        _input.onkeydown = function(event, _who){            
+            if (event.key === 'Enter'){                
+                let _label = _this.parentElement.children[0];                
+                SETTINGS_MORE_PROMPTS.RenamePrompt(_input, _label, who);
+                _input.style.display = 'none';    
+            }
+        }
+        _input.onclick = function(event){
+            event.stopPropagation();
+        }
+    }
+    function SETTINGS_MORE_PROMPTS_DeletePrompt(_this, who){                
+        let _label  = _this.parentElement.children[0];          
+        SETTINGS_MORE_PROMPTS.DeletePrompt(who, _label.innerHTML);
+        let _parent = _this.parentElement;
+        _parent.parentElement.removeChild(_parent);
+    }
+    function SETTINGS_MORE_PROMPTS_NewPrompt(__inpt, event, who){
+        if (event.key === 'Enter'){
+            let value = __inpt.value;
+            if (value === ''){
+                return alert('Please enter a valid name')
+            }     
+            if (SETTINGS_MORE_PROMPTS.AddPrompt(__inpt.value, who) !== 'S_OK'){
+                return
+            }
+            __inpt.parentElement.children[1].innerHTML += `
+            <div style="display:flex;position:relative">
+                <div class='DASHBOARD_ClicableText' onclick="SETTINGS_MORE_PROMPTS.PromptClicked('${who}', '${value}')">${value}</div>
+                <input name='DASHBOARD::hide-me' style='position:absolute;display:flex;z-index:1;height:22px;width:300px;left:60px;margin-top:-4px' class='form-control'>
+                <div class='spacer'></div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="DASHBOARD_icon-small"viewBox="0 0 512 512" onclick="SETTINGS_MORE_PROMPTS_Rename(this, '${who}', event)">
+                    <path d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"/>
+                </svg>
+                <div style="width:2px"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-small" onclick="SETTINGS_MORE_PROMPTS_DeletePrompt(this, '${who}')">
+                    <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+                </svg>
+            </div>`             
+        }
+    }    
+    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-titles').children[0]);
+    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-outlines').children[0]);   
+    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-fix-content').children[0]);   
+    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-fine-tuning').children[0]);   
+    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-rp-news').children[0]);   
+    SETTINGS_MORE_PROMPTS_SelectEditor(document.getElementById('SETTINGS-MORE-PROMPTS::tabs-header-Facts').children[0]);
+</script>

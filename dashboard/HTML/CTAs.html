@@ -1,0 +1,510 @@
+{% extends 'dashboard.html' %}
+
+{% block breadcrumbs %}  
+<div style='display:flex; flex-direction: column; width:100%; margin-right:20px; margin-bottom:-16px;'>
+    <div style='display:flex; margin-bottom:20px;'> 
+        <span>SEO Tools</span>
+        <span>Clients</span>   
+    </div>        
+    <h1>Clients</h1>
+</div>    
+{% endblock %}    
+
+{% block tool_content %} 
+<style>
+.CTAS_Main{
+    background-color      : #f9f9f9;
+    color                 : #09090b;
+    width                 : 100%;
+    height                : 100%;
+    display               : flex;
+    flex-direction        : row;
+    font-size             : 14px;
+    font-family           : "Inter", sans-serif;
+    font-feature-settings : "cv11";
+    padding               : 10px 10px 10px 10px;
+    gap                   : 10px;
+}
+.CTA_Ctrl-Group{
+    background-color      : white;
+    color                 : black;
+    border-radius         : 16px;   
+    padding               : 20 20 20 20;
+    box-shadow            : 1px 1px lightgray;
+    font-family           : "Inter", sans-serif;
+    font-feature-settings : "cv11";
+}
+.CTA_Clents-View{
+    display       : flex;
+    flex-direction: column;
+    width         : 50%;
+}
+.CTA_New-Client{
+    display       : flex;
+    flex-direction: column;
+    width         : 30%;
+}
+.CTA_input{
+    background-color: white;
+    color           : black;
+    border-radius   : 6px ;
+    border          : none;    
+    height          : 36px;
+    outline         : 1px solid rgb(230, 230, 230)  ;
+    box-shadow      : 0px 2px lightgray;
+    font-family           : "Inter", sans-serif;
+    font-feature-settings : "cv11";
+    padding: 10px 10px 10px 10px;
+}
+.CTA_input:focus{
+    outline: 2px solid black;
+}
+.CTA_Client{
+    border-bottom    : 1px solid lightgray;    
+    padding          : 16px 0px 10px 0px;
+    display          : flex;
+    font-family           : "Inter", sans-serif;
+    font-feature-settings : "cv11";
+    gap                   : 6px;
+}
+.CTA_button{
+    background-color      : black;
+    color                 : white;
+    border                : none;
+    outline               : none;
+    border-radius         : 6px;
+    padding               : 6px 20px 6px 20px;
+    font-weight           : semibold; 
+    font-family           : "Inter", sans-serif;
+    font-feature-settings : "cv11";
+}
+.CTA_button:hover{
+    background-color: #09090be6;
+}
+.CTA_button-alt{
+    background-color: white;
+    color           : black;
+    border          : 1px solid lightgray;;
+    outline         : none;
+    border-radius   : 6px;
+    padding         : 6px 20px 6px 20px;
+    font-weight     : semibold; 
+    font-family           : "Inter", sans-serif;
+    font-feature-settings : "cv11";
+}
+.CTA_button-alt:hover{
+    background-color: rgb(240, 240, 240) ;
+}
+.CTA_3dots{
+    border-radius: 4px;
+    padding      : 10px 6px 6px 6px;
+    cursor       : pointer;
+}
+.CTA_3dots:hover{
+    background-color:lightgray;
+}
+.CTA_dialog-container{
+    position         : absolute;
+    left             : 0; 
+    right            : 0; 
+    margin-inline    : auto; 
+    width            : 100%;
+    height           : 100%;
+    top              : 0;
+    background-color : #50505050;
+    display          : none;
+}
+.CTA_dialog{
+    margin: auto;
+}
+.CTA_label-lvl3{     
+    color       : #000000aa;
+    font-size   : 14px;
+    font-family           : "Inter", sans-serif;
+}
+</style>
+
+</div style="display:flex; flex-direction: column; width:100%; margin-right:20px; margin-bottom:-16px;">
+    <div class="tw_Ctrl-Group tw_tabs-container" style="width:calc(100% - 20px);margin-left:10px;">
+        <button id="CTAS::clients-tab-button" class="tw_tabs-button" onclick="CLIENTS_SwitchTabs(this)">
+            <i class="fa-solid fa-users"></i>
+            Clients
+        </button>
+        <button id="CTAS::ctas-tab-button" class="tw_tabs-button-selected" onclick="CLIENTS_SwitchTabs(this)">
+            <i class="fa-solid fa-bullhorn"></i>
+            CTAS
+        </button>        
+    </div>
+    <div id="CTAs::Main" class="CTAS_Main">       
+        <div class="CTA_Ctrl-Group CTA_Clents-View">
+            <div style="display:flex;">
+                <h3 style="font-weight:semibold; font-size: 16px;">
+                    Clients
+                </h3>  
+                <div style="flex-grow:1"></div>
+                <div class="DASHBOARD_Loader" style="border-top:4px solid black; display:flex;margin-top:-10px" id="CTA::clients-spinner"></div>   
+            </div>    
+            <p class="CTA_label-lvl3" style="font-size:12px;" id="CTA::clients-footer">Fethching clients list from the database</p>
+                
+            <div style='display:flex;flex-direction:column;overflow:none;margin-top: 20px;'>
+                <div id="CTA::Clients" style='display:flex;flex-direction:column;overflow:auto;height:500px;padding-right:20px;'>                
+                </div>              
+            </div>
+            <div style="flex-grow: 1;"></div>
+            <div style="display: flex;flex-direction: row-reverse; margin-top:20px; gap:6px">
+                <button class="CTA_button" style="width: 200px;" onclick="CTA_ShowNewClientDialog()">
+                    New client
+                </button>                      
+            </div>
+        </div>  
+        <div class="CTA_Ctrl-Group CTA_Clents-View">
+            <div style="display:flex;">
+                <h3 style="font-weight:semibold; font-size: 16px;">
+                    Services
+                </h3>              
+            </div>    
+            <p class="CTA_label-lvl3" style="font-size:12px;" id="CTA::clients-footer">Select a client on the left to inspect its servies</p>            
+            <div style='display:flex;flex-direction:column;overflow:none;margin-top: 20px;'>
+                <div id="CTA::Services" style='display:flex;flex-direction:column;overflow:auto;height:500px;padding-right:20px;'>                
+                </div>              
+            </div>  
+            <div style="flex-grow: 1;"></div>
+            <div style="display: flex;flex-direction: row-reverse; margin-top:20px; gap:6px">
+                <button class="CTA_button" style="width: 200px;" onclick="CTA_ShowNewServiceDialog()">
+                    New Service
+                </button>                      
+            </div>      
+        </div>  
+        <div id="CTA::new-client-dialog" class="CTA_dialog-container">
+            <div class="CTA_Ctrl-Group CTA_New-Client CTA_dialog">
+                <h3 style="font-weight: semibold; font-size: 16px; ">
+                    New client 
+                </h3> 
+                <p class="CTA_label-lvl3">Create a new client and a servie for it. More services can be added latter</p>
+                <label style="margin-top:30px; font-feature-settings : frac; font-family: Inter, cursive">Company name</label>  
+                <input id="CTA::client-name" class="CTA_input"></input>
+                <label style="margin-top:30px; font-feature-settings : cv11; font-family: Inter, sans-serif">Service name</label>  
+                <input id="CTA::service-name" class="CTA_input"></input>
+                <label style="margin-top:30px; font-feature-settings : cv11; font-family: Inter, sans-serif">Service description</label>  
+                <textarea id="CTA::service-description" class="CTA_input" style="height: 200px" rows="20"></textarea>
+                <div style="flex-grow: 1;"></div>
+                <div style="display: flex;flex-direction: row-reverse; margin-top:20px; gap:6px">
+                    <button class="CTA_button" style="width: 200px;" onclick="CTA_NewClient()">
+                        Create
+                    </button>
+                    <button class="CTA_button-alt" style="width:200px;" 
+                    onclick="document.getElementById('CTA::new-client-dialog').style.display = 'none'">
+                        Cancel
+                    </button>
+                </div>           
+            </div>
+        </div>       
+        <div id="CTA::new-service-dialog" class="CTA_dialog-container">
+            <div class="CTA_Ctrl-Group CTA_New-Client CTA_dialog">
+                <h3 style="font-weight: semibold; font-size: 16px; ">
+                    New service 
+                </h3> 
+                <p class="CTA_label-lvl3">Create a service for the selected  client</p>
+                <label style="margin-top:30px; font-feature-settings : frac; font-family: Inter, cursive">Company name</label>  
+                <input id="CTA::new-service-client-name" disabled class="CTA_input"></input>
+                <label style="margin-top:30px; font-feature-settings : cv11; font-family: Inter, sans-serif">Service name</label>  
+                <input id="CTA::new-service-service-name" class="CTA_input"></input>
+                <label style="margin-top:30px; font-feature-settings : cv11; font-family: Inter, sans-serif">Service description</label>  
+                <textarea id="CTA::new-service-service-description" class="CTA_input" style="height: 200px" rows="20"></textarea>
+                <div style="flex-grow: 1;"></div>
+                <div style="display: flex;flex-direction: row-reverse; margin-top:20px; gap:6px">
+                    <button class="CTA_button" style="width: 200px;" onclick="CTA_NewService()">
+                        Create
+                    </button>
+                    <button class="CTA_button-alt" style="width:200px;" 
+                    onclick="document.getElementById('CTA::new-service-dialog').style.display = 'none'">
+                        Cancel
+                    </button>
+                </div>           
+            </div>
+        </div>  
+        <div id="CTA::edit-service-description-dialog" class="CTA_dialog-container">   
+            <div class="CTA_Ctrl-Group CTA_New-Client CTA_dialog">
+                <h3 style="font-weight: semibold; font-size: 16px; ">
+                    Edit service description
+                </h3> 
+                <p id="CTA::edit-service-hint" class="CTA_label-lvl3">Edit the description of the service</p>
+                <textarea id="CTA::service-editor" rows="20" class="CTA_input" style="width:100%;height:400px"></textarea>   
+                <div style="display: flex;flex-direction: row-reverse; margin-top:20px; gap:6px">
+                    <button class="CTA_button" style="width: 200px;" onclick="CTA_CommitServiceDescriptionEdit()">
+                        Commit
+                    </button>
+                    <button class="CTA_button-alt" style="width:200px;" 
+                        onclick="document.getElementById('CTA::edit-service-description-dialog').style.display = 'none'">
+                        Cancel
+                    </button>
+                </div>           
+            </div>
+        </div>            
+    </div>
+    {%include 'Clients.html' %}
+</div>
+
+<script>
+    CTAS = {
+        __Clients         : {},
+        __SelectedClient  : null,
+        __selectedServuce : null,
+        SelectClient(client){
+            this.__SelectedClient  = client;
+            this.__Clients[client] = []
+        },
+        SelectService(service){
+            this.__selectedServuce = service;
+        },
+        GetService(){
+            return this.__selectedServuce;
+        },
+        GetClient(){
+            return this.__SelectedClient === null ? '' : this.__SelectedClient;
+        },
+        IsClient(client){
+            return client in this.__Clients;
+        },
+        AddClient(client){
+            if (this.IsClient(client)) {
+                alert(`Client ${client} already exists`);
+                return
+            }
+            this.__Clients[client] = []   
+        }, 
+        IsService(service){
+            return this.__Clients[this.__SelectedClient].includes(service);
+        },  
+        AddService(client, service){
+            this.__Clients[client].push(service);
+        },     
+        Clear(){
+            this.__Clients         = {};
+            this.__SelectedClient  = null;
+            this.__selectedServuce = null;
+            document.getElementById('CTA::Services').innerHTML = '';
+        }
+    }
+    function CTA_IntructionsDialog(client, service){
+        let elements = bff(/*html*/`
+            <div class="CTA_dialog-container" data-self='root'>
+                <div class="CTA_Ctrl-Group CTA_New-Client CTA_dialog" style="width: 500px;">
+                    <h3 style="font-weight: semibold; font-size: 16px; ">
+                        Edit instructions
+                    </h3> 
+                    <p class="CTA_label-lvl3">Edit the instructions of the service
+                    ${service}, client: ${client}</p>
+                    <textarea rows="20" class="CTA_input" style="width:100%;height:400px" data-self='instructions'></textarea>
+                    <div style="flex-grow: 1;"></div>
+                    <div style="display: flex;flex-direction: row-reverse; margin-top:20px; gap:6px">    
+                        <button class="CTA_button" style="width: 200px;" data-self='apply'>
+                            Apply
+                        </button>                    
+                        <button class="CTA_button-alt" style="width: 200px;" data-self='cancel'>
+                            Close
+                        </button>
+                    <div class="DASHBOARD_Loader" style="display:none; margin-right:10px" data-self='spinner'></div>    
+                </div>
+            </div>`).AppendTo(document.body);  
+        elements.spinner.style.display = 'flex';
+        elements.root.style.display    = 'flex';    
+        elements.cancel.onclick        = function(){            
+            elements.root.remove()
+        }; 
+        ;(async function(){            
+            let f_options  = DASHBOARD_FetchOPtions();
+            f_options.body = JSON.stringify({Client : client, ServiceName : service});
+            try {
+                let reply = await DASHBOARD_Fetch('/CTAs-get-service-instructions', f_options);
+                if (reply.Reply != 'S_OK') {
+                    throw new Error(reply.Reply);
+                }
+                elements.instructions.value = reply.Instructions;
+            } catch (e) {
+                console.error(e);
+                DASHBOARD_except(e)
+            } finally {
+                elements.spinner.style.display = 'none';
+            }
+        })()
+        elements.apply.onclick  = async function(){
+            let instructions = elements.instructions.value;
+            if (instructions === '') {
+                alert('Please fill the instructions');
+                return; 
+            }
+            DASHBOARD_OK_Cancel(`Are you sure you want to apply the instructions for service ${service} of client ${client}?`, 'Apply',
+            async function () {
+                elements.spinner.style.display = 'flex';
+                let options  = DASHBOARD_FetchOPtions();
+                options.body = JSON.stringify({
+                    Client       : client, 
+                    ServiceName  : service, 
+                    Instructions : instructions});
+                try {
+                    let reply = await DASHBOARD_Fetch('/CTAs-add-service-instructions', options);
+                    if (reply.Reply != 'S_OK') {
+                        throw new Error(reply.Reply);
+                    }
+                    alert(`Instructions for service ${service} of client ${client} have been applied successfully`);
+                } catch (e) {
+                    console.error(e);
+                    DASHBOARD_except(e)
+                } finally {
+                    elements.spinner.style.display = 'none';
+                    elements.root.remove();
+                }
+            })
+        }  
+    }
+
+    function CTA_CommitServiceDescriptionEdit(){
+        (async function(){
+            let description = document.getElementById('CTA::service-editor').value;
+            let client      = CTAS.GetClient();
+            let service     = CTAS.GetService();
+            let f_options   = DASHBOARD_FetchOPtions();
+            f_options.body  = JSON.stringify({Client : client, ServiceName : service, ServiceDescription : description});
+            reply           = await DASHBOARD_Fetch('CTAs-update-description', f_options);
+            console.log(reply);
+            document.getElementById('CTA::edit-service-description-dialog').style.display = 'none';
+        })()
+    }    
+    function CTA_ShowNewClientDialog(){
+        document.getElementById('CTA::new-client-dialog').style.display = 'flex';
+    }
+    function CTA_ShowNewServiceDialog(){
+        document.getElementById('CTA::new-service-client-name').value    = CTAS.GetClient();
+        document.getElementById('CTA::new-service-dialog').style.display = 'flex';
+    }
+    function CTA_NewClient(){
+        (async function(){
+            let client      = document.getElementById('CTA::client-name').value;
+            let service     = document.getElementById('CTA::service-name').value;
+            let description = document.getElementById('CTA::service-description').value;
+            if (client === '' || service === '' || description === '') {
+                alert('Plese fill all the fields');
+                return;
+            }
+            if (CTAS.IsClient(client)) {
+                alert('Client already exists');
+                return;
+            }
+            console.log(client, service, description);
+            let f_options  = DASHBOARD_FetchOPtions();
+            f_options.body = JSON.stringify({Client : client, ServiceName : service, ServiceDescription : description});
+            reply          = await DASHBOARD_Fetch('/CTAs-add-service', f_options);
+            if (reply.Reply != 'S_OK') {
+                alert(reply.Reply)
+            }
+            CTA_AddClient(client)
+            document.getElementById('CTA::new-client-dialog').style.display = 'none';
+        })();
+    };
+    function CTA_NewService(){
+        (async function(){
+            let client      = document.getElementById('CTA::new-service-client-name').value;
+            let service     = document.getElementById('CTA::new-service-service-name').value;
+            let description = document.getElementById('CTA::new-service-service-description').value;
+            if (client === '' || service === '' || description === '') {
+                alert('Please fill all the fields');
+                return;
+            }            
+            if (CTAS.IsService(service)) {
+                alert('Service already exists');
+                return;
+            }
+            console.log(client, service, description);
+            let f_options  = DASHBOARD_FetchOPtions();
+            f_options.body = JSON.stringify({Client : client, ServiceName : service, ServiceDescription : description});
+            reply          = await DASHBOARD_Fetch('/CTAs-add-service', f_options);
+            if (reply.Reply != 'S_OK') {
+                alert(reply.Reply)
+            }            
+            document.getElementById('CTA::new-service-dialog').style.display = 'none';
+            CTA_ListServices(client);
+        })();
+    }
+    function CTA_EditServiceDescription(client, service){       
+        (async function () {
+            CTAS.SelectService(service);
+            let f_options   = DASHBOARD_FetchOPtions();
+            f_options.body  = JSON.stringify({Client : client, ServiceName : service});
+            let description = await DASHBOARD_Fetch('/CTAs-get-service-description', f_options);
+            console.log(description)
+            document.getElementById('CTA::service-editor').value         = description.Reply;
+            document.getElementById('CTA::edit-service-hint').innerHTML  = `Client: ${client}, service: ${service}`
+            document.getElementById('CTA::edit-service-description-dialog').style.display = 'flex';
+        })();
+    }
+    function CTA_EditServiceInstructions(client, service){
+        CTA_IntructionsDialog(client, service);        
+    }
+    function CTA_DeleteService(client, service){
+        DASHBOARD_OK_Cancel(`Are you sure you want to service ${service}?`, 'Delete',
+        async function () {
+            let f_options  = DASHBOARD_FetchOPtions();
+            f_options.body = JSON.stringify({Client : client, ServiceName : service});
+            let reply      = await DASHBOARD_Fetch('/CTAs-delete-service', f_options);
+            CTA_ListServices(client);
+        });
+    }
+    function CTA_AddService(client, service){
+        CTAS.AddService(client, service);
+        let container        = document.getElementById('CTA::Services');        
+        container.innerHTML += /*html*/
+            `<div class="CTA_Client">
+                <div style="margin-top:10px">${service}</div>                
+                <div style="flex-grow: 1;"></div>   
+                <button class="CTA_button-alt" onclick="CTA_EditServiceDescription('${client}', '${service}')">View\\Edit description</button> 
+                <button class="CTA_button-alt" onclick="CTA_EditServiceInstructions('${client}', '${service}')">View\\Edit instructions</button> 
+                <i class="fa-solid fa-trash CTA_3dots" onclick="CTA_DeleteService('${client}', '${service}')"></i>               
+            </div>`
+    }
+    function CTA_ListServices(client){
+        (async function () {
+            document.getElementById('CTA::Services').innerHTML = '';
+            CTAS.SelectClient(client);
+            let f_options  = DASHBOARD_FetchOPtions();
+            f_options.body = JSON.stringify({Client : client});
+            let services   = await DASHBOARD_Fetch('/CTAs-list-services', f_options);     
+            for (let service of services.Services)    {
+                CTA_AddService(client, service)
+            }
+        })()       
+    }
+    function CTA_DeleteClient(client){
+        DASHBOARD_OK_Cancel(`Are you sure you want to client ${client}?`, 'Delete',
+        async function () {
+            let f_options  = DASHBOARD_FetchOPtions();
+            f_options.body = JSON.stringify({Client : client});
+            let reply      = await DASHBOARD_Fetch('/CTAs-delete-client', f_options);
+            CTA_ListClients();
+        })
+    }
+    function CTA_AddClient(client){
+        CTAS.AddClient(client);
+        let container        = document.getElementById('CTA::Clients');        
+        container.innerHTML += /* html */
+            `<div class="CTA_Client">
+                <div style="margin-top:10px">${client}</div>
+                <div style="flex-grow: 1;"></div>   
+                <button class="CTA_button-alt" onclick="CTA_ListServices('${client}')">View services</button> 
+                <i class="fa-solid fa-trash CTA_3dots" onclick="CTA_DeleteClient('${client}')"></i>               
+            </div>`                     
+    }
+    async function CTA_ListClients(){
+        CTAS.Clear();
+        let clients = await DASHBOARD_Fetch('CTAs-list-clients', DASHBOARD_FetchOPtions());        
+        document.getElementById('CTA::clients-spinner').style.display = 'none';
+        document.getElementById('CTA::clients-footer').innerHTML      = 'Select a client to view, add or edit its services';
+        let container       = document.getElementById('CTA::Clients');
+        container.innerHTML = ''
+        for (let client of clients.Clients) {
+            CTA_AddClient(client)
+        }
+    }
+    CTA_ListClients();
+</script>    
+{% endblock %}    

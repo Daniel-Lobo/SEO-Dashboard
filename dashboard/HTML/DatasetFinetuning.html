@@ -1,0 +1,392 @@
+{% extends 'dashboard.html' %}
+
+{% block breadcrumbs %}  
+<div style='display:flex; flex-direction: column; width:100%; margin-right:20px; margin-bottom:-16px;'>
+    <div style='display:flex; margin-bottom:20px; text-transform: uppercase;'> 
+        <span>SEO Tools</span>
+        <span>Dataset Finetuning</span>   
+    </div>        
+    <div style='display:flex; flex-direction:row'>
+        <h1 class='az-content-title'>Dataset Finetuning</h1>
+        <p style='margin-left:16px; margin-top:10px; margin-right:12px;font-size:14px;text-transform:none;'id='DATASET-FINETUNNING::status'></p>
+        <div id='DATASET-FINETUNNING::extraction-indicator' style='width:30px;height:30px;margin-top:-2px;' class='DASHBOARD_Loader'></div>
+    </div>    
+</div>    
+{% endblock %}    
+
+{% block tool_content %} 
+{% if acess_flag_dset_tuning %} 
+<style>   
+.DATASET-FINETUNNING_root{
+    display         : flex;
+    /*background-color: var(--theme-clr-weak);*/
+    width           : 100%;
+    height          : calc(100% - 0px);
+    overflow        : none;
+    margin-right    : 10px;
+    margin-bottom   : 0px;
+    padding:   10 10 10 10;
+    gap             : 20px;
+}
+.DATASET-FINETUNNING_svg{
+    fill    :white;
+    width   : 1.5em;
+    height  : 1.5em;    
+}
+</style>    
+
+<div class='DATASET-FINETUNNING_root'>
+    <div style='display:flex;flex-direction:column;width:30%;gap:6px'>
+        <button class='btn btn-az-secondary btn-rounded' style='flex-grow:1;' onclick="DATASET_FINETUNNING_Extract()">Extract PDF pages as images
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="DATASET-FINETUNNING_svg">
+                <path d="M64 464l48 0 0 48-48 0c-35.3 0-64-28.7-64-64L0 64C0 28.7 28.7 0 64 0L229.5 0c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3L384 304l-48 0 0-144-80 0c-17.7 0-32-14.3-32-32l0-80L64 48c-8.8 0-16 7.2-16 16l0 384c0 8.8 7.2 16 16 16zM176 352l32 0c30.9 0 56 25.1 56 56s-25.1 56-56 56l-16 0 0 32c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-48 0-80c0-8.8 7.2-16 16-16zm32 80c13.3 0 24-10.7 24-24s-10.7-24-24-24l-16 0 0 48 16 0zm96-80l32 0c26.5 0 48 21.5 48 48l0 64c0 26.5-21.5 48-48 48l-32 0c-8.8 0-16-7.2-16-16l0-128c0-8.8 7.2-16 16-16zm32 128c8.8 0 16-7.2 16-16l0-64c0-8.8-7.2-16-16-16l-16 0 0 96 16 0zm80-112c0-8.8 7.2-16 16-16l48 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 32 32 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 48c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-64 0-64z"/>
+            </svg>
+        </button>
+        <div style='display:flex;'>            
+            <button class='btn btn-az-secondary btn-rounded' style='flex-grow:1;' onclick="DATASET_FINETUNNING_Load()">Load</button>
+            <div id='DATASET-FINETUNNING::indicator' style='width:40px;height:40px;' class='DASHBOARD_Loader'></div>
+        </div>    
+        <div id='DATASET-FINETUNNING::files-list-header' class='az-content-label mg-b-5' style='margin-bottom:2px;margin-top:18px;'>Files List</div>   
+        <div id='DATASET-FINETUNNING::list-container' 
+            style='display:flex;flex-direction:column;width:100%;overflow-y:auto;margin-top:6px;border:1px solid #6f42c1; 
+            padding: 10 10 10 10; height:100%; gap:2px'> 
+        </div>
+    </div>
+    <div style='display:flex;flex-direction:column;width:70%; gap:6px'>        
+        <div id='DATASET-FINETUNNING::file-title' class='az-content-label mg-b-5' style='margin-bottom:12px;margin-top:0px;'>File view</div>   
+        <textarea id='DATASET-FINETUNNING::file-view' style="height:100%"></textarea>       
+        
+        <div style='display:flex;flex-direction:row-reverse; padding:0 0 0 0;margin-bottom:-10px;gap:10px'>            
+            <button id='DATASET-FINETUNNING::gen-qanda' class='btn btn-az-secondary btn-rounded' style='display:flex;margin-bottom:0px;' onclick='DATASET_FINETUNNING.Gen()'>        
+                <div id='DATASET-FINETUNNING::gen-qanda-label'>Generate Q and A</div> 
+                <div id='DATASET-FINETUNNING::gen-qanda-spinner' class='DASHBOARD_Loader' style='width:26px; height:26px; margin-top:-4px;'></div>             
+            </button>
+            <select id='DATASET-FINETUNNING::prompts' class="form-control select2-no-search select2-hidden-accessible" 
+            style="width:200px" onclick="event.stopPropagation()">                             
+            </select> 
+            <!--<div style="margin:0 10 10 0; padding-left:2px; display:flex;gap:6px; border-bottom:2px solid #3366ff">
+                <input id='DATASET-FINETUNNING::stf-output' type="checkbox" style="margin:0 0 0 0"></input>
+                <div style='padding-top:5px;'>Output in SFT format</div>
+            </div>--> 
+            <select id='DATASET-FINETUNNING::format' class="form-control select2-no-search select2-hidden-accessible" 
+            style="width:200px" onclick="event.stopPropagation()">                             
+            </select> 
+        </div>     
+    </div>
+</div>
+
+<script>  
+function niceBytes(x){
+    const units = ['bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+   
+    let l = 0, n = parseInt(x, 10) || 0;
+   
+    while(n >= 1024 && ++l){
+        n = n/1024;
+    }
+     
+    return(n.toFixed(n < 10 && l > 0 ? 1 : 0) + ' ' + units[l]);
+}
+
+function DATASET_FINETUNNING_ToOpenAi(reply){
+    if (false === 'QAndA' in reply) return {}
+    QandA = []
+    for (doc of reply['QAndA']){
+        for ([doc_name, doc_items] of Object.entries(doc)){            
+            console.log("name", doc_name)
+            console.log("items", reply['QAndA'][doc_name])
+            for (doc_item of doc_items){
+                if ('assistant' in doc_item && 'user' in doc_item && 'system' in doc_item){
+                    QandA.push({
+                        'messages' : [
+                            {'role' : 'system', 'content' : doc_item['system']},
+                            {'role' : 'user', 'content' : doc_item['user']},
+                            {'role' : 'assistant', 'content' : doc_item['assistant']},
+                        ]
+                    })
+                }
+            }
+        }
+    }
+    return QandA;
+}
+
+function DATASET_FINETUNNING_ReorderKeys(json_string, format){    
+    //if (format === 'json') return json_string;
+    let lines     = json_string.split('\n')    
+    let new_lines = []    
+    for (let [index, line] of lines.entries()){
+        //console.log(line.replaceAll('\t', ''))
+        if (line.replaceAll('\t', '').startsWith('"question"')){
+            //console.log('found')
+            let question   = lines[index]
+            let context    = lines[index-1]
+            let answer     = lines[index-2]
+            lines[index-2] = question + ','
+            lines[index-1] = answer
+            lines[index]   = context.split('').reverse().join('').replace(',', '').split('').reverse().join('')
+        }
+    }      
+    return lines.join('\n');   
+}
+function DATASET_FINETUNNING_ToStf(json, format){    
+    let output = ''  //`{\n\t[`
+	
+    for (let file of json['QAndA']){        
+        for (let [key, value] of Object.entries(file)){
+            if (false === Array.isArray(value)) // very ugly fix
+            value = [value]                      
+            for (let qa of value) {
+                output += `\n{"text": "${qa.text.replace('\n', '\n\t\t').replace('""', '"')}"}`
+            }
+        }
+    }
+    return output; //+ '\n\t]\n}';
+}
+var DATASET_FINETUNNING = {
+    size   : 0,
+    idexes : [],
+    files  : [],
+    Select1st(){
+        for (const child of document.getElementById('DATASET-FINETUNNING::list-container').children){
+            child.children[1].click()
+            break;
+        }
+    },
+    __GetPrompts(){
+        let prompts_list = DASHBOARD_OptionO('More Prompts')['Fine tuning'][document.getElementById('DATASET-FINETUNNING::prompts').value];
+        let promtps = {} 
+        let format  = DASHBOARD_GetOptions('DATASET-FINETUNNING::format')[0]
+        if (format === 'json')
+            prompts = {'System' : prompts_list[0], 'User' : prompts_list[1], 'System - image' : prompts_list[2], 'User - image' : prompts_list[3]};
+        else if (format === 'stf')
+            prompts = {'System' : prompts_list[4], 'User' : prompts_list[5], 'System - image' : prompts_list[6], 'User - image' : prompts_list[7]};
+        else if (format === 'stf-original')
+            prompts = {'System' : prompts_list[8], 'User' : prompts_list[9], 'System - image' : prompts_list[10], 'User - image' : prompts_list[11]};
+        else if (format === 'openai')
+            prompts = {'System' : prompts_list[12], 'User' : prompts_list[13], 'System - image' : prompts_list[14], 'User - image' : prompts_list[15]};
+        for (let [key, value] of Object.entries(prompts)){
+            if (value === undefined || value === '' || value === "undefined") {
+                let f = {"json" : "Json", "stf" : "SFT", "stf-original" : "SFT-original", "openai" : "OpenAI"}[format] 
+                alert(`The seleted prompt is missing a "${key}" prompt for format "${f}"`)
+                return null;
+            }
+        }
+        console.log("prompts", prompts)
+        return prompts;        
+    },
+    async AGen(){
+        //await new Promise(resolve => setTimeout(resolve, 2000));
+        try {
+            await DASHBOARD_UpdateSettings()      
+            let format  = DASHBOARD_GetOptions('DATASET-FINETUNNING::format')[0] //document.getElementById('DATASET-FINETUNNING::stf-output').checked === false ? 'json' : 'stf';        
+            let prompts = this.__GetPrompts()
+            if (prompts == null) return;
+            let request = {'Files' : [], Prompts : prompts, format : format}
+            for (const file of this.files){
+                if (file.checked){                
+                    request.Files.push({
+                        'Name': file.name, 
+                        'Content' : file.content, 
+                        'Type' : file.content.startsWith('data:image/png;base64') ? 'base64' : 'text' 
+                    })               
+                }
+            }   
+            console.log(format);
+            //console.log(prompts);
+            //return;
+            if (request.Files.length === 0){
+                alert('No files selected')
+                return
+            }    
+            let options  = DASHBOARD_FetchOPtions()         
+            options.body = JSON.stringify(request)
+            let reply    = await fetch('/dataset-finetunning_gen-qanda', options);
+            let json     = await reply.json();
+            
+            let success  = {"QAndA" : json['QAndA']};
+            let failed   = json['Failed'];
+            
+            const a    = document.createElement('a');
+            let blob   = ''
+            if (format === 'stf'){
+                blob = new Blob([DATASET_FINETUNNING_ToStf(success, format)]);
+            } else if (format === 'json'){
+                blob = new Blob([            
+                    DATASET_FINETUNNING_ReorderKeys(
+                        JSON.stringify(success, null, "\t"), format)
+                ]);
+            } else if (format === 'stf-original'){
+                blob = new Blob([JSON.stringify(success, null, "\t")]);
+            } else if (format === 'openai'){
+                console.log("==========================>", success)
+                blob = new Blob([JSON.stringify(DATASET_FINETUNNING_ToOpenAi(success), null, "\t")]);
+            }        
+            a.href     = URL.createObjectURL(blob);
+            a.download = 'Train Data.json';                     
+            a.click();      
+            if (failed.length > 0){
+                let failed_text = failed.join('\n')            
+                alert('Failed to process the following files:\n' + failed_text)   
+            }
+        }
+        catch (error){
+            DASHBOARD_except(error)
+        }
+    },
+    Gen(){
+        document.getElementById('DATASET-FINETUNNING::gen-qanda').disabled              = true;
+        document.getElementById('DATASET-FINETUNNING::gen-qanda-spinner').style.display = 'block';       
+        this.AGen().then(() => {
+            document.getElementById('DATASET-FINETUNNING::gen-qanda').disabled              = false;
+            document.getElementById('DATASET-FINETUNNING::gen-qanda-spinner').style.display = 'none';       
+        })
+    },
+    AddFile(name, content){     
+        this.size       += new Blob([content]).size;    
+        let title        = document.getElementById('DATASET-FINETUNNING::file-title');
+        let textview     = document.getElementById('DATASET-FINETUNNING::file-view');    
+        let container    = document.getElementById('DATASET-FINETUNNING::list-container');
+        let div          = document.createElement('div');
+        let checkbox     = document.createElement('input');
+        let label        = document.createElement('label');
+        let spacer       = document.createElement('div');
+        let del          = document.createElement('button');
+        checkbox.type    = 'checkbox';
+        checkbox.style   = 'margin-right:4px;margin-top:-2px;'    
+        checkbox.checked = true;     
+        div.style        = 'display:flex;flex-direction:row;'
+        label.style      = 'margin-top:0px;margin-bottom:0px;'
+        spacer.className = 'spacer'
+        label.innerHTML  = name
+        label.className  = 'DASHBOARD_ClicableText';
+        del.innerHTML    = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-small">
+            <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+        </svg>`;         
+        del.style        = 'background-color:transparent;border:none;cursor:pointer;margin-top:-4px;'
+        div.appendChild(checkbox)
+        div.appendChild(label)
+        div.appendChild(spacer)
+        div.appendChild(del)
+        container.appendChild(div)
+        this.idexes.push(name)
+        this.files.push({name:name, content:content, checked:true})
+        label.onclick = function(){
+            let index        = DATASET_FINETUNNING.idexes.indexOf(name)
+            let curr_content = DATASET_FINETUNNING.files[index].content;
+            textview.value   = curr_content;
+            title.innerHTML  = name;
+            textview.onkeyup = function(){                
+                let index = DATASET_FINETUNNING.idexes.indexOf(name)
+                DATASET_FINETUNNING.files[index].content = textview.value;
+            }
+        }
+        del.onclick = function(){
+            container.removeChild(div);
+            let index = DATASET_FINETUNNING.idexes.indexOf(name)
+            DATASET_FINETUNNING.files.splice(index, 1);
+            DATASET_FINETUNNING.idexes.splice(index, 1);
+            DATASET_FINETUNNING.Select1st()
+        }
+        checkbox.onchange = function(){
+            let index = DATASET_FINETUNNING.idexes.indexOf(name)
+            DATASET_FINETUNNING.files[index].checked = checkbox.checked;
+        }
+        document.getElementById('DATASET-FINETUNNING::files-list-header').innerHTML = 'Files List ' + niceBytes(this.size);
+    }
+}
+function DATASET_FINETUNNING_Load(){
+    document.getElementById('DATASET-FINETUNNING::indicator').style.display = 'block';
+    DASHBOARD_LoadB(accept = '.xlsx, .csv, .pdf, .png, .txt, .md', async function(name, data){      
+        if (name.endsWith('.xlsx')){
+            let options  = {method: 'POST', body: new Blob([data])}
+            let response = await fetch('/dataset-finetunning_read-excel', options)
+            let text     = (await response.json()).Text
+            DATASET_FINETUNNING.AddFile(name,text)
+        } else if (name.endsWith('.pdf')){
+            let options  = {method: 'POST', body: new Blob([data])}
+            let response = await fetch('/dataset-finetunning_read-pdf', options)
+            let json     = await response.json()
+            if (json.Text == '' && json.Chapters.length > 0){
+                for (const [i, chap] of json.Chapters.entries()){
+                    DATASET_FINETUNNING.AddFile(`${name} - Chapter ${i+1}`, chap)
+                }
+            } else {
+                DATASET_FINETUNNING.AddFile(name,json.Text)
+            }            
+        } else if (name.endsWith('.png')){            
+            let text = data
+            DATASET_FINETUNNING.AddFile(name,text)
+        } else if (name.endsWith('.csv')){
+            let text = data
+            DATASET_FINETUNNING.AddFile(name,text)
+        } else if (name.endsWith('.txt') || name.endsWith('.md')){
+            let text = data;
+            DATASET_FINETUNNING.AddFile(name,text)
+        }       
+    }, function(){
+        document.getElementById('DATASET-FINETUNNING::indicator').style.display = 'none';
+        DATASET_FINETUNNING.Select1st()
+    })
+}
+function DATASET_FINETUNNING_Extract(){
+    let blobs = []
+    let names = []
+    DASHBOARD_LoadB(accept = '.pdf', async function(name, data){   
+        blobs.push(new Blob([data]))
+        names.push(name)
+    }, async function(){
+        let status_text = document.getElementById('DATASET-FINETUNNING::status')
+        let spinner               = document.getElementById('DATASET-FINETUNNING::extraction-indicator')
+        status_text.style.display = 'flex'; 
+        spinner.style.display     = 'flex';
+
+        let r     = await fetch('/dataset-finetunning_extract-pdf-create-job');
+        let json  = await r.json();
+        let jobid = json.JobId;
+        for (const [index, blob] of blobs.entries()) {
+            let options = {method: 'POST', body: blob}
+            let name    = names[index]
+            status_text.innerHTML = `Processing file ${index+1}/${blobs.length}`;
+            console.log(name)
+            await fetch(`/dataset-finetunning_extract-pdf?JobId=${jobid}&Name=${name}`, options)
+        }
+        r          = await fetch(`/dataset-finetunning_extract-pdf-finish-job?JobId=${jobid}`)
+        let blob   = await r.blob()
+        status_text.style.display = 'none'; 
+        spinner.style.display     = 'none';
+        const a    = document.createElement('a');            
+        a.href     = URL.createObjectURL(blob);
+        a.download = 'Images.zip';                     
+        a.click();
+    });   
+}
+(async function(){
+        await DASHBOARD_UpdateSettings()
+        let select       = document.getElementById('DATASET-FINETUNNING::prompts')
+        select.innerHTML = ''        
+        for (const prompt in DASHBOARD_OptionO('More Prompts')['Fine tuning']){            
+            let option      = document.createElement('option');
+            option.value    = prompt;
+            option.label    = prompt;              
+            select.appendChild(option);
+        }  
+        select           = document.getElementById('DATASET-FINETUNNING::format');
+        select.innerHTML = ''    
+        let labels       = ["Json", "STF", "STF-original", "OpenAI"]   
+        for (const [index, format] of ['json', 'stf', 'stf-original', 'openai'].entries()){            
+            let option      = document.createElement('option');
+            option.value    = format;
+            option.label    = labels[index];    
+            //if (index === 3) 
+            //option.disabled = "disabled"         
+            select.appendChild(option);
+        }             
+    })()
+</script>    
+
+{% else %}
+    <h1 class='az-content-title DASHBOARD_Noaccess'>You don't have access to this tool</h1>
+{% endif %}    
+    
+{% endblock %}

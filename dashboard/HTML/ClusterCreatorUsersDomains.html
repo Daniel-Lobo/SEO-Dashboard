@@ -1,0 +1,373 @@
+<style>
+	.ClusterCreatorUsersDomains_list-container {
+		display       : flex;
+		flex-direction: column;
+		width         : 100%;
+		height        : 500px;
+		overflow      : auto;		
+		position:relative;		
+	}
+</style>
+
+<div id="ClusterCreatorUsersDomains::root" class="tw_dialog-container"	name='DASHBOARD::modal' style="z-index: 5"
+	onclick='event.stopPropagation()'>
+	<div class="tw_Ctrl-Group tw_dialog" style="width:80%;">
+		<div style="display:flex;width:100%;gap:20px">
+			<div class="tw_Ctrl-Group" style="display:flex;flex-direction:column;width:33%;gap:30px;overflow-y: auto;">
+				<p class='tw_h3' style="margin-bottom:0px"> Clients<p>	
+				<p class='tw_h4' style="margin-top:-74px; margin-bottom:-12px;"> Select a client to load domains from</p>
+				<div id='ClusterCreatorUsersDomains::clients-list'
+					class='ClusterCreatorUsersDomains_list-container'>                
+            	</div>		
+			</div>			
+			<div class="tw_Ctrl-Group" style="display:flex;flex-direction:column;width:33%;overflow-y: auto;">
+				<p id="ClusterCreatorUsersDomains::domains-header" class='tw_h3' style="margin-bottom:0px">Domains</p>
+				<p class='tw_h4'> Select a domain to load clusters from</p>	
+				<div id='ClusterCreatorUsersDomains::domains-list'
+					class='ClusterCreatorUsersDomains_list-container'>                
+				</div>		
+			</div>	
+			<div class="tw_Ctrl-Group" style="display:flex;flex-direction:column;width:33%;overflow-y: auto;">
+				<p id="ClusterCreatorUsersDomains::clusters-header" class='tw_h3' style="margin-bottom:0px">Clusters</p>
+				<p class='tw_h4'> Select a clusters to load</p>		
+				<div id='ClusterCreatorUsersDomains::clusters-list'
+				class='ClusterCreatorUsersDomains_list-container'>                
+				</div>		
+			</div>	
+		</div>
+		<div style="display:flex;flex-direction:row-reverse;margin-top:10px;padding-top: 6px;">
+			<button class="tw_button" 
+			onclick="document.getElementById('ClusterCreatorUsersDomains::root').style.display='none'">Close</button>
+		</div>			
+	</div>
+</div>
+<div id="ClusterCreatorUsersDomains::no-domain" class="tw_dialog-container"	name='DASHBOARD::modal'
+	onclick='event.stopPropagation()'>
+	<div class="tw_Ctrl-Group tw_dialog">
+		<div style="display: flex;">
+			<i class="fa-solid fa-triangle-exclamation fa-2xl" style="color:red"></i>
+			<h3 class='tw_h3' style="margin-left:16px; margin-top:-4px"> No domain</h3>			
+		</div>
+		<p class='tw_h4'> This cluster doesn't have and domain<br>
+			Domains are deduced from the base url, please assign a valid base url</p>
+		<div style="display:flex;flex-direction:row-reverse;margin-top:10px;border-top:1px solid lightgray; padding-top: 6px;">
+			<button class="tw_button" 
+			onclick="document.getElementById('ClusterCreatorUsersDomains::no-domain').style.display='none'">Close</button>
+		</div>	
+	</div>
+</div>
+<div id="ClusterCreatorUsersDomains::no-client" class="tw_dialog-container"	name='DASHBOARD::modal'
+	onclick='event.stopPropagation()'>
+	<div class="tw_Ctrl-Group tw_dialog">
+		<div style="display:flex;">
+			<i class="fa-solid fa-user-plus fa-2xl" style="color:rgb(0, 0, 255)"></i>
+			<h3 class='tw_h3' style="margin-left:16px; margin-top:-4px"> No Client</h3>			
+		</div>
+		<p class='tw_h3_5'> This cluster doesn't have a client. Please pick or create a new one</p>		
+		<p style="margin-bottom: 0px;" class="tw_h4"> Current clients, select one or...</p>
+		<select id="ClusterCreatorUsersDomains::clients" style="width:100%;margin-bottom:20px" class="tw_input">
+		</select>	
+		<p style="margin-bottom: 0px;" class="tw_h4"> ...create a new one</p>
+		<input class="tw_input" id="ClusterCreatorUsersDomains::client-name" style="width:100%;margin-bottom:20px" placeholder="Client name">
+		</input>
+		<p style="margin-bottom: 0px;" class="tw_h4"> Cluster name</p>
+		<input class="tw_input" id="ClusterCreatorUsersDomains::cluster-name" style="width:100%;margin-bottom:20px" placeholder="Cluster name">
+		</input>
+		<progress id='ClusterCreatorUsersDomains::choose-client-progress' max="100" style="width:100%"></progress>    
+		<div style="display:flex;flex-direction:row-reverse;margin-top:10px;border-top:1px solid lightgray;padding-top:6px;gap:10px">
+			<button class="tw_button-alt" id="ClusterCreatorUsersDomains::save" style="display:flex;">
+				<span id='ClusterCreatorUsersDomains::save-spinner' class="loader" 
+				style='width:24px;height:24px;margin-top:-2px;margin-right:4px;color:black;display:none'></span> 
+				Save</button>
+			<button class="tw_button" 
+			onclick="document.getElementById('ClusterCreatorUsersDomains::no-client').style.display='none'">Close</button>
+		</div>	
+	</div>
+</div>
+<script>
+	async function ClusterCreatorUsersDomains_Load(client, domain, cluster) {
+		let reply = await DASHBOARD_Fetch(`/client_owned_clusters-load?client=${client}&domain=${domain}&cluster=${cluster}`, DASHBOARD_FetchOPtions());		
+		return reply.Cluster;
+	}
+	async function ClusterCreatorUsersDomains_ListClients(){
+		let reply = await DASHBOARD_Fetch('/client_owned_clusters-list_clients', DASHBOARD_FetchOPtions());
+		console.log("Clients", reply);
+		return reply.Clients;
+	}
+	async function ListDomains(client) {
+		let reply = await DASHBOARD_Fetch(`/client_owned_clusters-list_domains?client=${client}`, DASHBOARD_FetchOPtions());
+		return reply.Domains;
+	}
+	async function ListClusters(client, domain) {
+		let reply = await DASHBOARD_Fetch(`/client_owned_clusters-list_clusters?client=${client}&domain=${domain}`, DASHBOARD_FetchOPtions());
+		return reply.Clusters;		
+	}
+	async function ClusterCreatorUsersDomains_ShowDialog(){
+		let clients         = await ClusterCreatorUsersDomains_ListClients();
+		let clients_list    = document.getElementById("ClusterCreatorUsersDomains::clients-list");
+		let domains_list    = document.getElementById("ClusterCreatorUsersDomains::domains-list");
+		let clusters_list   = document.getElementById("ClusterCreatorUsersDomains::clusters-list");
+		let domains_header  = document.getElementById("ClusterCreatorUsersDomains::domains-header");
+		let clusters_header = document.getElementById("ClusterCreatorUsersDomains::clusters-header");
+		clients_list.innerHTML  = '';
+		domains_list.innerHTML  = '';
+		clusters_list.innerHTML = '';
+		for (let client of clients) {
+			let          s = document.createElement('div');
+			let       icon = document.createElement('button');  
+			let  curr_cltn = document.createElement('div');
+			let          p = document.createElement('div');
+			s.className         = 'spacer'
+			icon.classList      = "tw_Button-alt";
+			icon.innerHTML      = "List domains";
+			curr_cltn.className = 'tw_List-Item-Container';
+			p.classList         = 'tw_List-Item-Label DASHBOARD_ellipsis';
+			p.innerHTML         = client;       
+			curr_cltn.appendChild(p);      
+			curr_cltn.appendChild(s);      
+			curr_cltn.appendChild(icon);    
+			clients_list.appendChild(curr_cltn);
+			icon.onclick =  async function() {
+				clusters_header.innerHTML = 'Clusters'
+				domains_header.innerHTML  = client + ' domains'
+				domains_list.innerHTML    = '';
+				clusters_list.innerHTML   = '';
+				let domains               = await ListDomains(client);
+				for (let domain of domains) {
+					let           s       = document.createElement('div');
+					let        icon       = document.createElement('button');  
+					let curr_domain       = document.createElement('div');
+					let           p       = document.createElement('div');
+					s.className           = 'spacer'
+					icon.classList        = "tw_Button-alt";
+					icon.innerHTML        = "List clusters";
+					curr_domain.className = 'tw_List-Item-Container';
+					p.classList           = 'tw_List-Item-Label DASHBOARD_ellipsis';
+					p.innerHTML           = domain;       
+					curr_domain.appendChild(p);      
+					curr_domain.appendChild(s);      
+					curr_domain.appendChild(icon);    
+					domains_list.appendChild(curr_domain);
+					icon.onclick =  async function() {
+						clusters_header.innerHTML = domain + ' clusters'
+						clusters_list.innerHTML   = '';
+						let clusters              = await ListClusters(client, domain);
+						for (let cluster of clusters) {
+							let          s = document.createElement('div');
+							let       icon = document.createElement('i');  
+							let      trash = document.createElement('i'); 
+							let          d = document.createElement('div');
+							let          p = document.createElement('div');
+							s.className     = 'spacer'
+							icon.classList  = "fa-solid fa-folder-open tw_Icon-Clickable";
+							trash.classList = "fa-solid fa-trash tw_Icon-Clickable";
+							trash.style.color = "#aa0000";
+							d.className     = 'tw_List-Item-Container';
+							p.classList     = 'tw_List-Item-Label DASHBOARD_ellipsis';
+							p.innerHTML     = cluster;       
+							d.appendChild(p);      
+							d.appendChild(s);     
+							d.appendChild(trash); 
+							d.appendChild(icon);    
+							clusters_list.appendChild(d);
+							icon.onclick = async function() {
+								document.getElementById("ClusterCreatorUsersDomains::root").style.display = "none";
+								CLUSTERCREATOR_msg(`Loading cluster "${cluster}", Client: "${client}", Domain: "${domain}"`);
+								try {
+									let cluster_data = await ClusterCreatorUsersDomains_Load(client, domain, cluster);
+									console.log(cluster_data)
+									KEYWORDS.FromJson(cluster_data);
+									KEYWORDS.SetClient(client);									
+									KEYWORDS.SetCluster(cluster);
+									KEYWORDS.SetDomain(domain);
+									DOMAIN_OWNED_KEYWORS.Reset()
+									CLUSTERCREATOR_msg(`Loading domain clusters`);
+									return; // don't load other clusters anchors now									
+								} catch (error) {
+									DASHBOARD_except(error);
+								} finally{
+									CLUSTERCREATOR_msg(``);
+								}
+							}
+							trash.onclick = async function() {
+								DASHBOARD_OK_Cancel(`Delete cluster ${cluster}`, "Delete", async()=>{
+									console.log(await DASHBOARD_Fetch(
+										`/client_owned_clusters-delete?Client=${client}&Domain=${domain}&ClusterName=${cluster}`, 
+										DASHBOARD_FetchOPtions()
+									));
+									let parent = d.parentElement;
+									parent.removeChild(d)
+									let count = parent.children.length;
+									if (count == 0) {
+										clusters_header.innerHTML = 'Clusters'
+										let grand_parent = curr_domain.parentElement;
+										grand_parent.removeChild(curr_domain)
+										count = grand_parent.children.length;
+										if (count == 0) {
+											domains_header.innerHTML = client + ' domains'
+											let grand_grand_parent   = curr_cltn.parentElement;
+											grand_grand_parent.removeChild(curr_cltn)										
+										}
+									}
+								});
+							}
+						}
+					}
+				};
+			}
+		}
+		document.getElementById("ClusterCreatorUsersDomains::root").style.display = "flex";		
+	}
+	function ClusterCreatorUsersDomains_Save(){		
+		let domain       = KEYWORDS.GetDomain();
+		let client       = KEYWORDS.GetClient();
+		let cluster_name = KEYWORDS.GetCluster();
+		if (domain == '' || client == '' || cluster_name == '') {
+			ClusterCreatorUsersDomains_SaveDialog();
+			return			
+		}
+		let save = async function() {
+			CLUSTERCREATOR_msg(`Saving cluster "${cluster_name}", Client: "${client}", Domain: "${domain}"`);
+			try 
+			{			
+				let options  = DASHBOARD_FetchOPtions();
+				options.body = JSON.stringify({"Request":{ 
+					'Client'      : client, 
+					'ClusterName' : cluster_name, 
+					'Domain'      : domain,
+					"data"        : KEYWORDS.ToDB()
+					}
+				});
+				let result = await DASHBOARD_Fetch('/client_owned_clusters-save', options);				
+				console.log(result);
+			}
+			catch (e) 
+			{
+				DASHBOARD_except(e);
+			}
+			finally{
+				CLUSTERCREATOR_msg("", "Finished");
+			}													
+		}	
+		DASHBOARD_OK_Cancel(`Overwite cluster ${cluster_name}`, "Save", save);						
+	}	
+	async function ClusterCreatorUsersDomains_SaveDialog(){
+		let selected_client = "";
+		let selected_domain = "";
+		ClusterCreatorUsersDomains_SaveDialog_close = () => 
+			{document.getElementById("ClusterCreatorUsersDomains::save-diag").style.display = "none"};
+		this.html = /*html*/`		
+		<div class="tw_dialog-container" id="ClusterCreatorUsersDomains::save-diag">
+			<div class="tw_Ctrl-Group tw_dialog" style="width:1000px;height:700px">
+				<p class="tw_h3" id="ClusterCreatorUsersDomains::save-diag-header">Save Cluster</p>
+				<div style="display:flex;flex-direction:row;gap:10px;margin-bottom:20px">
+					<div style="display:flex;flex-direction:column;width:50%"> 
+						<p class="tw_h4">Clients</p>
+						<div class="tw_Ctrl-Group" id="ClusterCreatorUsersDomains::save-diag-clients-list" 
+							style="display:flex;flex-direction:column;width:100%;height:450px;gap:10px;overflow-y:auto">							
+						</div>
+					</div>	
+					<div style="display:flex;flex-direction:column;width:50%"> 
+						<p class="tw_h4">Domains</p>
+						<div class="tw_Ctrl-Group" id="ClusterCreatorUsersDomains::save-diag-domains-list" 
+							style="display:flex;flex-direction:column;width:100%;height:450px;gap:10px;overflow-y:auto">							
+						</div>
+					</div>						
+				</div>			
+
+				<p class="tw_h4">Cluster Name</p>
+				<input class="tw_input" id="ClusterCreatorUsersDomains::save-diag-cluster-name" 
+					style="width:100%;margin-bottom:10px;margin-top:-12px" placeholder="Cluster name">
+
+				<div style="display:flex;flex-direction:row-reverse;margin-top:10px;border-top:1px solid lightgray;padding-top:6px;gap:10px">
+					<button class="tw_button" id="ClusterCreatorUsersDomains::save-diag-no"
+						onclick="ClusterCreatorUsersDomains_SaveDialog_close()">Cancel
+					</button>
+					<button class="tw_button-alt" id="ClusterCreatorUsersDomains::save-diag-yes"
+						onclick="ClusterCreatorUsersDomains_SaveDialog_Save()">Save
+					</button>	
+					<div class="loader" id="ClusterCreatorUsersDomains::save-diag-spinner" 
+						style="width:24px;height:24px;margin-top:2px;margin-right:4px;color:black;display:flex">
+					</div>
+				</div>	
+			</div>
+		</div>`
+		if (document.getElementById("ClusterCreatorUsersDomains::save-diag") == null) {
+			document.body.insertAdjacentHTML('beforeend', this.html);
+		}
+		document.getElementById("ClusterCreatorUsersDomains::save-diag-clients-list").innerHTML = "";
+		document.getElementById("ClusterCreatorUsersDomains::save-diag-domains-list").innerHTML = "";
+		document.getElementById("ClusterCreatorUsersDomains::save-diag").style.display          = "flex";	
+		let clients   = await ClusterCreatorUsersDomains_ListClients();
+		let container = document.getElementById("ClusterCreatorUsersDomains::save-diag-clients-list");
+		for (client of clients){
+			container.insertAdjacentHTML('beforeend', /*html*/`
+				<div style="display:flex;flex-direction:row;gap:4px;" class="tw_List-Item-Container">					
+					<input class="tw-input" type="radio" value="${client}" 
+						onchange="ClusterCreatorUsersDomains_SaveDialog_ListDomains('${client}')"
+						name="ClusterCreatorUsersDomains_save-diag-client">
+					<label style="margin-top:6px">${client}</label>
+				</div>	
+			`);			
+		}	
+		document.getElementById("ClusterCreatorUsersDomains::save-diag-spinner").style.display          = "none";	
+		ClusterCreatorUsersDomains_SaveDialog_SelectDomain = (domain) => {
+			selected_domain = domain;
+		}
+		ClusterCreatorUsersDomains_SaveDialog_ListDomains = async(client) => {
+			document.getElementById("ClusterCreatorUsersDomains::save-diag-spinner").style.display      = "flex";	
+			selected_client     = client;
+			selected_domain   	= "";
+			let domains         = await ListDomains(client);
+			console.log(domains);
+			let container       = document.getElementById("ClusterCreatorUsersDomains::save-diag-domains-list");
+			container.innerHTML = "";
+			for (domain of domains){
+				container.insertAdjacentHTML('beforeend', /*html*/`
+					<div style="display:flex;flex-direction:row;gap:4px;" class="tw_List-Item-Container">					
+						<input class="tw-input" type="radio" value="${domain}" 
+							onchange="ClusterCreatorUsersDomains_SaveDialog_SelectDomain('${domain}')"
+							name="ClusterCreatorUsersDomains_save-diag-domain">
+						<label style="margin-top:6px">${domain}</label>
+					</div>	
+				`);			
+			}
+			document.getElementById("ClusterCreatorUsersDomains::save-diag-spinner").style.display       = "none";	
+		}		
+		ClusterCreatorUsersDomains_SaveDialog_Save = async() => {
+			document.getElementById("ClusterCreatorUsersDomains::save-diag-spinner").style.display      = "flex";	
+			let name = document.getElementById("ClusterCreatorUsersDomains::save-diag-cluster-name").value;
+			if (selected_client == "" || selected_domain == "" || name == "") {
+				document.getElementById("ClusterCreatorUsersDomains::save-diag-spinner").style.display  = "none";	
+				alert("Please select a client and domain and provide a cluster name");
+				return;
+			}
+			let clusers = await ListClusters(selected_client, selected_domain);
+			if (clusers.includes(name)) {
+				alert(`Cluster ${name} already exists in domain ${selected_domain}`);
+				document.getElementById("ClusterCreatorUsersDomains::save-diag-spinner").style.display  = "none";	
+				return;
+			}
+			DASHBOARD_OK_Cancel(`Save cluster ${name}, (client: ${selected_client}, domain: ${selected_domain}`, "Save", 
+			async()=>
+			{
+				document.getElementById("ClusterCreatorUsersDomains::save-diag-spinner").style.display   = "flex";
+				CLUSTERCREATOR_msg(`Saving cluster "${name}", Client: "${selected_client}", Domain: "${selected_domain}"`);
+				let options  = DASHBOARD_FetchOPtions();
+				options.body = JSON.stringify({"Request":{ 
+					'Client'      : selected_client, 
+					'ClusterName' : name, 
+					'Domain'      : selected_domain,
+					"data"        : KEYWORDS.ToDB()
+					}
+				});
+				let result = await DASHBOARD_Fetch('/client_owned_clusters-save', options);				
+				console.log(result);
+				document.getElementById("ClusterCreatorUsersDomains::save-diag").style.display         = "none";
+				document.getElementById("ClusterCreatorUsersDomains::save-diag-spinner").style.display = "none";
+				CLUSTERCREATOR_msg(``);
+				alert(`Cluster ${name} saved`);
+			});
+		}	
+	}
+</script>	

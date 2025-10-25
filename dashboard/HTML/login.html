@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+		body{
+			display: flex;  /* allow vertical centering */			
+			height:100%
+		}
+		input{
+			border: None;
+			border-bottom: 1px solid lightgray;
+		}
+		input:focus{
+			outline: None;		
+		}
+		img{
+			margin-top: -20px;
+			margin-bottom: 0px;
+		}
+		button{
+			margin-bottom: 50px;
+		}
+		h4{
+			font-size: 14px;
+		}
+		.LOGIN_Container{
+			/*text-align: center;*/
+			width     :400px; 
+			height    :500px;			
+		}
+    </style>
+
+	<div class="tw_dialog-container" style="display:flex;flex-direction: column; margin:auto; height: 100%;">
+		<div style="flex-grow: 1;"></div>
+		<div class="tw_dialog" style="flex-grow: 0;">      
+			<div class="tw_Ctrl-Group" style="width:400px">
+				<div style="display: flex;flex-direction: row;">
+					<img src='static/img/logo_small.png' id='LOGIN::logo'></img>
+				</div>
+				<div style="margin-left: 10px;">
+					<div class="tw_h3">
+						SEO Dashboard
+					</div>
+					
+					<div id="LOGIN::msg" class="tw_h3_5" style="margin-bottom: 10px;">Login</div>
+			
+					<div class="form-group">
+						<input id='LOGIN::email' type='text' placeholder='email' style='display:none' class="tw_input" style="width:100%;"></input>             
+					</div><!-- form-group -->
+
+					<div class="form-group">
+						<input id='LOGIN::user_name' type='text' placeholder='Username' class="tw_input" style="width:100%;"></input>              
+					</div><!-- form-group -->
+
+					<div class="form-group">
+						<input id='LOGIN::password' type='password' placeholder='Password' class="tw_input" style="width:100%;"></input>             
+					</div><!-- form-group -->		
+
+					<button id='LOGIN::login' class="tw_button-alt">Sign In</button>	
+					<button id='LOGIN::register' style='display:none' class="tw_button-alt">Register</button>	
+								
+
+				</div><!-- az-signin-header -->
+
+				<div class="az-signin-footer" style="display:flex;flex-direction: row-reverse;">			
+				<br />
+					<p>
+						<a id="LOGIN::switch_to_register" href='javascript:LOGIN_RegisterScreen()'>Register</a> 		
+						<a id="LOGIN::switch_to_login" style='display:none' href='javascript:LOGIN_LoginScreen()'>Login</a> 					        
+					</p>
+				</div><!-- az-signin-footer -->
+			</div><!-- az-card-signin -->    
+		</div><!-- az-signin-wrapper -->
+		<div style="flex-grow: 1;"></div>
+	</div>	
+
+	<script>
+		function LOGIN_RegisterScreen(){
+			document.getElementById('LOGIN::msg').innerHTML                    = 'Register';
+			document.getElementById('LOGIN::switch_to_register').style.display = 'none';			
+			document.getElementById('LOGIN::login').style.display              = 'none';
+			document.getElementById('LOGIN::register').style.marginBottom      = '0px';
+			document.getElementById('LOGIN::register').style.display           = 'block';
+			document.getElementById('LOGIN::email').style.display              = 'block';
+			document.getElementById('LOGIN::switch_to_login').style.display    = 'block';	
+		}
+		function LOGIN_LoginScreen(){
+			document.getElementById('LOGIN::msg').innerHTML                    = 'Login';
+			document.getElementById('LOGIN::register').style.display           = 'none';
+			document.getElementById('LOGIN::email').style.display              = 'none';
+			document.getElementById('LOGIN::switch_to_login').style.display    = 'none';
+			document.getElementById('LOGIN::login').style.marginBottom         = '40px';
+			document.getElementById('LOGIN::switch_to_register').style.display = 'block';			
+			document.getElementById('LOGIN::login').style.display              = 'block';				
+		}
+		document.getElementById('LOGIN::login').onclick = async function(){			
+			var request = {
+				credentials: 'same-origin',
+				mode       : 'same-origin',
+				method     : 'POST',
+				headers    : {'Content-Type': 'application/json', 'Accept' : 'application/json'},
+				body: JSON.stringify({
+					"user_name": document.getElementById('LOGIN::user_name').value, 
+					'password' : document.getElementById('LOGIN::password').value
+				})
+			};
+			const response = await fetch('login', request);  
+			const json     = await response.json();
+			if ('err' in json){
+				document.getElementById('LOGIN::msg').style.color = 'DarkRed';
+				document.getElementById('LOGIN::msg').innerHTML   =  json.err;
+			} else {
+				window.location.href = '/';
+			}
+			console.log(json)
+		}
+		document.getElementById('LOGIN::register').onclick = async function(){			
+			var request = {
+				cache      : 'no-store',
+				credentials: 'same-origin',
+				mode       : 'same-origin',
+				method     : 'POST',
+				headers    : {'Content-Type': 'application/json', 'Accept' : 'application/json'},
+				body: JSON.stringify({
+					"user_name": document.getElementById('LOGIN::user_name').value, 
+					'email'    : document.getElementById('LOGIN::email').value,
+					'password' : document.getElementById('LOGIN::password').value
+				})
+			};
+			const response = await fetch('register', request);  
+			const json     = await response.json();
+			if ('err' in json){
+				document.getElementById('LOGIN::msg').style.color = 'DarkRed';
+				document.getElementById('LOGIN::msg').innerHTML   =  json.err;
+			} else {
+				window.location.href = '/';
+			}
+			console.log(json)
+		}
+	</script>	
+
+{% endblock content %}

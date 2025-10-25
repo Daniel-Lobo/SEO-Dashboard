@@ -1,0 +1,128 @@
+<script>
+    (function () {
+        DASHBOARD.__TIPS = {
+            'DASBOARD::admin-users-page' : 'tool-tip test', 
+            'KEYWORDS::gen-links' : 'tool-tip test: element on the bottom of the screen',
+            'ADDITIONAL-KEYWORDS::add-kword-button' : 'tool-tip test: element on the right of the screen',
+            'SETTINGS-PROMPTS::tag-keyword'      : 'Expands to the current keyword',
+            'SETTINGS-PROMPTS::tag-outline'      : 'Expands to the current keyword\'s outline',
+            'SETTINGS-PROMPTS::tag-intent'       : 'Expands to the current keyword\'s search intent',
+            'SETTINGS-PROMPTS::tag-section'      : `Expands to the current section "title" on the keyword\'s outline. On the improve phase,
+            expands to the entire content of the section to be improved`,
+            'SETTINGS-PROMPTS::tag-full-section' : 'Expands to the current section "title" plus all it\'s subsections "titles" on the keyword\'s outline',
+            'SETTINGS-PROMPTS::tag-instructions' : `Expands to :
+            "Special intructions:
+            {INTRUCTIONS}"
+            Where {INTRUCTIONS} is the section's special intructions as defined in the 
+            "Create article" section of the "Topic Clusters" page`,
+            'SETTINGS-PROMPTS::tag-country'      : 'Expands to the country choosen in the "Topic Clusters" page\'s "outline" tab', 
+            'SETTINGS-PROMPTS::tag-audience'     : 'Expands to the audience selected in the in global settings page',
+            'SETTINGS-PROMPTS::tag-facs'         : 'Expands to the current keyword\'s facts',
+            'SETTINGS-PROMPTS::tag-nlinks1'      : `Any text inside these tags is only kept in the prompt, if the 
+            current section has excalty one link`,
+            'SETTINGS-PROMPTS::tag-n'            : `These tags will expands to 1, 2, 3, ... N and so on, on the order they appear in the prompt`,
+            'SETTINGS-PROMPTS::tag-tones'        : 'Expands to the current tone(s), separated by a comma, if there are two of them',
+            'SETTINGS-PROMPTS::tag-tones-full'   : `Expands to the current tone(s) with their respective descriptions, in the format:
+            tone: description.
+            If there are two tones, a line feed is inserted between them`,
+            'SETTINGS-PROMPTS::tag-ntones2'      : `Any text inside these tags is only kept in the prompt, if 
+            there are currently two tones selected in the global settings page`,
+            'SETTINGS-PROMPTS::tag-ntones1'      :  `Any text inside these tags is only kept in the prompt, if 
+            there are currently only one tone selected in the global settings page`,
+            'SETTINGS-PROMPTS::tag-nlinks2'      : `Any text inside these tags is only kept in the prompt, if the 
+            current section has excalty two links`,
+            'SETTINGS-PROMPTS::tag-links'        : `Expands to the internal links of the current 
+            section if any, in the format:
+            Link #:
+            Target URL: ...
+            Anchor text: ...
+            Section: ...
+            where # is the index of the link`,
+            'SETTINGS-PROMPTS::tag-black-list'      : 'Expands to the current black list defined in the global settings page',
+            'SETTINGS-PROMPTS::tag-date'            : 'Expands to the current date', 
+            'SETTINGS-MORE-PROMPTS::tag-tones'      : 'Expands to the current tone(s), separated by a comma, if there are two of them',
+            'SETTINGS-MORE-PROMPTS::tag-tones-full' : `Expands to the current tone(s) with their respective descriptions, in the format:
+            tone: description.
+            If there are two tones, a line feed is inserted between them`,
+            'SETTINGS-MORE-PROMPTS::tag-audience'   : 'Expands to the audience selected in the in global settings page',
+            'SETTINGS-MORE-PROMPTSS::tag-content'   : 'Expands to the full text of the section\subsections that is currently being improved',
+            'SETTINGS-MORE-PROMPTS::tag-removals'   : 'Expands to the black listed terms that were found in the setence text of the section\\subsections that is currently being improved',
+            'SETTINGS-MORE-PROMPTS::tag-gp-topic'   : 'Expands to the content of the "topic" field in the "guest posting" page',
+            'SETTINGS-MORE-PROMPTS::tag-gp-title'   : 'Expands to the content of the "title" field in the "guest posting" page',
+            'SETTINGS-MORE-PROMPTS::tag-gp-cosiderations' : `Expands to the "seacher considerations" generated on the 1st step of
+            the guest post generation. On the "manual" process, this can be edited 
+            by the user before moving to the next state `,
+            'SETTINGS-MORE-PROMPTS::tag-gp-tones'        : 'Expands to the tone(s) selected in the "guest posting" page, separated by a comma, if there are two of them',
+            'SETTINGS-MORE-PROMPTS::tag-gp-instructions' : `Expands to the content of the outline\\article fields in the "guest posting" page`,
+            'SETTINGS-MORE-PROMPTS::tag-gp-audience' : 'Expands to the audience selected in the "guest posting" pageselected in the "guest posting" page',
+            'SETTINGS-MORE-PROMPTS::tag-gp-date'     : 'Expands to the current date',
+            'SETTINGS-MORE-PROMPTS::tag-gp-meta'     : 'Expands to the meta-description "field" of the "guest posting" page',
+            'SETTINGS-MORE-PROMPTS::tag-gp-outline'  : `Expands to the "outline" generated on the 2nd step of 
+            the guest post generation. On the "manual" process, this can be edited
+            by the user before moving to the next state `,
+            'SETTINGS-MORE-PROMPTS::tag-url'      : 'Expands to the content of the "url" field in the "guest posting" page',
+            'SETTINGS-MORE-PROMPTS::tag-anchor'   : 'Expands to the content of the "anchor text" field in the "guest posting" page',
+            'SETTINGS-MORE-PROMPTS::tag-analysis' : `Expands to the "semantic analysis" generated on the 1st step of
+            the guest post generation. On the "manual" process, this can be edited 
+            by the user before moving to the next state `,
+            'SETTINGS-MORE-PROMPTS::tag-ol-keyword'     : `Expands to the current keyword`,
+            'SETTINGS-MORE-PROMPTS::tag-ol-snipet'      : `Expands to "feature sniped" generated right before the "search intent" generation`,
+            'SETTINGS-MORE-PROMPTS::tag-ol-qanda'       : `Expands to the "questions and answers" generated right before the "search intent" generation`,
+            'SETTINGS-MORE-PROMPTS::tag-ol-competitors' : `Expands to the scraped "competitor\'s outlines in the format:
+            "Article 1:
+            ...
+            
+            Article 2:
+            ..."
+            
+            and so on.
+            If there are no outlines, expands to:
+            "No competitor\'s outlines were found."`,
+            'SETTINGS-MORE-PROMPTS::tag-ol-aud'         : `Expands to the audience currently selected in the global settings page`,
+            'SETTINGS-MORE-PROMPTS::tag-ol-tones'       : `Expands to:
+            the tone "Tone" 
+            if there is currently only one tone selected in the global settings page, or to:
+            a mix of the tones: "Tone 1" and "Tone 2",
+            if there are two`,
+            'SETTINGS-MORE-PROMPTS::tag-ol-semanalysis' : `Expands to the current keyword\'s semantic analysis`,
+            'SETTINGS-MORE-PROMPTS::tag-gp-facts'       : `Expands to the current keyword\'s facts`,
+            'SETTINGS-MORE-PROMPTS::tag-gp-intent'      : `Expands to the current keyword\'s search intent`,
+            'SETTINGS-MORE-PROMPTS::tag-gp-intruct'     : `Expands to:
+            "Special instructions:
+            {SPECIAL_INSTRUCTIONS}" 
+            where {SPECIAL_INSTRUCTIONS} is the content of the "special instructions" field in the outlines tab.
+            If the field is empty, the tag is simply removed`,
+            'SETTINGS-MORE-PROMPTS::tag-gp-date'        : `Expands to the current date`,  
+            'SETTINGS-MORE-PROMPTS::tag-tt-topic'       : `Expands to the content of the "topic" field in the "guest posting page"`,
+            'SETTINGS-MORE-PROMPTS::tag-tt-title'       : `Expands to the content of the "title" field in the "guest posting page"`,
+            'SETTINGS-MORE-PROMPTS::tag-tt-date'        : 'Expands to the current date',
+            'SETTINGS-MORE-PROMPTS::tag-ft-data'        : `Expands to the content of the current file if thet file is not an image. 
+            If it is an image, the tag is removed`, 
+            'SETTINGS-MORE-PROMPTS::tag-ft-file'        : 'Expands to the name of the current file',  
+            'SETTINGS::tip-icon-model-content'          : 'Model used to generate articles in the topic cluster page',
+            'SETTINGS::tip-icon-model-anchors'          : 'Model used to generate anchors in the topic clusters page',
+            'SETTINGS::tip-icon-model-titles'           : `Model used to generate title and meta-descriptions in topic clusters page. 
+            The guest posting page always uses google/gemini-pro-1.5`,
+            'SETTINGS::tip-icon-model-improve'          : `Model used to improve the generated content on both the topic clusters and
+            guest posting pages`,
+            'SETTINGS::tip-icon-model-outline'          : `Model used to generate outlines in the topic clusters, outline creator and 
+            guest posting pages`,
+            'SETTINGS::tip-icon-model-outline-clean-up' : `Model used to clean up the competitors ooutlines on the topic clusters, outline creator pages`,
+            'SETTINGS::tip-icon-model-search-intent'    : `Model used to generate the seach intent on both the topic clusters and outline creator pages`,
+            'SETTINGS::tip-icon-model-entity'           : `Model used to extract enetities and perform entity analysis on both the topic clusters 
+            and guest posting pages`,
+            'SETTINGS::tip-icon-model-gp-article'       : `Model used to generate articles in the guest posting page`,
+            'SETTINGS::tip-icon-model-black-list'       : `Model used to remove black listed terms from the article on both the topic clusters 
+            and guest posting pages`,
+            'SETTINGS::tip-icon-model-black-list-2nd'   : `Model used on the 2nd pass to remove black listed terms from the article on both
+            the topic clusters and guest posting pages`,
+            'SETTINGS::tip-icon-model-black-list-outline': `Model used to remove black listed terms from the outline 
+            on the topic clusters page. This step is not performed on the guest posting page`,
+            'SETTINGS::tip-icon-model-black-list-outline-2nd': `Model used on the 2nd pass to remove black listed terms from the outline 
+            on the topic clusters page This step is not performed on the guest posting page`,
+            'SETTINGS::tip-icon-model-self-referencing-outline-2nd': `Model used to remove self-referencing terms from the outline on
+            the topic clusters page. This step is not performed on the guest posting page.`,
+            'KEYWORDS::tip-titles-prompt' : 'Prompt used to generate titles and meta-descriptions',
+        }     
+    })()
+</script>    

@@ -1,0 +1,730 @@
+<style>
+.SETTINGS-PROMPTS_main{
+    display : none;
+    height  : calc(100%-40px);
+    flex-direction: column;
+}
+.SETTINGS-PROMPTS_root{
+    display   : flex;
+    width     : 100%;      
+    overflow-y: none;
+    position  : relative;
+    margin-top: 20px;
+    height    : calc(100%)
+}  
+.SETTINGS-PROMPTS_editor_column{
+    display        : flex;
+    flex-direction : column;
+    width          : 40%;    
+} 
+.SETTINGS-PROMPTS_editor_row{
+    display        : flex;
+    flex-direction : row;
+    flex-wrap      : nowrap;  
+    height         : 100%;  
+} 
+.SETTINGS-PROMPTS_editor{
+    background-color : var(--theme-clr-weak);     
+    flex-direction   : column;       
+    display          : none;
+    width            : 100%;    
+    border           : 1px solid #252935;
+    border-top       : none; 
+    padding          : 10 10 10 10;
+    height           : 100% ; 
+    overflow         : auto;  
+    scrollbar-color: grey var(--theme-clr-weak);
+} 
+.SETTINGS-PROMPTS_editor::placeholder {   
+    font-weight      : normal;   
+}
+.SETTINGS-PROMPTS_editor:focus {
+    border           : 1px solid #252935;
+    border-top       : none;
+    outline: none !important;
+}
+.SETTINGS-PROMPTS_view_column{
+    display        : flex;
+    flex-direction : column;
+    width          : 30%;
+    gap            : 6px
+} 
+.SETTINGS-PROMPTS_list_column{
+    display        : flex;
+    flex-direction : column;
+    width          : 30%;
+    gap            : 10px
+}
+.SETTINGS-PROMPTS_tabs-header{
+    display          : flex;    
+    flex-direction   : column ;   
+    background-color : white;          
+    margin           : 10 0 0 0;
+    padding          : 20 10 0 10; 
+    height           : 100%;
+    gap              : 6px;   
+    width            : 220px;    
+}
+.SETTINGS-PROMPTS_editor-variables{
+    display          : flex;       
+    flex-direction   : row-reverse ;     
+    margin           : 0 0 0 0;
+    padding          : 0 0 0 0; 
+    width            : 100%;  
+}
+.SETTINGS-PROMPTS_editor-variable{    
+    background-color : #252935;      
+    color            : white; 
+    border           : none;  
+    margin           : 4 3 0 3;
+    padding          : 10 0 10 0; 
+    border-radius    : 10px ;
+}
+.SETTINGS-PROMPTS_tabs-button{
+    border-radius    : 12px ;
+    background-color : white;   
+    color            : black;             
+    border           : none;    
+    padding          : 10 2 10 2;      
+    margin-bottom    : 0px;        
+    height           : 40px;     
+    text-align       : right;       
+}
+.SETTINGS-PROMPTS_tabs-button-selected{
+    border-radius    : 12px ;
+    background-color : lightgray;   
+    color            : black;             
+    border           : none;    
+    padding          : 10 10 10 10;      
+    margin-bottom    : 0px;        
+    height           : 40px;     
+    text-align       : right;    
+}    
+.SETTINGS-PROMPTS_black-list-diag{
+    position        : absolute;
+    z-index         : 1;
+    background-color: var(--theme-clr-weak);  
+    border          : 1px solid var(--theme-clr-strong);  
+    width           : 600px;
+    height          : 500px;
+    padding         : 10 10 10 10;
+    gap             : 10px;
+    display         : none;
+    flex-direction  : column;
+}  
+</style>
+
+<div class='SETTINGS-PROMPTS_main' id='SETTINGS::Prompts'>
+
+    <div style='display:flex; width:100%; margin-top:6px; gap:14px; padding-bottom:0px; border-bottom:1px solid lightgray; margin-bottom: 0px;'>          
+        <h6 id='SETTINGS-PROMPTS::tab-item-Articles' class='tw_h3_5' onclick='SETTINGS_MORE_PROMPTS_SelectTab(this)' 
+        style='border-bottom:2px solid black;margin-bottom:-2px;cursor:pointer;'>Articles</h2>
+        <h6 id='SETTINGS-PROMPTS::tab-item-Fix-content' class='tw_h3_5' style="margin-bottom:-2px;cursor:pointer;" onclick='SETTINGS_MORE_PROMPTS_SelectTab(this)'>Fix content</h6> 
+        <h6 id='SETTINGS-PROMPTS::tab-item-Guest-posting' class='tw_h3_5'  style="margin-bottom:-2px;cursor:pointer;" onclick='SETTINGS_MORE_PROMPTS_SelectTab(this)'>Guest posting</h6> 
+        <h6 id='SETTINGS-PROMPTS::tab-item-Outlines' class='tw_h3_5'  style="margin-bottom:-2px;cursor:pointer;" onclick='SETTINGS_MORE_PROMPTS_SelectTab(this)'>Outlines</h6>    
+        <h6 id='SETTINGS-PROMPTS::tab-item-Titles-and-meta' class='tw_h3_5'  style="margin-bottom:-2px;cursor:pointer;" onclick='SETTINGS_MORE_PROMPTS_SelectTab(this)'>Titles & Meta Descriptions</h2>    
+        <h6 id='SETTINGS-PROMPTS::tab-item-Fine-Tuning' class='tw_h3_5' style='display:flex;cursor:pointer;' onclick='SETTINGS_MORE_PROMPTS_SelectTab(this)'>Dataset fine-tuning</h6>
+        <h6 id='SETTINGS-PROMPTS::tab-item-Rp-News' class='tw_h3_5'  style="margin-bottom:-2px;cursor:pointer;" onclick='SETTINGS_MORE_PROMPTS_SelectTab(this)'>RP News</h6> 
+        <h6 id='SETTINGS-PROMPTS::tab-item-Facts' class='tw_h3_5'  style="margin-bottom:-2px;cursor:pointer;" onclick='SETTINGS_MORE_PROMPTS_SelectTab(this)'>Facts</h6>   
+        <h6 id='SETTINGS-PROMPTS::tab-item-Entities' class='tw_h3_5'  style="margin-bottom:-2px;cursor:pointer;" onclick='SETTINGS_MORE_PROMPTS_SelectTab(this)'>Entities</h6>                                     
+    </div> 
+
+    <div id='SETTINGS-PROMPTS::root' class='SETTINGS-PROMPTS_root'>    
+        <div class='SETTINGS-PROMPTS_black-list-diag' id='SETTINGS-PROMPTS::black-list-diag'>
+            <div class="az-content-label mg-b-5">Black listed keywords</div>   
+            <input id='SETTINGS-PROMPTS_new-bad-keyword' class='form-control' placeholder='type the new keyword and and hit enter'></input> 
+            <div id='SETTINGS-PROMPTS::black-list' style='display:flex;flex-direction:column;height:350px;
+            background-color:white;overflow-y:auto;padding: 10 10 10 10;'></div> 
+            <div style='display:flex; flex-direction:row-reverse;'>
+                <button class='btn btn-rounded btn-az-secondary' style='width:100px' 
+                onclick='document.getElementById("SETTINGS-PROMPTS::black-list-diag").style.display = "none"'>Close</button>      
+            </div> 
+        </div>    
+        <div class='SETTINGS-PROMPTS_tabs-header tw_Ctrl-Group' id='SETTINGS-PROMPTS::tabs-header' style="font-size:normal; gap:2px">        
+            <button class='tw_button-alt DASHBOARD_Toobar-Button' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Initial System</button>
+            <button class='tw_button-alt DASHBOARD_Toobar-Button' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Initial User</button>      
+            <button class='tw_button-alt DASHBOARD_Toobar-Button' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Introdution System</button>
+            <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Introdution User</button>  
+            <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Section System</button>
+            <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Section User</button>  
+            <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_PROMPTS_SelectTab(this)'>FAQ System</button>
+            <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_PROMPTS_SelectTab(this)'>FAQ User</button>  
+            <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Conclusion System</button>
+            <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Conclusion User</button>   
+            <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Improve Intro System</button>
+            <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Improve Intro User</button>       
+            <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Improve System</button>
+            <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Improve User</button>   
+            <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Section Facts System</button>
+            <button class='SETTINGS-PROMPTS_tabs-button az-content-label' onclick='SETTINGS_PROMPTS_SelectTab(this)'>Section Facts User</button>                       
+        </div>    
+        <div class='SETTINGS-PROMPTS_editor_column' style="width:800px">          
+            <div class='SETTINGS-PROMPTS_editor-variables'>   
+                <div style='margin:10px; padding:0; border-radius: 10px;'>         
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-keyword' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{KEYWORD}</button>   
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-outline' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{OUTLINE}</button> 
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-intent' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{INTENT}</button>
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-section' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{SECTION}</button>   
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-full-section' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{FULL_SECTION}</button>   
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-instructions' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{INSTRUCTIONS}</button> 
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-country' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{COUNTRY}</button>                        
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-audience' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{AUDIENCE}</button> 
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-audience-full' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{AUDIENCE_FULL}</button> 
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-facs' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{FACTS}</button>                    
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-nlinks1' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{NLINKS==1}{@NLINKS==1}</button>  
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-n' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{N}</button>  
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-tones' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{TONES}</button>  
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-tones-full' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{TONES_FULL}</button> 
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-ntones2' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{NTONES==2}{@NTONES==2}</button> 
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-ntones1' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{NTONES==1}{@NTONES==1}</button>                                       
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-nlinks2' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{NLINKS==2+}{@NLINKS==2+}</button> 
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-links' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{INTERNAL_LINKS}</button>  
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-black-list' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{BLACK_LIST}</button>      
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-date' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{DATE}</button>   
+                    <button class='tw_button-alt' id='SETTINGS-PROMPTS::tag-content' 
+                    name='DASHBOARD_tool-tip' onclick='SETTINGS_PROMPTS.AppendTag(this)'>{CONTENT}</button>                                                                                        
+                </div>                           
+            </div>
+            <div class='SETTINGS-PROMPTS_editor_row' id='SETTINGS-PROMPTS::editor_row'>    
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Initial SYSTEM prompt' style='display:flex;'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Initial USER prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Introduction SYSTEM prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Introduction USER prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Section SYSTEM prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Section USER prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='FAQ SYSTEM prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='FAQ USER prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Conclusion SYSTEM prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Conclusion USER prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Improve Intro SYSTEM prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Improve Intro USER prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Improve SYSTEM prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Improve USER prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Section Facts SYSTEM prompt'></textarea>
+                <textarea style="width:100%;height:100%;margin: 10 10 10 10" class='tw_input' placeholder='Section Facts USER prompt'></textarea>
+            </div>    
+        </div>
+        <div style='width:10px'></div>
+        <div class='SETTINGS-PROMPTS_view_column' style="display:none;">    
+            <input type='file' accept='.json' id='SETTINGS-PROMPTS::load-dialog' style='display:none'></input>
+            <button class='btn btn-rounded btn-az-secondary' style='position:relative;flex-grow: 1;' onclick='SETTINGS_PROMPTS.LoadCluster()'>Load cluster</button>  
+            <select id='SETTINGS-PROMPTS::Keyword' class="form-control select2-no-search select2-hidden-accessible">
+                <option value='PlaceHolder' label="PlaceHolder"></option>                    
+            </select> 
+            <select id='SETTINGS-PROMPTS::section' class="form-control select2-no-search select2-hidden-accessible">
+                <option value='PlaceHolder' label="PlaceHolder"></option>                    
+            </select> 
+            <textarea contenteditable id='SETTINGS-PROMPTS::view' class='SETTINGS-PROMPTS_editor' 
+            style='display:flex;margin-top:10px;border-top: 1px solid #252935; height:450px'></textarea>
+        </div>
+        <div style='width:10px'></div>
+        <div class='tw_Ctrl-Group' style="width:600px">
+            <div class="tw_h3" style='display:none'>PROMPTS LIST</div> 
+            <div style='display:flex;width:100%;gap:10px'>   
+                <button class='tw_button' id='SETTINGS-PROMPTS::black-list-diag-button' style='position:relative;flex-grow: 1;'>Black list</button>    
+                <button class='tw_button' style='position:relative;flex-grow: 1;' id='SETTINGS-PROMPTS_new-button'>New Prompt</button>  
+                <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em' id='SETTINGS-PROMPTS::save' viewBox="0 0 448 512">
+                    <path d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"/>
+                </svg>       
+                <svg xmlns="http://www.w3.org/2000/svg" class='DASHBOARD_icon' style='width:2.8em;height:2.8em;' id='SETTINGS-PROMPTS::load' viewBox="0 0 576 512">
+                    <path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/>
+                </svg>                
+            </div>       
+            <input id='SETTINGS-PROMPTS_new-input' class='form-control' name='DASHBOARD::hide-me'style='display:none' placeholder='type the new prompt and and hit enter'></input>         
+            <div id='SETTINGS-PROMPTS_list' style='display:flex;flex-direction:column;height:100%;padding:10 10 10 10;'>
+                <div style="display: flex;">
+                    <div class='DASHBOARD_ClicableText' onclick="SETTINGS_PROMPTS.PromptClicked(event)">Default</div>
+                    <div class='spacer'></div>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-small">
+                        <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+                    </svg>
+                </div>    
+            </div>        
+        </div>
+    </div>
+    {%include 'Settings-More-Prompts.html'%}
+</div> 
+<script>
+async function SETTINGS_PROMPTS_KeyWord(k){
+    let kword = {
+        __data      :  k,
+        __Sections  : [],
+        GetKeyWord(){
+            return this.__data.Keyword;
+        },
+        GetOutline(){
+            if      ('Outline' in this.__data)  return this.__data.Outline
+            else if ('outline' in this.__data)  return this.__data.outline
+            return ''
+        },
+        GetSections(){
+            return this.__Sections;
+        },
+        GetFullSection(plain){
+            for (const section of this.__Sections){
+                if (section.Plain === plain){
+                    return section.Merged;
+                }
+            }
+            return '';
+        },
+        GetIntent(){
+            if      ('Search Intent' in this.__data)  return this.__data['Search Intent'];
+            else if ('search_intent' in this.__data)  return this.__data['search_intent'];
+            return ''
+        },
+        GetFacts(){
+            return ('Facts' in this.__data) ? this.__data.Facts : '';             
+        }
+    }
+    let fetch_options  = DASHBOARD_FetchOPtions();
+    fetch_options.body = JSON.stringify({
+        Query            : kword.GetOutline(),
+        MergeSubsections : true      
+    }); 
+    let secs = (await DASHBOARD_Fetch('/content-creator_split-outline', fetch_options)).Reply;
+    console.log(secs);
+    for (let i=0; i<secs.Plain.length; i++){
+        kword.__Sections.push({
+            Plain  : secs.Plain[i],  
+            Tagged : secs.Tagged[i],  
+            Merged : secs.Merged[i],  
+            Trimed : secs.Trimed[i],  
+        })
+    }
+    return kword;
+}
+var SETTINGS_PROMPTS = {
+        __legacy          : {},
+        __promtps         : {'Default' : {}},
+        __currrent_prompt :  'Default',
+        __current_editor  : null,    
+        __keywords        : {},  
+        async __GetKeyWord(kword){
+            return await SETTINGS_PROMPTS_KeyWord(this.__keywords[kword])
+        },  
+        async __FinishLoadCluster(cluster){
+            if (false === ('Keywords' in cluster)) return;            
+            this.__keywords  = {}
+            for (const k of cluster.Keywords){
+                this.__keywords[k.Keyword] = k
+            }
+            let kwords_select       = document.getElementById('SETTINGS-PROMPTS::Keyword'); 
+            kwords_select.innerHTML = ''       
+            for (const kword of cluster.Keywords){
+                let option       = document.createElement('option');
+                option.value     = kword.Keyword;
+                option.innerHTML = kword.Keyword;
+                kwords_select.appendChild(option);
+            }
+            this.UpdateSections(cluster.Keywords[0].Keyword);
+        },
+        async UpdateSections(kword){
+            let k             = await this.__GetKeyWord(kword);
+            let outline       = k.GetOutline()      
+            let fetch_options = DASHBOARD_FetchOPtions()
+            fetch_options.body = JSON.stringify({
+                Query            : outline,
+                MergeSubsections : true      
+            });            
+            let secs_select       = document.getElementById('SETTINGS-PROMPTS::section'); 
+            secs_select.innerHTML = ''  
+            for (const section of k.GetSections()){
+                let t = section.Tagged;
+                if (t.startsWith('Introduction-Tag') || t.startsWith('Conclusion-Tag') || t.startsWith('FAQ-TAG[')) {
+                    continue;
+                }
+                let option       = document.createElement('option');
+                option.value     = section.Plain;
+                option.innerHTML = section.Plain;
+                secs_select.appendChild(option);
+            }                      
+        },
+        LoadCluster(){
+            var diag      = document.getElementById('SETTINGS-PROMPTS::load-dialog')        
+            diag.onchange = function() {            
+                var reader         = new FileReader();
+                reader.onloadend   = function() {                        
+                    SETTINGS_PROMPTS.__FinishLoadCluster(JSON.parse(this.result))            
+                    let parent     = document.getElementById('SETTINGS-PROMPTS::load-dialog').parentElement;
+                    parent.removeChild( document.getElementById('SETTINGS-PROMPTS::load-dialog'));
+                    let newdiag    = document.createElement('input') ;
+                    newdiag.type   = 'file'; 
+                    newdiag.id     = 'SETTINGS-PROMPTS::load-dialog';
+                    newdiag.style  = 'display:none'; 
+                    newdiag.accept = '.json'
+                    parent.appendChild(newdiag);                          
+                }                
+                reader.readAsText(this.files[0], 'UTF-8');                     
+            }
+            diag.click();       
+        },
+        GetPrompts(){
+            let prompts = {'Legacy' : this.__legacy};
+            for (let [key, value] of Object.entries(this.__promtps)){
+                prompts[key] = value;
+            }
+            //console.log("saving", prompts["Default"])
+            return prompts
+        },
+        SetLegacyPrompt(msgs){
+            this.__legacy  = {}
+            let secs       = ['Intro SYSTEM','Intro USER','Section SYSTEM','Section USER','FAQ SYSTEM','FAQ USER','Conclusion SYSTEM','Conclusion USER']
+            for (let i=0; i<msgs.length; i++) {
+                this.__legacy[secs[i]] = msgs[i];
+            }
+        },
+        GetCurrPrompt(){
+            return this.__promtps[this.__currrent_prompt];
+        },
+        GetPromptsNames(){
+            let names = [];
+            for (let [key, value] of Object.entries(this.GetPrompts())){
+                names.push(key);
+            }
+            return names
+        },
+        CreatePrompt(prompt){
+            this.__promtps[prompt] = {};
+            this.__currrent_prompt = prompt
+            this.UpdatePrompt();
+        },
+        PromptClicked(event){            
+            let prompt             = event.target.innerHTML;
+            this.__currrent_prompt = prompt
+            let _prompt            = this.__promtps[this.__currrent_prompt]
+            let editors            = document.getElementById('SETTINGS-PROMPTS::editor_row').children;
+            let keys               = ['Initial SYSTEM', 'Initial USER', 'Intro SYSTEM', 'Intro USER', 'Section SYSTEM', 'Section USER',
+                                      'FAQ SYSTEM',  'FAQ USER',  'Conclusion SYSTEM', 'Conclusion USER', 'Improve Intro SYSTEM', 'Improve Intro USER', 
+                                      'Improve SYSTEM', 'Improve USER', 'Section Facts SYSTEM', 'Section Facts USER']
+            for (let i = 0; i < keys.length; i++){      
+                editors[i].value = (keys[i] in _prompt) ? _prompt[keys[i]] : ''                            
+            }        
+            for (const child of document.getElementById('SETTINGS-PROMPTS_list').children){
+                child.style['text-decoration'] = 'none';
+            }
+            for (const child of document.getElementById('SETTINGS-PROMPTS_list').children){
+                child.children[0].style['text-decoration'] = '';
+            }
+            event.target.style['text-decoration'] = 'underline';
+        },
+        SetCurrentEditor(editor){
+            this.__current_editor = editor;
+            SETTINGS_PROMPTS_FormatView(this.__current_editor)
+        },
+        GetCurrEditor(){
+            return this.__current_editor;
+        },
+        AppendTag(TagButtton){
+            this.__current_editor.value += TagButtton.innerHTML + '\n';
+            SETTINGS_PROMPTS_FormatView(this.__current_editor)
+        }, 
+        DeletePrompt(element){
+            let key = element.parentElement.children[0].innerHTML;
+            if (key === 'Default') return alert("The Default prompt can't be deleted")
+            if (key === 'Legacy')  return alert("The Legacy prompt can't be deleted")
+            element.parentElement.parentElement.removeChild(element.parentElement)
+            delete this.__promtps[key];
+            for (const child of document.getElementById('SETTINGS-PROMPTS_list').children){
+                child.children[0].click();
+                return 
+            }
+        }, 
+        Rename(event, element){
+            event.stopPropagation()
+            let label          = element.parentElement.children[0];
+            let edit           = element.parentElement.children[1];
+            edit.style.display = 'flex'
+            edit.placeholder   = 'type the new prompt name and press enter'
+            let _this          = this;
+            edit.onclick       = function(event){event.stopPropagation()};
+            edit.onkeypress    = function(event){
+                event.stopPropagation()
+                if (event.key === 'Enter'){  
+                    _this.__promtps[this.value] = _this.__promtps[label.innerHTML]
+                    delete _this.__promtps[label.innerHTML];
+                    this.style.display        = 'none';
+                    label.innerHTML           = this.value;
+                }   
+            }
+        },
+        async FromJson(json){           
+            if (false === 'Prompts' in JSON.parse(json)) return;
+            this.__promtps = JSON.parse(json).Prompts;            
+            let d          = await DASHBOARD_Fetch('/content-creator_default-prompt');       
+            let dflt       = {}
+            let secs       = ['Initial SYSTEM','Initial USER','Intro SYSTEM','Intro USER','Section SYSTEM','Section USER','FAQ SYSTEM','FAQ USER',
+            'Conclusion SYSTEM','Conclusion USER', 'Improve Intro SYSTEM', 'Improve Intro USER', 'Improve SYSTEM', 'Improve USER', 'Section Facts SYSTEM'
+            , 'Section Facts USER']
+            for (let i=0; i<d.Reply.length; i++) {
+                dflt[secs[i]] = d.Reply[i];
+            }
+            //console.log("loaded =================================++", this.__promtps["Default"])
+            this.__promtps.Default = dflt;
+            document.getElementById('SETTINGS-PROMPTS_list').innerHTML = ''
+            for (let [key, value] of Object.entries(this.__promtps)){
+                document.getElementById('SETTINGS-PROMPTS_list').innerHTML += /*html*/
+                `<div style="display:flex;position:relative">
+                    <div class='DASHBOARD_ClicableText' onclick="SETTINGS_PROMPTS.PromptClicked(event)">${key}</div>
+                    <input name='DASHBOARD::hide-me' style='position:absolute;display:none;z-index:1;height:22px;width:300px;left:60px;margin-top:-4px' class='form-control'>
+                    <div class='spacer'></div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="DASHBOARD_icon-small"viewBox="0 0 512 512", onclick="SETTINGS_PROMPTS.Rename(event, this)">
+                        <path d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"/>
+                    </svg>
+                    <div style="width:2px"></div>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-small" onclick="SETTINGS_PROMPTS.DeletePrompt(this)">
+                        <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+                    </svg>
+                </div>`
+            }
+            document.getElementById('SETTINGS-PROMPTS_list').children[0].click();
+        },
+        GetLastPrompt(){return this.__currrent_prompt;},
+        SetLastPrompt(last){
+            console.log(last)
+            if (last in this.__promtps){
+                for (const child of document.getElementById('SETTINGS-PROMPTS_list').children){                    
+                    if (child.children[0].innerHTML === last)
+                    child.children[0].click()
+                }
+            }
+        },
+        UpdatePrompt(){
+            let editors = document.getElementById('SETTINGS-PROMPTS::editor_row').children;
+            this.__promtps[this.__currrent_prompt] = {
+                'Initial SYSTEM'       : editors[0].value,
+                'Initial USER'         : editors[1].value,
+                'Intro SYSTEM'         : editors[2].value,
+                'Intro USER'           : editors[3].value,
+                'Section SYSTEM'       : editors[4].value,
+                'Section USER'         : editors[5].value,
+                'FAQ SYSTEM'           : editors[6].value,
+                'FAQ USER'             : editors[7].value,
+                'Conclusion SYSTEM'    : editors[8].value,
+                'Conclusion USER'      : editors[9].value,
+                'Improve Intro SYSTEM' : editors[10].value,
+                'Improve Intro USER'   : editors[11].value,
+                'Improve SYSTEM'       : editors[12].value,
+                'Improve USER'         : editors[13].value,
+                'Section Facts SYSTEM' : editors[14].value,
+                'Section Facts USER'   : editors[15].value
+            }    
+            //console.log(Object.keys(this.__promtps[this.__currrent_prompt]))     
+            //console.log(this.__promtps[this.__currrent_prompt]["Section Facts SYSTEM"])      
+        }        
+    }   
+    document.getElementById('SETTINGS-PROMPTS::black-list-diag-button').onclick = function(event){
+        event.stopPropagation()
+        document.getElementById('SETTINGS-PROMPTS::black-list-diag').style.display = 'flex';
+    }
+    document.getElementById('SETTINGS-PROMPTS_new-bad-keyword').onkeypress = function(event){       
+        event.stopPropagation();
+        if (event.key === 'Enter'){  
+            let _this = document.getElementById('SETTINGS-PROMPTS_new-bad-keyword');     
+            SETTINGS_PROMPTS_AddBlackListedTerm(_this.value)
+        }   
+    }
+    document.getElementById('SETTINGS-PROMPTS::save').onclick = function(){
+        const a     = document.createElement('a');
+        let prompts = SETTINGS_PROMPTS.GetPrompts();
+        delete prompts.Default;
+        delete prompts.Legacy;
+        const blob  = new Blob([JSON.stringify({Prompts : prompts, 'More Prompts' : SETTINGS_MORE_PROMPTS.GetPrompts()}, null,'\t')]);
+        a.href      = URL.createObjectURL(blob);
+        a.download  = 'Prompts.json';                     
+        a.click();
+    }
+    document.getElementById('SETTINGS-PROMPTS::load').onclick = function(){
+        var diag      = document.getElementById('SETTINGS-PROMPTS::load-dialog')        
+        diag.onchange = function() {            
+            var reader       = new FileReader();
+            reader.onloadend = async function() {                              
+                await SETTINGS_PROMPTS.FromJson(this.result);
+                await SETTINGS_MORE_PROMPTS.SetPrompts(JSON.parse(this.result)['More Prompts'])                    
+            }            
+            reader.readAsText(this.files[0], 'UTF-8');                     
+        }
+        diag.click();    
+    }
+    document.getElementById('SETTINGS-PROMPTS_new-button').onclick = function(event){
+        document.getElementById("SETTINGS-PROMPTS_new-input").value         = '';
+        document.getElementById("SETTINGS-PROMPTS_new-input").style.display = 'flex';
+        event.stopPropagation()
+    }
+    document.getElementById('SETTINGS-PROMPTS_new-input').onclick = function(event){       
+        event.stopPropagation();
+    }
+    document.getElementById('SETTINGS-PROMPTS_new-input').onkeypress = function(event){       
+        event.stopPropagation();
+        if (event.key === 'Enter'){  
+            let _this = document.getElementById('SETTINGS-PROMPTS_new-input');                                          
+            SETTINGS_PROMPTS.CreatePrompt(_this.value);
+            _this.style.display = 'none';            
+            document.getElementById('SETTINGS-PROMPTS_list').innerHTML += 
+            `<div style="display:flex;position:relative">
+                <div class='DASHBOARD_ClicableText' onclick="SETTINGS_PROMPTS.PromptClicked(event)">${this.value}</div>
+                <input name='DASHBOARD::hide-me' style='position:absolute;display:none;z-index:1;height:22px;width:300px;left:60px;margin-top:-4px' class='form-control'>
+                <div class='spacer'></div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="DASHBOARD_icon-small"viewBox="0 0 512 512" onclick="SETTINGS_PROMPTS.Rename(event, this)">
+                    <path d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"/>
+                </svg>
+                <div style="width:2px"></div>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-small" onclick="SETTINGS_PROMPTS.DeletePrompt(this)">
+                    <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+                </svg>
+            </div>`
+        }   
+    }
+    document.getElementById('SETTINGS-PROMPTS::Keyword').addEventListener('change',function(){
+        SETTINGS_PROMPTS.UpdateSections(this.value);
+    })
+    document.getElementById('SETTINGS-PROMPTS::section').addEventListener('change',function(){
+        SETTINGS_PROMPTS_FormatView(SETTINGS_PROMPTS.GetCurrEditor())
+    }) 
+    function SETTINGS_PROMPTS_AddBlackListedTerm(term){
+        document.getElementById('SETTINGS-PROMPTS::black-list').innerHTML += 
+        `<div style="display: flex;">
+            <p style='margin:0 0 0 0'>${term}</p>
+            <div class='spacer'></div>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="DASHBOARD_icon-small" onclick='SETTINGS_PROMPTS_DeleteBlackListedKeyword(this)'>
+                <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+            </svg>
+        </div>`
+    }
+    function SETTINGS_PROMPTS_DeleteBlackListedKeyword(el){
+        let parent = el.parentElement;
+        parent.parentElement.removeChild(parent);
+    }
+    function SETTINGS_PROMPTS_GetBlackListedTerms(){
+        let kwords    = []
+        let container = document.getElementById('SETTINGS-PROMPTS::black-list')
+        for (const child of container.children){           
+            kwords.push(child.children[0].innerHTML)
+        }
+        return kwords
+    }
+    function SETTINGS_PROMPTS_SelectTab(tab){
+        let buttons = document.getElementById('SETTINGS-PROMPTS::tabs-header').children;
+        let editors = document.getElementById('SETTINGS-PROMPTS::editor_row').children;
+        for (i=0; i<buttons.length; i++){
+            let child  = buttons[i];
+            let editor = editors[i];
+            if (child === tab) {
+                child.classList      = 'tw_button-alt DASHBOARD_Toobar-Button-selected'
+                editor.style.display = 'flex';
+                SETTINGS_PROMPTS.SetCurrentEditor(editor);
+            } else {
+                child.classList      = 'tw_button-alt DASHBOARD_Toobar-Button'
+                editor.style.display = 'none';
+            }            
+        }
+    }    
+    function SETTINGS_PROMPTS_Expandprompt(template, k, section='', full_section=''){
+        let kword        = k.GetKeyWord();
+        let Outline      = k.GetOutline();
+        let Intent       = k.GetIntent();
+        let Facts        = k.GetFacts();
+        let prompt       = template
+        let FullTones    = ''
+        let Tones        = ''   
+        let Links        = [] //CLUSTER_CONTENT_CREATOR_GetLinks(section, kword);        
+        let links_str    = ''
+        for (let i=0; i<Links.length; i++){
+            let sec    =  Links[i]['Section'];
+            let anchor =  Links[i]['Anchor'];
+            let url    =  Links[i]['TargetURL'];
+            links_str += `Link${i+1}:\nTarget URL:${url}\nAnchor text:${anchor}\nSection:${sec}\n`
+        }   
+        let descriptions = DASHBOARD_GetToneDescriptions();   
+        let index        = 0;    
+        for (let [tone, description] of Object.entries(descriptions)){
+            Tones     += tone + ', ';
+            FullTones += index > 0 ? '\n\n' + tone + ': ' + description : tone + ': ' + description;
+            index ++;
+        }        
+        Tones  = Tones.substring(0, Tones.length-2) + ' ';
+        prompt = prompt.replaceAll("</p>", '');
+        prompt = prompt.replaceAll('{KEYWORD}', kword);
+        prompt = prompt.replaceAll('{OUTLINE}', Outline);
+        prompt = prompt.replaceAll('{INTENT}', Intent);
+        prompt = prompt.replaceAll('{TONES}', Tones);
+        prompt = prompt.replaceAll('{TONES_FULL}', FullTones);
+        prompt = prompt.replaceAll('{AUDIENCE}', DASHBOARD_GetOption('Selected Audience').length > 0 ? DASHBOARD_GetOption('Selected Audience')[0] : '');
+        prompt = prompt.replaceAll('{FACTS}', Facts);
+        prompt = prompt.replaceAll('{SECTION}', section);
+        prompt = prompt.replaceAll('{FULL_SECTION}', full_section);
+        prompt = prompt.replaceAll('{INTERNAL_LINKS}', links_str);
+        prompt = prompt.replaceAll('{DATE}', new Date().toDateString().split(' ').slice(1, 4).toString().replace(',', ' ').replace(',', ', '));
+        prompt = prompt.replaceAll('{BLACK_LIST}', SETTINGS_PROMPTS_GetBlackListedTerms().toString()); 
+        prompt = prompt.replaceAll('{COUNTRY}', ''); 
+        let regex = /({NTONES==2})(.*)({@NTONES==2})/g
+        prompt = prompt.replaceAll(regex, DASHBOARD_GetOption('Selected Tones').length === 2 ? '$2' : '');
+        regex  = /({NTONES==1})(.*)({@NTONES==1})/g
+        prompt = prompt.replaceAll(regex, DASHBOARD_GetOption('Selected Tones').length === 1 ? '$2' : '');
+        regex  = /({NLINKS==1})(.*)({@NLINKS==1})/g
+        prompt = prompt.replaceAll(regex, Links.length === 1 ? '$2' : '');
+        regex  = /({NLINKS==2\+})(.*)({@NLINKS==2\+})/g
+        prompt = prompt.replaceAll(regex, Links.length > 1 ? '$2' : '');   
+        let __index  = 1
+        while (prompt.includes('{N}')){
+            prompt = prompt.replace('{N}', __index)
+            __index ++;
+        }    
+        return prompt;
+    }
+    async function SETTINGS_PROMPTS_FormatView(editor){           
+        if (document.getElementById('SETTINGS-PROMPTS::Keyword').value === 'PlaceHolder') return SETTINGS_PROMPTS.UpdatePrompt();
+        let k    = await SETTINGS_PROMPTS.__GetKeyWord(document.getElementById('SETTINGS-PROMPTS::Keyword').value)
+        let sec  = document.getElementById('SETTINGS-PROMPTS::section').value;
+        let full = k.GetFullSection(sec)
+        if (k === null) return;        
+        document.getElementById('SETTINGS-PROMPTS::view').innerHTML = SETTINGS_PROMPTS_Expandprompt(editor.value, k, sec, full);
+        SETTINGS_PROMPTS.UpdatePrompt()
+    }
+    async function SETTINGS_PROMPTS_BindEvents(){       
+        for (const editor of document.getElementById('SETTINGS-PROMPTS::editor_row').children){
+            editor.onkeypress = function(){SETTINGS_PROMPTS_FormatView(editor)};
+            editor.onkeydown  = editor.onkeypress;
+            editor.onchange   = editor.onkeypress;
+            editor.onclick    = editor.onkeypress;
+        }
+        document.getElementById('SETTINGS-PROMPTS::Keyword').onchange = function(){
+            SETTINGS_PROMPTS_FormatView(SETTINGS_PROMPTS.GetCurrEditor())
+        }
+        let d       = await DASHBOARD_Fetch('/content-creator_default-prompt');        
+        let editors = document.getElementById('SETTINGS-PROMPTS::editor_row').children;
+        for (let i=0; i<d.Reply.length; i++) {
+            editors[i].value = d.Reply[i]
+        }
+        SETTINGS_PROMPTS.SetLegacyPrompt(d.Legacy)
+        SETTINGS_PROMPTS.UpdatePrompt();
+    }
+    SETTINGS_PROMPTS_SelectTab(document.getElementById('SETTINGS-PROMPTS::tabs-header').children[0]);
+    SETTINGS_PROMPTS_BindEvents();
+    //SETTINGS_PROMPTS_InitUI();   
+</script>
+
+
+
+</script>
+

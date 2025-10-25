@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% block title %}Main page{% endblock %}
+{% block content %}  
+    <style>
+        body{
+			display       : flex;  
+            flex-direction: column;
+            height        : 100%;
+            width         : 100%;
+            overflow      : hidden;     
+            box-sizing    : border-box;      
+		}
+        .spacer{
+            flex-grow: 1;
+        }
+        .DASHBOARD_User{
+            margin-top  : 18px;
+            margin-right: 30px;            
+        }   
+        .DASHBOARD_BarAndContentContainer{  
+            display       : flex;            
+            height        : 100%;           
+            width         : 100%            
+        }
+        .DASHBOARD_Toobar{
+            display       : flex;  
+            flex-direction: column;
+            height        : 100%;
+            margin-left   : 40px;            
+        }
+        .DASHBOARD_ContentBase{
+            display       : flex;  
+            flex-direction: column;
+            height        : 100%;
+            width         : 100%;
+            overflow      : hidden;   
+        }    
+        .DASHBOARD_Content{
+            display       : flex;  
+            flex-direction: row;
+            height        : 100%;
+            width         : 100%;
+            gap           : 20px;
+            overflow-x    : auto;
+            overflow-y    : auto;
+        }    
+        .DASHBOARD_ClicableText{
+        cursor : pointer;
+        }
+        .DASHBOARD_ClicableText:hover{
+            color : #6f42c1;
+        }   
+        .DASHBOARD_Noaccess {
+            color: darkred;
+        } 
+        .DASHBOARD_Button {
+            height: 38px; /*match height with other azia widgets*/
+        }        
+    </style>    
+    
+    <script>
+        async function DASHBOARD_Fetch(url, options){
+            try {
+                const response = await fetch(url, options);
+                var  json      = await response.json();
+            } catch (err){
+                return {'err' : err};
+            }
+            return json;
+        }
+        function DASHBOARD_ElementIndex(el){
+            return `::Index_${el.id.split('::Index_')[1]}`;
+        }
+        function DASHBOARD_TruncateString(str, max=100) {
+            return str.length > max ? `${str.substring(0, max-3)}...` : str; 
+        }
+        function DASHBOARD_ShowUserMenu() {            
+            document.getElementById('DASHBOARD::user_menu').style.display = 'block';
+        }
+        function DASHBOARD_FetchOPtions(){
+            return {				
+				credentials: 'same-origin',
+				mode       : 'same-origin',
+				method     : 'POST',
+				headers    : {'Content-Type': 'application/json', 'Accept' : 'application/json'}				
+			}
+        }
+        function DASHBOARD_Multichoice(options=[]){
+            var self = {
+                Container : document.createElement('div'),
+                Options   : [],
+                AddOption : function(option) {
+                    var Option = {
+                        div    : document.createElement('div'),                   
+                        text   : document.createElement('p'),
+                        button : document.createElement('button'), 
+                    }
+                    Option.div.style = 'display:flex';
+                    text.innerHTML   = option;
+                    button.innerHTML = 'X'
+                    Option.div.appendChild(text);
+                    Option.div.appendChild(button);
+                    this.Container.appendChild(Option.div);
+                    this.Options.push(Option);
+                }
+            }
+            self.Container.style = 'display:flex; flex-wrap:wrap';
+            for (const option of options){
+                self.AddOption(option)
+            }            
+            return self
+        }        
+    </script>    
+
+    <div class='az-header' style='display: flex; width: 100%'>       
+        <img src='static/img/logo_small.png' style='width:225px; height:58px;' alt='???'></img>
+        <div class="spacer"></div>
+        <div class="dropdown az-profile-menu">
+            <a href='javascript: DASHBOARD_ShowUserMenu()' id='DASHBOARD::user_pic' class="az-img-user DASHBOARD_User"><img src='{{config.IMG}}{{user}}' alt='???'></a>
+            <div id='DASHBOARD::user_menu' class="dropdown-menu DASHBOARD_User">              
+                <div class="az-header-profile">
+                    <div class="az-img-user">
+                        <img src='{{config.IMG}}{{user}}' alt='???'>
+                    </div><!-- az-img-user -->                
+               </div><!-- az-header-profile -->             
+               <a href="/logout" class="dropdown-item"><i class="typcn typcn-power-outline"></i> Sign Out</a>
+            </div><!-- dropdown-menu -->
+        </div>        	    
+    </div>   
+
+    <div class='az-content pd-y-20 pd-lg-y-30 pd-xl-y-40 DASHBOARD_BarAndContentContainer'>
+        <div class='az-content-left az-content-left-components DASHBOARD_Toobar'>
+            <div style='height:50px;'></div>
+            {% if admin %}            
+            <div class='component-item'>
+                <label>Admin tools</label>
+                <nav class='nav flex-column'>
+                    <a href='/admin?page=Users' class="nav-link">Users</a>
+                </nav>             
+            </div>    
+            <div style='height:50px;'></div>
+            {% endif %}            
+            <div class='component-item'>
+                <label>SEO Tools</label>
+                <nav class='nav flex-column'>
+                    <a href='/seo_tool?page=OutlineGenPage' class="nav-link">Outline generator</a>
+                </nav>  
+                <nav class='nav flex-column'>
+                    <a href='/seo_tool?page=ClusterCreator' class="nav-link">Topic cluster creator</a>
+                </nav>            
+            </div>   
+        </div> 
+        
+        <div class='DASHBOARD_ContentBase'>    
+            <div class='az-content-breadcrumb' style='margin-bottom:30px; margin-left:10px;'>
+                {% block breadcrumbs %} {% endblock %}                
+            </div>
+            <div class='DASHBOARD_Content'>            
+                <div class='spacer'></div>                                  
+                {% block tool_content %} {% endblock %}                     
+                <div class='spacer'></div>        
+            </div>
+            <div style='min-height:20px'></div>       
+        </div>    
+    </div>    
+
+    <script>
+        document.body.onclick = function() {
+            document.getElementById('DASHBOARD::user_menu').style.display = 'none';            
+        }
+    </script>    
+{% endblock content %}  

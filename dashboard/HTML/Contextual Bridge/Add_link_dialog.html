@@ -1,0 +1,51 @@
+<style>  
+.master_container
+{
+    position: absolute;   
+    display : none;    
+    z-index : 1;        
+    background-color: lightgrey;
+    white-space:nowrap;
+    border-radius: 4px; 
+    border: 1px solid black;        
+    gap: 10px;  
+    padding:5px;               
+}   
+.node:hover, .section:hover
+{
+    border-radius: 4px;
+    background-color: lightblue;
+    color:white;
+    cursor: pointer;
+}
+.node, .score, .section
+{
+    border-radius: 4px;
+    background-color: lightgrey;
+    border : 1px solid gray; 
+    color:black;
+} 
+</style>  
+<div id="{id}" style="position:absolute;">        
+    <div id="{id}_master_container" 
+        class="master_container" 
+        style="display: _display;" 
+        onclick="{script('onclick')}" 
+        onmouseover="{script('show')}" 
+        onmouseleave="{script('hide')}">
+        
+        <div id="{id}_node_container">
+            {% for node in _nodes %}
+                <div class="node">${node}</div>            
+            {% endfor %}    
+        </div>            
+        <div id="{id}_score_container">
+            {% for score in _scores %}
+                <div class="score">${score}</div>            
+            {% endfor %}    
+        </div>          
+    </div>      
+</div>
+
+
+

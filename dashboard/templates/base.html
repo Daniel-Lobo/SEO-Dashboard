@@ -1,0 +1,66 @@
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    
+    
+    <!-- Meta -->
+    <meta name="description" content="Responsive Bootstrap 4 Dashboard Template">
+    <meta name="author" content="BootstrapDash">    
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ config.AZIA }}/favicon.png">
+  
+    <title>
+        {% block title %}{% endblock %} 
+    </title>
+  
+    <!-- vendor css -->
+    <link href="{{ config.AZIA }}/lib/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="{{ config.AZIA }}/lib/ionicons/css/ionicons.min.css" rel="stylesheet">
+    <link href="{{ config.AZIA }}/lib/typicons.font/typicons.css" rel="stylesheet">
+    <link href="{{ config.AZIA }}/lib/flag-icon-css/css/flag-icon.min.css" rel="stylesheet">
+  
+    <!-- Page CSS Plugins goes HERE  -->
+    {% block plugin_stylesheets %}{% endblock plugin_stylesheets %}
+  
+    <!-- azia CSS -->
+    <link rel="stylesheet" href="{{ config.AZIA }}/css/azia.css">
+  
+    <!-- Specific Page CSS goes HERE  -->
+    {% block stylesheets %}{% endblock stylesheets %}     
+
+    <style>
+        .DASHBOARD_Loader {
+            border        : 4px solid #f3f3f3;
+            border-radius : 50%;
+            border-top    : 4px solid #3498db;
+            width         : 28px;
+            height        : 28px;            
+            margin-left   : 10px;
+            margin-top    : 2;     
+            display       : None;       
+            animation     : DASHBOARD_LoaderSpin 2s linear infinite;
+        }  
+        .DASHBOARD_CheckboxLabel{           
+            margin-bottom: 6px;
+        }       
+
+        @keyframes DASHBOARD_LoaderSpin {
+            0%   { transform: rotate(0deg);   }
+            100% { transform: rotate(360deg); }
+        }            
+    </style>    
+    
+    <script>
+        const base = {
+            fetch_options  : {				
+				credentials: 'same-origin',
+				mode       : 'same-origin',
+				method     : 'POST',
+				headers    : {'Content-Type': 'application/json', 'Accept' : 'application/json'}				
+			}
+        };        
+    </script>    
+</head>
+
+<body>
+    {% block content %}{% endblock content %}  
+</body>

@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+{% block title %}Main page{% endblock %}
+{% block content %}  
+    <style>
+        body{
+			display       : flex;  
+            flex-direction: column;
+            height        : 100%;
+            width         : 100%;
+            overflow      : hidden;     
+            box-sizing    : border-box;      
+		}
+        .spacer{
+            flex-grow: 1;
+        }
+        .DASHBOARD_User{
+            margin-top  : 18px;
+            margin-right: 30px;            
+        }   
+        .DASHBOARD_BarAndContentContainer{  
+            display       : flex;            
+            height        : 100%;           
+            width         : 100%            
+        }
+        .DASHBOARD_Toobar{
+            display       : flex;  
+            flex-direction: column;
+            height        : 100%;
+            margin-left   : 40px; 
+            text-transform: uppercase;                   
+        }
+        .DASHBOARD_ContentBase{
+            display       : flex;  
+            flex-direction: column;
+            height        : 100%;
+            width         : 100%;
+            overflow      : hidden;   
+        }    
+        .DASHBOARD_Content{
+            display       : flex;  
+            flex-direction: row;
+            height        : 100%;
+            width         : 100%;
+            gap           : 20px;
+            overflow-x    : auto;
+            overflow-y    : auto;
+        }    
+        .DASHBOARD_ClicableText{
+            cursor : pointer;
+        }
+        .DASHBOARD_ClicableText:hover{
+            color : #6f42c1;
+        }   
+        .DASHBOARD_Noaccess {
+            color: darkred;
+        } 
+        .DASHBOARD_Button {
+            height: 38px; /*match height with other azia widgets*/
+        }   
+        .DASHBOARD_icon{    
+            vertical-align : -.125em;
+            fill           : grey;
+            width          : 2em;
+            height         : 2em;                
+        }  
+        .DASHBOARD_icon-small{    
+            vertical-align : -.125em;
+            fill           : grey;
+            width          : 1.0em;
+            height         : 1.0em;                
+        }  
+        .DASHBOARD_icon-very-small{    
+            vertical-align : -.125em;
+            fill           : grey;
+            width          : 0.5em;
+            height         : 0.5em;
+                
+        }  
+        .DASHBOARD_icon:hover{         
+            fill           :  #6f42c1;
+        }   
+        .DASHBOARD_icon-small:hover{         
+            fill           :  #6f42c1;
+        } 
+        .DASHBOARD_ubuntu-console{  
+            background-color:#481036;
+            color:#eeeeee;
+            font-family: monospace;
+            outline: none;
+            font-size:12px;
+            display:inline-block;         
+        }    
+    </style>    
+    
+    <script>
+        "use strict";
+        async function DASHBOARD_Fetch(url, options){
+            try {
+                const response = await fetch(url, options);
+                var  json      = await response.json();
+            } catch (err){
+                return {'err' : err};
+            }
+            return json;
+        }
+        function DASHBOARD_ElementIndex(el){
+            return `::Index_${el.id.split('::Index_')[1]}`;
+        }
+        function DASHBOARD_TruncateString(str, max=100) {
+            return str.length > max ? `${str.substring(0, max-3)}...` : str; 
+        }
+        function DASHBOARD_ShowUserMenu() {            
+            document.getElementById('DASHBOARD::user_menu').style.display = 'block';
+        }
+        function DASHBOARD_FetchOPtions(){
+            return {				
+				credentials: 'same-origin',
+				mode       : 'same-origin',
+				method     : 'POST',
+				headers    : {'Content-Type': 'application/json', 'Accept' : 'application/json'}				
+			}
+        }
+        function DASHBOARD_AwsomeSVG(icon_path, viewbox, classname = 'DASHBOARD_icon'){
+            var path      = document.createElementNS("http://www.w3.org/2000/svg", "path");          
+            var svg       = document.createElementNS("http://www.w3.org/2000/svg", "svg");                  
+            svg.setAttribute('class', classname);
+            svg.setAttribute('viewBox', viewbox);
+            path.setAttribute('d', icon_path);
+            svg.appendChild(path);             
+            return svg;         
+        }
+        function DASHBOARD_AziaButton(caption='Replace me', extra_styles=''){
+            var element                = document.createElement('button');
+            element.className          = 'btn btn-az-primary';
+            element.innerHTML          = caption;  
+            if (extra_styles !== '') {
+                element.style = extra_styles;
+            }          
+            return element;
+        }
+        function DASHBOARD_AziaForm(tag='textarea', placeholder='', extra_styles=''){
+            var element                = document.createElement(tag);
+            element.className          = 'form-control';
+            element.placeholder        = placeholder;  
+            if (extra_styles !== '') {
+                element.style = extra_styles;
+            }          
+            return element;
+        }
+        function DASHBOARD_AziaSubtitle(caption, extra_styles=''){
+            var element                = document.createElement('div')
+            element.className          = 'mg-b-20';
+            element.innerHTML          = caption;
+            if (extra_styles !== '') {
+                element.style = extra_styles;
+            }
+            return element;
+        }
+        function DASHBOARD_Multichoice(options=[]){
+            var self = {
+                __Container                : document.createElement('span'),
+                __SelectedOptionsContainer : document.createElement('span'),
+                __OptionsContainer         : document.createElement('span'),
+                __Options                  : [],   
+                Container : function(){
+                    return this.__Container
+                },             
+                AddOption : function(option) {
+                    //console.log(option);
+                    var _this  = this;
+                    var Option = {
+                        div      : document.createElement('div'),                   
+                        text     : document.createElement('button'),
+                        button   : document.createElement('button'), 
+                        slct_but : document.createElement('button'), 
+                        selected : false,
+                        Unselect : function(){  
+                            this.selected = false                          
+                            _this.Unselect(this);
+                        },
+                        Select : function(){  
+                            this.selected = true                          
+                            _this.Select(this);
+                        }
+                    }
+                    Option.slct_but.style     = 'width:100%; border:none; background-color:LightGray; color:black; text-justify:justify; height:30px'
+                    Option.div.style          = 'display:flex; background-color:#6f42c1; color:white; border-radius:4px; height:30px';
+                    Option.text.innerHTML     = option;
+                    Option.slct_but.innerHTML = option
+                    Option.text.style         = 'color:inherit; background-color:inherit; border: none; font: inherit; border-right:1px solid white; \
+                                                border-top-left-radius: inherit; border-bottom-left-radius: inherit; cursor:default';
+                    Option.button.style       = 'color:inherit; background-color:inherit; border: none; font: inherit; border-radius: inherit';
+                    Option.button.innerHTML   = 'X'
+                    Option.div.appendChild(Option.text);
+                    Option.div.appendChild(Option.button);                   
+                    this.__Options.push(Option);
+                    Option.button.onclick  = function(event){
+                        Option.Unselect();
+                        event.stopPropagation()
+                    }
+                    Option.slct_but.onclick = function(event){
+                        Option.Select();
+                        this.style.backgroundColor = 'LightGray';
+                        this.style.color           = 'black';
+                        event.stopPropagation()
+                    }
+                    Option.text.onclick = function(event){event.stopPropagation()};
+                    Option.slct_but.onmouseenter   = function(){
+                        this.style.backgroundColor = '#6f42c1';
+                        this.style.color           = 'white';
+                    }
+                    Option.slct_but.onmouseleave   = function(){
+                        this.style.backgroundColor = 'LightGray';
+                        this.style.color           = 'black';
+                    }
+                    this.__OptionsContainer.appendChild(Option.slct_but);
+                    this.Select(Option);
+                    return Option;
+                },
+                Select : function(option){
+                    this.__SelectedOptionsContainer.appendChild(option.div);
+                    self.__OptionsContainer.removeChild(option.slct_but);
+                    self.__OptionsContainer.style.display = 'none'
+                    var rect  = self.__SelectedOptionsContainer.getBoundingClientRect();
+                    self.__OptionsContainer.style.top  = rect.bottom - rect.top + 2;
+                    option.selected = true;
+                    //if (self.OptionsContainer.children.length == 0)
+                        //self.OptionsContainer.style.display = 'none';
+                },
+                Unselect : function(option){
+                    self.__SelectedOptionsContainer.removeChild(option.div);
+                    self.__OptionsContainer.appendChild(option.slct_but);
+                    option.selected = false;                    
+                },
+                Selection() {
+                    var sel = []
+                    for (const option of self.__Options) {
+                        //console.log(option);
+                        if (option.selected == true)
+                        sel.push(option.text.innerHTML);
+                    } 
+                    return sel;
+                }
+            }            
+            self.__OptionsContainer.style         = 'position:absolute; display:none; flex-direction:column; z-index:2; padding:0px; border:1px solid lightgray; \
+            background-color:LightGray; color:black; min-height:30px; margin:0%; border:none; margin:-1px'   
+            self.__OptionsContainer.setAttribute('name', 'DASHBOARD::hide-me');
+            self.__SelectedOptionsContainer.style = 'display:flex; flex-wrap:wrap; flex-grow:1; gap:4px; padding:4px; cursor:pointer';
+            self.__Container.style                = 'display:column; position:relative; flex-direction:column; color:white; flex-grow:1; gap:0px; \
+            border:1px solid lightgray; cursor:pointer; min-height:80px; width:100%; z-index:2; padding:0px';
+            self.__Container.appendChild(self.__SelectedOptionsContainer);
+            self.__Container.appendChild(self.__OptionsContainer);
+            for (const option of options){
+                var op = self.AddOption(option);                
+            }    
+            self.__Container.onclick = function(event){
+                //if (self.OptionsContainer.children.length == 0)
+                //return;
+                var rect                                    = self.__SelectedOptionsContainer.getBoundingClientRect();
+                var rct                                     = self.__SelectedOptionsContainer.getBoundingClientRect()
+                console.log(self.__Container.style.width)
+                self.__OptionsContainer.style.width         = rct.rigth   - rct.left;          
+                self.__OptionsContainer.style.top           = rect.bottom - rect.top + 2;
+                self.__OptionsContainer.style.left          = '0px';
+                self.__OptionsContainer.style.right         = '0px';
+                self.__OptionsContainer.style.display       = 'flex';
+                event.stopPropagation();
+            }        
+            return self
+        }        
+    </script>    
+
+    <div class='az-header' style='display: flex; width: 100%'>       
+        <img src='static/img/logo_small.png' style='width:225px; height:58px;' alt='???'></img>
+        <div class="spacer"></div>
+        <div class="dropdown az-profile-menu">
+            <a href='javascript: DASHBOARD_ShowUserMenu()' id='DASHBOARD::user_pic' class="az-img-user DASHBOARD_User"><img src='{{config.IMG}}{{user}}' alt='???'></a>
+            <div id='DASHBOARD::user_menu' class="dropdown-menu DASHBOARD_User">              
+                <div class="az-header-profile">
+                    <div class="az-img-user">
+                        <img src='{{config.IMG}}{{user}}' alt='???'>
+                    </div><!-- az-img-user -->                
+               </div><!-- az-header-profile -->             
+               <a href="/logout" class="dropdown-item"><i class="typcn typcn-power-outline"></i> Sign Out</a>
+            </div><!-- dropdown-menu -->
+        </div>        	    
+    </div>   
+
+    <div class='az-content pd-y-20 pd-lg-y-30 pd-xl-y-40 DASHBOARD_BarAndContentContainer'>
+        <div class='az-content-left az-content-left-components DASHBOARD_Toobar'>
+            <div style='height:50px;'></div>
+            {% if admin %}            
+            <div class='component-item'>
+                <label>Admin tools</label>
+                <nav class='nav flex-column'>
+                    <a href='/admin?page=Users' class="nav-link">Users</a>
+                </nav>             
+            </div>    
+            <div style='height:50px;'></div>
+            {% endif %}            
+            <div class='component-item'>                
+                <label>SEO Tools</label>
+                <div style='display:flex'>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class='DASHBOARD_icon-small' style='margin-right:4px; position:relative; top:2px' onclick='window.location.href="/seo_tool?page=OutlineGenPage"'>
+                        <path d="M96 0C43 0 0 43 0 96V416c0 53 43 96 96 96H384h32c17.7 0 32-14.3 32-32s-14.3-32-32-32V384c17.7 0 32-14.3 32-32V32c0-17.7-14.3-32-32-32H384 96zm0 384H352v64H96c-17.7 0-32-14.3-32-32s14.3-32 32-32zm32-240c0-8.8 7.2-16 16-16H336c8.8 0 16 7.2 16 16s-7.2 16-16 16H144c-8.8 0-16-7.2-16-16zm16 48H336c8.8 0 16 7.2 16 16s-7.2 16-16 16H144c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/>
+                    </svg>   
+                    <nav class='nav flex-column'>
+                        <a href='/seo_tool?page=OutlineGenPage' class="nav-link">Outline generator</a>
+                    </nav>  
+                </div>     
+                <div style='height:2px'></div>
+                <div style='display:flex'> 
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class='DASHBOARD_icon-small' style='margin-right:4px; position:relative; top:2px' onclick='window.location.href="/seo_tool?page=ClusterCreator"'>
+                        <path d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z"/>
+                    </svg>                       
+                    <nav class='nav flex-column'>
+                        <a href='/seo_tool?page=ClusterCreator' class="nav-link">Topic cluster creator</a>
+                    </nav>  
+                </div>         
+            </div>   
+        </div> 
+        
+        <div class='DASHBOARD_ContentBase'>    
+            <div class='az-content-breadcrumb' style='margin-bottom:30px; margin-left:10px;'>
+                {% block breadcrumbs %} {% endblock %}                
+            </div>
+            <div class='DASHBOARD_Content'>            
+                <div class='spacer'></div>                                  
+                {% block tool_content %} {% endblock %}                     
+                <div class='spacer'></div>        
+            </div>
+            <div style='min-height:20px'></div>       
+        </div>    
+    </div>    
+
+    <script>
+        document.body.onclick = function() {
+            document.getElementById('DASHBOARD::user_menu').style.display = 'none';   
+            var hide_me = document.getElementsByName('DASHBOARD::hide-me');
+            for (let i = 0; i < hide_me.length; i++) {
+                hide_me[i].style.display = 'none';
+            }             
+        }
+    </script>    
+{% endblock content %}  

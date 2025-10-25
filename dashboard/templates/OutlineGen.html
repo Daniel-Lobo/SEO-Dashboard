@@ -1,0 +1,339 @@
+<style>
+    .OUTLINEGEN_Title{
+        text-justify: left;
+    }
+    .OUTLINEGEN_Base-Column{
+        display       : flex;
+        flex-direction: column;
+        height        : 100%;;   
+        width         : 100%;                     
+    }
+    .OUTLINEGEN_SERP-Column{
+        display        : flex;
+        flex-direction : column;             
+        padding-bottom : 4px;
+        width          : 100%;
+    }
+    .OUTLINEGEN_SERP-Row{
+        display        : flex;
+        flex-direction : row;
+        gap            : 8px;
+    }
+    .OUTLINEGEN_URLS-Row{
+        display        : flex;
+        flex-direction : row;
+        gap            : 20px;
+        visibility     : hidden; 
+        height         : 3600px;          
+    }
+    .OUTLINEGEN_URLS-Column{
+        display        : flex;
+        flex-direction : column;            
+        width          : 800px;
+        gap            : 0px;
+    }
+    .OUTLINEGEN_URLS-Base-Column{
+        display        : flex;
+        flex-direction : column;            
+        width          : 800px;           
+    }
+    .OUTLINEGEN_Scrape-Button-Row{
+        display        : flex;
+        flex-direction : row;
+        gap            : 8px;
+        margin-top     : 4px;   
+    }
+    .OUTLINEGEN_Scrape-Button{
+        width : 300px;            
+    }
+    .OUTLINEGEN_Scrape-ButtonSpacer{
+        flex-grow: 1
+    }
+    .OUTLINEGEN_Outlines-Base-Column{
+        display        : flex;
+        flex-direction : column;            
+        width          : 800px;
+        gap            : 2px;        
+        visibility     : hidden;           
+    }        
+</style>   
+<div class='OUTLINEGEN_Base-Column'> 
+    <h1 class='az-content-title'>Outline Generator</h1>
+
+    <div style='display:flex; margin-top:20px; margin-bottom:10px; gap:20px;'>  
+        <div class='OUTLINEGEN_SERP-Column'> 
+            <div class='az-content-label mg-b-5 OUTLINEGEN_Title'>FIND TOP-RANKING ARTICLES</div>
+            <div style='display:flex; gap:2px'>
+                <p class='mg-b-20 OUTLINEGEN_Title'>Generate a list of the top-ranking articles for the desired keyword</p> 
+                <div style='width:20px'></div>
+                <p id='OUTLINEGEN::msg' class='mg-b-20 OUTLINEGEN_Title'></p> 
+                <div id='OUTLINEGEN::spinner' class='DASHBOARD_Loader' style='width:26px; height:26px; margin-top:-4px'></div>
+            </div>
+            <div class='OUTLINEGEN_SERP-Row'>                
+                <input id='OUTLINEGEN::Keyword' class="form-control" placeholder='Keyword' type="text">               
+                <select id='OUTLINEGEN::Country' class="form-control select2-no-search select2-hidden-accessible">
+                    <option value='US' label="United States" data-select2-id="15"></option>                    
+                    <option value="CA" data-select2-id="26">Canada</option>
+                    <option value="UK" data-select2-id="27">United Kingdom</option>
+                    <option value="AU" data-select2-id="28">Australia</option>
+                    <option value="Netherlands" data-select2-id="29">Netherlands</option>
+                </select>                
+                <button class="btn btn-az-primary btn-block DASHBOARD_Button", onclick='OutlineGen_SERP()'>Scrape SERP</button>  
+                <div class='spacer'></div>                                  
+            </div>   
+            <div style='height:20px'></div>   
+        </div>           
+    </div>    
+    
+    <div id='OUTLINEGEN::URLs-Row' class='OUTLINEGEN_URLS-Row'> 
+        <div class='OUTLINEGEN_URLS-Base-Column'> 
+            <div class='az-content-label mg-b-5 OUTLINEGEN_Title'>Scrape URL</div>
+            <p class='mg-b-20 OUTLINEGEN_Title'>Select the desired URLs and Click on <b>"Extract Outlines"</b> to start the outlines extraction.</p> 
+            <div id='OUTLINEGEN::URLs-Column' class='OUTLINEGEN_URLS-Column'></div>                 
+            <div class='OUTLINEGEN_Scrape-Button-Row'>   
+                <div class='OUTLINEGEN_Scrape-ButtonSpacer'></div>  
+                <div id='OUTLINEGEN::another-spinner' class='DASHBOARD_Loader' style='width:42px; height:42px; margin-top:-2px'></div>     
+                <button id='OUTLINEGEN::gen-button' class="btn btn-az-primary OUTLINEGEN_Scrape-Button" onclick='OutlineGen.Generate()'>Generate Outline (GPT-4 Only)</button>             
+                <button class="btn btn-az-primary OUTLINEGEN_Scrape-Button" onclick='OutlineGen.Scrape()'>Extract outlines</button>                                                                                   
+            </div> 
+        </div>             
+
+        <div id='OUTLINEGEN::result' style='display:flex; flex-direction:column; height:322px; width:800px;'>
+            <div class='az-content-label mg-b-5 OUTLINEGEN_Title'>New outline</div>
+            <p class='mg-b-20 OUTLINEGEN_Title'>New AI generated outline</p> 
+            <textarea id='OUTLINEGEN::result-view' rows=32 class='form-control'>Outline</textarea>  
+            <div style='display:flex; margin-top:10px'>
+            <div class='spacer'></div>                  
+                <button class="btn btn-az-primary OUTLINEGEN_Scrape-Button" onclick='OutlineGen.Export()'>Export</button>
+            </div>                          
+        </div>  
+    </div> 
+
+    <div style='min-height:30px'></div>
+        <div id='OUTLINEGEN::outlines-subtitle' class='az-content-label mg-b-5 OUTLINEGEN_Title;' style='visibility:hidden'>Scraped outlines</div>
+        <p class='mg-b-20 OUTLINEGEN_Title'></p> 
+        <div id='OUTLINEGEN::outlines-div' style='display:flex; gap:20px; flex-wrap:wrap;'>     
+    </div>   
+    <div style='min-height:60px'></div>
+</div>   
+
+
+<script>
+    var OutlineGen = {
+        __URLs        : [],
+        __SeachIntent : '',
+        InsertURL : function(url) {
+            var truncated   = DASHBOARD_TruncateString(url);
+            var container   = document.getElementById('OUTLINEGEN::URLs-Column');
+            var label       = document.createElement('label');
+            var input       = document.createElement('input');
+            var span        = document.createElement('span');
+            label.classList = 'ckbox DASHBOARD_CheckboxLabel';
+            input.className = 'checkbox';
+            input.type      = 'checkbox'
+            input.checked   = true;
+            span.innerHTML  = truncated;
+            label.appendChild(input);
+            label.appendChild(span);
+            container.appendChild(label);      
+            this.__URLs.push({
+                short_url     : truncated,
+                URL           : url,
+                checkbox      : input,
+                label         : label,
+                outline       : '',
+                OutlineWidget : null
+            });
+            var _this = this;
+            span.onmouseenter = function(){
+                return;
+                OutlineGen.MouseOverURL(this);  
+            };                           
+        },  
+        GetURL(to_find){
+            for (url of this.__URLs) {
+                if (url.URL === to_find || url.short_url === to_find){
+                    return url
+                }
+            }
+        },
+        RemoveWidget(widget){
+            this.GetURL(widget.src_url).OutlineWidget = null;
+            this.GetURL(widget.src_url).outline       = '';
+            widget.column.parentElement.removeChild(widget.column);
+        },
+        URLClicked  : function(src){     
+            window.open(this.GetURL(src.innerHTML).URL);              
+        }, 
+        MouseOverURL : function(src){                
+            var url = this.GetURL(src.innerHTML);                
+            document.getElementById('OUTLINEGEN::outline_view').value = url.outline; 
+            document.getElementById('OUTLINEGEN::url_link').innerHTML = url.short_url;                                  
+        },      
+        ClearURLs : function() {
+            for (url of this.__URLs) {
+                if (url.OutlineWidget != null){
+                    this.RemoveWidget(url.OutlineWidget);
+                }                
+                url.label.parentElement.removeChild(url.label);     
+            }
+            this.__URLs = [];
+        }, 
+        AppendOutline : function(url, outline){
+            if (url.OutlineWidget != null){
+                this.RemoveWidget(url.OutlineWidget);
+            }                
+            url.OutlineWidget = OutlineGen_OutlineWidget(url.URL, url.outline, document.getElementById('OUTLINEGEN::outlines-div'));
+        } ,         
+        AScrape : async function() {                     
+            var fetch_data = {URLs : []}  
+            for (url of this.__URLs) {
+                if (url.checkbox.checked == 1){
+                    fetch_data.URLs.push(url.URL);                        
+                }
+            } 
+            console.log(fetch_data.URLs);                   
+            var fetch_options  = DASHBOARD_FetchOPtions()  
+            fetch_options.body =  JSON.stringify(fetch_data);                    
+            var outlines       = await DASHBOARD_Fetch('/outlinegen-scrape', fetch_options);
+            for (outline of outlines.URLs){
+                this.GetURL(outline.URL).outline = outline.Outline;
+                this.AppendOutline(this.GetURL(outline.URL), outline);
+            }                
+            OutlineGen_SetMsg('');
+            document.getElementById('OUTLINEGEN::outlines-subtitle').style.visibility = 'visible';                   
+            document.getElementById('OUTLINEGEN::gen-button').style.visibility        = 'visible'; 
+            //document.getElementById('OUTLINEGEN::gen-button2').style.visibility        = 'visible'; 
+        },
+        Scrape : function() {
+            OutlineGen_SetMsg('Scraping URLs');     
+            this.AScrape();
+        },
+        SetIntent : function(intent){
+            this.__SeachIntent = intent;
+        },
+        AGenerate : async function(){
+            await new Promise(r => setTimeout(r, 2000)); 
+            var outlines = []
+            for (url of this.__URLs){
+                if (url.outline != '') {
+                    outlines.push(url.OutlineWidget.text.value);
+                }
+            }
+            var fetch_options  = DASHBOARD_FetchOPtions()  
+            fetch_options.body = JSON.stringify({
+                Outlines    : outlines, 
+                SeachIntent : this.__SeachIntent, 
+                Keyword     : document.getElementById('OUTLINEGEN::Keyword').value
+            });    
+            var outline = await DASHBOARD_Fetch('/outlinegen-generate', fetch_options);  
+            console.log(outline);
+            OutlineGen_SetMsg('')   
+            document.getElementById('OUTLINEGEN::result-view').value       = outline.Outline;
+            document.getElementById('OUTLINEGEN::result').style.visibility = 'visible';
+            document.getElementById('OUTLINEGEN::another-spinner').style.display = 'none';
+        },
+        Generate  : function(){
+            document.getElementById('OUTLINEGEN::another-spinner').style.display = 'block';
+            OutlineGen_SetMsg('Generating outline'); 
+            this.AGenerate();
+        },
+        AOptimize : async function(){
+            await new Promise(r => setTimeout(r, 2000)); 
+            var outlines = []
+            for (url of this.__URLs){
+                if (url.outline != '') {
+                    outlines.push(url.OutlineWidget.text.value);
+                }
+            }
+            var fetch_options  = DASHBOARD_FetchOPtions()  
+            fetch_options.body = JSON.stringify({
+                Outlines    : outlines, 
+                SeachIntent : this.__SeachIntent, 
+                Keyword     : document.getElementById('OUTLINEGEN::Keyword').value
+            });    
+            var outline = await DASHBOARD_Fetch('/outlinegen-optmized', fetch_options);  
+            console.log(outline);
+            OutlineGen_SetMsg('')   
+            document.getElementById('OUTLINEGEN::result-view').value       = outline.Outline;
+            document.getElementById('OUTLINEGEN::result').style.visibility = 'visible';
+        },
+        Optimize  : function(){
+            OutlineGen_SetMsg('Generating outline'); 
+            this.AOptimize();
+        },
+        Export : function () {
+            var outline =  document.getElementById('OUTLINEGEN::result-view').value;
+            navigator.clipboard.writeText(outline); 
+            alert('Outline copyed to clipboard: ');
+        }
+    }
+    function OutlineGen_OutlineWidget(url, outline, parent_div){
+        var widget  = {
+            column   : document.createElement('div'),     
+            row      : document.createElement('div'), 
+            url      : document.createElement('p'),  
+            text     : document.createElement('textarea'),  
+            button   : document.createElement('button'),  
+            spacer   : document.createElement('div'),   
+            src_url  : url         
+        }
+        widget.column.style           = 'display:flex; flex-direction:column; gap:4px;';
+        widget.row.style              = 'display:flex;';
+        widget.text.style             = 'min-width:520px; min-height:300px; width:400px; height:300px;'
+        widget.url.style              = 'min-width:520px; width:400px; height:18px;'
+        widget.url.classList          = 'mg-b-20 DASHBOARD_ClicableText'
+        widget.text.classList         = 'form-control'        
+        widget.spacer.style           = 'min-width:380px'   
+        widget.text.value             = outline;
+        widget.url.innerHTML          = DASHBOARD_TruncateString(url, max=50);
+        widget.url.style              = 'margin-bottom:2px; border:1px solid #cdd4e0; padding: 8px 10px; background-color: #f4f5f8';
+        widget.button.innerHTML       = 'Remove';
+        widget.button.classList       = 'btn btn-danger btn-block';
+        parent_div.appendChild(widget.column);
+        widget.row.appendChild(widget.spacer);
+        widget.row.appendChild(widget.button);
+        widget.column.appendChild(widget.url);
+        widget.column.appendChild(widget.text);
+        widget.column.appendChild(widget.row);            
+        widget.url.onclick     = function(){widget.UrlClicked();}
+        widget.button.onclick  = function(){OutlineGen.RemoveWidget(widget)}
+
+        widget.UrlClicked = function(){
+            window.open(OutlineGen.GetURL(this.src_url).URL);
+        }            
+        return widget
+    }
+    function OutlineGen_SetMsg(msg) {
+        document.getElementById('OUTLINEGEN::msg').innerHTML         = msg;
+        document.getElementById('OUTLINEGEN::spinner').style.display = msg === '' ? 'None' : 'block';
+    }  
+    async function OutlineGen_ASERP() {                  
+        const country  = document.getElementById('OUTLINEGEN::Country').value;
+        const kword    = document.getElementById('OUTLINEGEN::Keyword').value;
+        const options  = {method : 'POST', headers : {'Content-Type': 'application/json', 'Accept' : 'application/json'}};                
+        var  urls      = await DASHBOARD_Fetch(`/outlinegen-serp?country_code=${country}&keyword=${kword}`, options);                     
+        if ('err' in urls) {
+            console.log(urls)
+            return
+        };             
+        document.getElementById('OUTLINEGEN::URLs-Row').style.visibility = 'visible';           
+        OutlineGen.ClearURLs();                     
+        for (const url of urls.URLs) {                
+            OutlineGen.InsertURL(url);               
+        }
+        console.log(urls.intent)
+        OutlineGen.SetIntent(urls.intent)
+        OutlineGen_SetMsg('')        
+    }    
+    function OutlineGen_SERP(){
+        document.getElementById('OUTLINEGEN::gen-button').style.visibility          = 'hidden'; 
+        //document.getElementById('OUTLINEGEN::gen-button2').style.visibility          = 'hidden'; 
+        document.getElementById('OUTLINEGEN::outlines-subtitle').style.visibility   = 'hidden';     
+        document.getElementById('OUTLINEGEN::URLs-Row').style.visibility            = 'hidden';            
+        document.getElementById('OUTLINEGEN::result').style.visibility              = 'hidden';
+        OutlineGen_SetMsg(' Generating top-ranking articles list and performing search intent analysis')  
+        OutlineGen_ASERP();           
+    }         
+</script>    
+

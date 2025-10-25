@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+mysqldump -h$mysql -u$b4f881244769ea82 -p$93c0aac3f457af9ff2e571b2da0a5d0a88ad766b4f7f18fb --single-transaction --routines --triggers --no-tablespaces $b4f881244769ea82 > /tmp/mysqldump.sql

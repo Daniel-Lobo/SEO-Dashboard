@@ -1,0 +1,733 @@
+{% include 'additional-keywords-component.html' %}
+
+<div id="CLIENTS::create-dialog" class="tw_dialog-container" name='DASHBOARD::modal' style="z-index: 5"
+	onclick='event.stopPropagation()'>
+	<div class="tw_Ctrl-Group tw_dialog" style="width:400px;">
+		<p class='tw_h3' style="margin-bottom:10px"> Ceate a new client<p>		
+		<input id="CLIENTS::client-name" class="tw_input" placeholder="Client name" style="width:100%;margin-bottom:20px" ></input>
+		
+		<div style="display:flex;flex-direction:row-reverse;margin-top:10px;padding-top:6px;gap:10px">
+			<button class="tw_button" 
+				onclick="document.getElementById('CLIENTS::create-dialog').style.display='none'">Close
+			</button>			
+			<button class="tw_button-alt" id="CLIENTS::create-client" style="display:flex;" onclick="CLIENTS_CreateClient()">
+				Create
+			</button>
+			<div class="loader" style="width:26px;height:26px;margin-top:4px;margin-left:6px;display:none;color:black" id="CLIENTS::create-spinner"></div>
+		</div>			
+	</div>
+</div>
+
+<div id="CLIENTS::create-domain-dialog" class="tw_dialog-container"	name='DASHBOARD::modal' style="z-index: 5"
+	onclick='event.stopPropagation()'>
+	<div class="tw_Ctrl-Group tw_dialog" style="width:600px;">
+		<p class='tw_h3' style="margin-bottom:20px" id="CLIENTS::create-domain-header"><p>		
+		<input id="CLIENTS::domain-name" class="tw_input" placeholder="New domain" style="width:100%;margin-bottom:10px" ></input>
+		
+		<p style="margin-bottom: 0px;" class="tw_h4"> Prompts</p>
+		<select id="CLIENTS::domain-prompts" class="tw_input" style="width:100%;margin-bottom:20px"></select>
+		
+		<p style="margin-bottom: 0px;" class="tw_h4"> Fix Prompts</p>
+		<select id="CLIENTS::domain-fprompts" class="tw_input" style="width:100%;margin-bottom:20px"></select>
+
+		<p style="margin-bottom: 0px;" class="tw_h4"> Tones - select one or two</p>
+		<select id="CLIENTS::domain-tones" multiple class="tw_input" style="width:100%;margin-bottom:20px;height:200px"></select>
+		
+		<p style="margin-bottom: 0px;" class="tw_h4"> Audience</p>
+		<select id="CLIENTS::domain-audience" class="tw_input" style="width:100%;margin-bottom:20px"></select>
+		
+		<div style="display:flex;flex-direction:row-reverse;margin-top:10px;padding-top:6px;gap:10px">
+			<button class="tw_button" 
+				onclick="document.getElementById('CLIENTS::create-domain-dialog').style.display='none'">Close
+			</button>			
+			<button class="tw_button-alt" id="CLIENTS::create-domain" style="display:flex;">
+				Create
+			</button>
+			<div class="loader" style="width:26px;height:26px;margin-top:4px;margin-left:6px;display:none;color:black" 
+				id="CLIENTS::create-domain-spinner">
+			</div>
+		</div>			
+	</div>
+</div>
+
+<div id="CLIENTS::update-domain-dialog" class="tw_dialog-container"	name='DASHBOARD::modal' style="z-index: 5"
+	onclick='event.stopPropagation()'>
+	<div class="tw_Ctrl-Group tw_dialog" style="width:600px;">
+		<p class='tw_h3' style="margin-bottom:20px" id="CLIENTS::update-domain-header"><p>		
+		
+		<p style="margin-bottom: 0px;" class="tw_h4"> Prompts</p>
+		<select id="CLIENTS::update-domain-prompts" class="tw_input" style="width:100%;margin-bottom:20px"></select>
+		
+		<p style="margin-bottom: 0px;" class="tw_h4"> Fix Prompts</p>
+		<select id="CLIENTS::update-domain-fprompts" class="tw_input" style="width:100%;margin-bottom:20px"></select>
+
+		<p style="margin-bottom: 0px;" class="tw_h4"> Tones - select one or two</p>
+		<select id="CLIENTS::update-domain-tones" multiple class="tw_input" style="width:100%;margin-bottom:20px;height:200px"></select>
+		
+		<p style="margin-bottom: 0px;" class="tw_h4"> Audience</p>
+		<select id="CLIENTS::update-domain-audience" class="tw_input" style="width:100%;margin-bottom:20px"></select>
+		
+		<div style="display:flex;flex-direction:row-reverse;margin-top:10px;padding-top:6px;gap:10px">
+			<button class="tw_button" 
+				onclick="document.getElementById('CLIENTS::update-domain-dialog').style.display='none'">Close
+			</button>			
+			<button class="tw_button-alt" id="CLIENTS::update-domain-button" style="display:flex;">
+				Update
+			</button>
+			<div class="loader" style="width:26px;height:26px;margin-top:4px;margin-left:6px;display:none;color:black" 
+				id="CLIENTS::update-domain-spinner">
+			</div>
+		</div>			
+	</div>
+</div>
+
+<div id="CLIENTS::import-cluster-modal" class="tw_dialog-container" name='DASHBOARD::modal' style="z-index: 5"
+	onclick='event.stopPropagation()'>
+	<div class="tw_Ctrl-Group tw_dialog" style="width:400px;">
+
+		<div style="display:flex;flex-direction:row;gap:10px;margin-bottom:-10px;">
+			<div class="loader" style="width:26px;height:26px;margin-top:0px;margin-left:6px;display:none;color:black"
+				id="CLIENTS::import-cluster-spinner"></div>		
+			<p class='tw_h3' style="margin-bottom:10px" id="CLIENTS::import-cluster-modal-header">Loading cluster</p>
+		</div>
+
+		<div style="display:none;flex-direction:column;margin-top:30px;" id="CLIENTS::import-cluster-inputs">
+			<input id="CLIENTS::import-cluster-name" class="tw_input" placeholder="Cluster name" style="width:100%;margin-bottom:20px" ></input>
+			<div style="display:flex;flex-direction:row-reverse;margin-top:10px;padding-top:6px;gap:10px">
+				<button class="tw_button" 
+					onclick="document.getElementById('CLIENTS::import-cluster-modal').style.display='none'">Close
+				</button>			
+				<button class="tw_button-alt" id="CLIENTS::import-cluster-dialog-button" style="display:flex;">
+					Import
+				</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<div id="Clients::Main" class="CTAS_Main" style="display:none">	
+	<div class="CTA_Ctrl-Group CTA_Clents-View" style="width:33%;">
+		<div style="display:flex;">
+			<h3 style="font-weight:semibold; font-size: 16px;">
+				Clients
+			</h3>  
+			<div style="flex-grow:1"></div>
+			<div class="DASHBOARD_Loader" style="border-top:4px solid black; display:flex;margin-top:-10px" id="CLIENTS::clients-spinner"></div>   
+		</div>    
+		<p class="CTA_label-lvl3" style="font-size:12px;" id="CLIENTS::clients-footer">Fethching clients list from the database</p>
+			
+		<div style='display:flex;flex-direction:column;overflow:none;margin-top: 20px;'>
+			<div id="CLIENTS::Clients" style='display:flex;flex-direction:column;overflow:auto;height:500px;padding-right:20px;'>                
+			</div>              
+		</div>
+		<div style="flex-grow: 1;"></div>
+		<div style="display: flex;flex-direction: row-reverse; margin-top:20px; gap:6px">
+			<button class="CTA_button" style="width: 200px;" id="CLIENTS::new-client-button">
+				<i class="fa-solid fa-plus"></i>
+				New client
+			</button>                      
+		</div>
+	</div>  
+	<div class="CTA_Ctrl-Group CTA_Clents-View" style="width:33%;">
+		<div style="display:flex;">
+			<h3 style="font-weight:semibold; font-size: 16px;">
+				Domains
+			</h3>  
+			<div style="flex-grow:1"></div>
+			<div class="DASHBOARD_Loader" style="border-top:4px solid black; display:flex;margin-top:-10px" id="CLIENTS::domains-spinner"></div>   
+		</div>    
+		<p class="CTA_label-lvl3" style="font-size:12px;" id="CLIENTS::domains-footer">Fethching domains list from the database</p>
+			
+		<div style='display:flex;flex-direction:column;overflow:none;margin-top: 20px;'>
+			<div id="CLIENTS::Domains" style='display:flex;flex-direction:column;overflow:auto;height:500px;padding-right:20px;'>                
+			</div>              
+		</div>
+		<div style="flex-grow: 1;"></div>
+		<div style="display: flex;flex-direction: row-reverse; margin-top:20px; gap:6px">
+			<button class="CTA_button" style="width: 200px;" id="CLIENTS::new-domain-button">
+				<i class="fa-solid fa-plus"></i>
+				New doḿain
+			</button>                      
+		</div>
+	</div>  				
+	<div class="CTA_Ctrl-Group CTA_Clents-View" style="width:33%;">
+		<div style="display:flex;">
+			<h3 style="font-weight:semibold; font-size: 16px;">
+				Clusters
+			</h3>  
+			<div style="flex-grow:1"></div>
+			<div class="DASHBOARD_Loader" style="border-top:4px solid black; display:flex;margin-top:-10px" id="CLIENTS::clusters-spinner"></div>   
+		</div>    
+		<p class="CTA_label-lvl3" style="font-size:12px;" id="CLIENTS::clusters-footer">Fethching clusters list from the database</p>
+			
+		<div style='display:flex;flex-direction:column;overflow:none;margin-top: 20px;'>
+			<div id="CLIENTS::Clusters" style='display:flex;flex-direction:column;overflow:auto;height:500px;padding-right:20px;'>                
+			</div>              
+		</div>
+		<div style="flex-grow: 1;"></div>	
+		<div style="display: flex;flex-direction: row-reverse; margin-top:20px; gap:6px">
+			<button class="CTA_button" style="width: 200px;" id="CLIENTS::import-cluster-button">
+				<i class="fa-solid fa-file-import"></i>
+				Import from json
+			</button>                      
+		</div>	
+	</div>  		
+</div>	
+
+<script>
+	function CLIENTS_OnDomainDeleted(client, domain){};
+	function CLIENTS_OnClientDeleted(client){};
+	function CLIENTS_SwitchTabs(_this){
+		if (_this.id == "CTAS::clients-tab-button"){
+			document.getElementById("CTAS::ctas-tab-button").className    = "tw_tabs-button";
+			document.getElementById("CTAS::clients-tab-button").className = "tw_tabs-button-selected";
+			document.getElementById("CTAs::Main").style.display           = "none";
+			document.getElementById("Clients::Main").style.display        = "flex";
+		}else if (_this.id == "CTAS::ctas-tab-button"){
+			document.getElementById("CTAS::clients-tab-button").className = "tw_tabs-button";
+			document.getElementById("CTAS::ctas-tab-button").className    = "tw_tabs-button-selected";
+			document.getElementById("CTAs::Main").style.display           = "flex";
+			document.getElementById("Clients::Main").style.display        = "none";
+		}
+	}
+	async function CLIENTS_ListClusters(client, domain) {
+		document.getElementById('CLIENTS::clusters-spinner').style.display  = 'flex';
+		document.getElementById('CLIENTS::clusters-footer').innerHTML       = 'Fethching clusters list from the database';
+		document.getElementById('CLIENTS::Clusters').innerHTML              = '';		
+		let container = document.getElementById('CLIENTS::Clusters');
+		let reply     = await DASHBOARD_Fetch(`/client_owned_clusters-list_clusters?client=${client}&domain=${domain}`, DASHBOARD_FetchOPtions());
+		for (let cluster of reply.Clusters){
+			container.insertAdjacentHTML('beforeend',  /*html*/`	
+			<div class="CTA_Client">
+                <div style="margin-top:10px">${cluster}</div>
+                <div style="flex-grow: 1;"></div>   
+				<i class="fa-solid fa-gear CTA_3dots" onclick="CLIENTS_ClusterSettings('${client}', '${domain}', '${cluster}')"></i>
+				<i class="fa-solid fa-pen CTA_3dots" onclick="CLIENTS_EditCluster('${client}', '${domain}', '${cluster}')"></i>
+                <i class="fa-solid fa-trash CTA_3dots" onclick="CLIENTS_DeleteCluster(this, '${client}', '${domain}', '${cluster}')"></i>               
+            </div>`);
+		}
+		document.getElementById('CLIENTS::clusters-spinner').style.display  = 'none';
+		document.getElementById('CLIENTS::clusters-footer').innerHTML       = `Listing ${client}\\${domain} clusters`;
+		document.getElementById('CLIENTS::import-cluster-button').onclick   = function(){CLIENTS_ImportCluster(client, domain);};
+		CLIENTS_OnDomainDeleted = function(target_client, target_domain){
+			if (target_client != client || target_domain != domain){
+				return
+			}
+			container.innerHTML = '';
+			document.getElementById('CLIENTS::clusters-footer').innerHTML      = `...`;
+			document.getElementById('CLIENTS::import-cluster-button').onclick  = function(){alert('Please select a client and domain first');};
+		};
+		return reply.Clusters;
+	}
+
+	async function CLIENTS_ListDomains(client) {
+		document.getElementById('CLIENTS::domains-spinner').style.display  = 'flex';
+		document.getElementById('CLIENTS::domains-footer').innerHTML       = 'Fethching domains list from the database';
+		document.getElementById('CLIENTS::Domains').innerHTML              = '';		
+		document.getElementById('CLIENTS::new-domain-button').onclick      = function(){alert('Please select a client first');};
+		document.getElementById('CLIENTS::import-cluster-button').onclick  = function(){alert('Please select a client and domain first');};
+		document.getElementById('CLIENTS::Clusters').innerHTML             = '';
+		document.getElementById('CLIENTS::clusters-footer').sinnerHTML     = '...';
+		let container = document.getElementById('CLIENTS::Domains');
+		let reply     = await DASHBOARD_Fetch(`/client_owned_clusters-list_domains?client=${client}`, DASHBOARD_FetchOPtions());
+		for (let domain of reply.Domains){
+			container.insertAdjacentHTML('beforeend', /*html*/`	
+			<div class="CTA_Client">
+                <div style="margin-top:10px">${domain}</div>
+                <div style="flex-grow: 1;"></div>   
+                <button class="CTA_button-alt" onclick="CLIENTS_ListClusters('${client}', '${domain}')">View clusters</button> 
+				<i class="fa-solid fa-link CTA_3dots" onclick="CLIENTS_DomainKeywords('${client}', '${domain}')"></i>
+				<i class="fa-solid fa-gear CTA_3dots" onclick="CLIENTS_DomainSettings('${client}', '${domain}')"></i>
+                <i class="fa-solid fa-trash CTA_3dots" onclick="CLIENTS_DeleteDomain(this, '${client}', '${domain}')"></i>               
+            </div>`);
+		}
+		document.getElementById('CLIENTS::domains-spinner').style.display  = '';
+		document.getElementById('CLIENTS::domains-footer').innerHTML       = `Listing <i>${client}</i> domains`;
+		document.getElementById('CLIENTS::new-domain-button').onclick      = async function(){
+			document.getElementById('CLIENTS::create-domain-header').innerHTML     = 'Create a new domain for client: ' + client;
+			document.getElementById('CLIENTS::create-domain-dialog').style.display = 'flex';
+			await CLIENTS_InitDomainSettingsUIFilelds();
+			document.getElementById('CLIENTS::create-domain').onclick = function(){				
+				CLIENTS_CreateDomain(client);
+			}
+		}
+		CLIENTS_OnClientDeleted = function(target_client){
+			if (target_client != client){
+				return
+			}
+			container.innerHTML = '';
+			document.getElementById('CLIENTS::domains-footer').innerHTML       = `...`;
+			document.getElementById('CLIENTS::new-domain-button').onclick      = function(){alert('Please select a client first');};
+			document.getElementById('CLIENTS::import-cluster-button').onclick  = function(){alert('Please select a client and domain first');};
+			document.getElementById('CLIENTS::Clusters').innerHTML             = '';
+			document.getElementById('CLIENTS::clusters-footer').sinnerHTML     = '...';
+			//CLIENTS_OnDomainDeleted(client);
+		};
+		return reply.Domains;
+	}
+	async function CLIENTS_DeleteCluster(element, client, domain, cluster){
+		DASHBOARD_OK_Cancel(`Are you sure you want to delete cluster ${cluster}?`, 'delete', async function ()
+		{	
+			try 
+			{
+				let reply = await DASHBOARD_Fetch(`
+					/client_owned_clusters-delete-cluster?Client=${client}&Domain=${domain}&ClusterName=${cluster}`, 
+					DASHBOARD_FetchOPtions()
+				);
+				console.log(reply);
+				if (reply.Err === 'S_OK')
+				{
+					return element.parentElement.remove();
+				} 
+				else 
+				{
+					throw new Error("Error deleting cluster: " + reply.Err);
+				}
+			}
+			catch (error) 
+			{
+				DASHBOARD_except(error);
+			}
+		});
+	}
+	async function CLIENTS_InitDomainSettingsUIFilelds() {
+		await DASHBOARD_UpdateSettings();
+		let tones          = await DASHBOARD_Fetch('get-tones-and-audiences-new-api', DASHBOARD_FetchOPtions());
+		let t_container    = document.getElementById('CLIENTS::domain-tones');
+		let a_container    = document.getElementById('CLIENTS::domain-audience');
+		let p_container    = document.getElementById('CLIENTS::domain-prompts');
+		let fp_container   = document.getElementById('CLIENTS::domain-fprompts');
+		let t_container_u  = document.getElementById('CLIENTS::update-domain-tones');
+		let a_container_u  = document.getElementById('CLIENTS::update-domain-audience');
+		let p_container_u  = document.getElementById('CLIENTS::update-domain-prompts');
+		let fp_container_u = document.getElementById('CLIENTS::update-domain-fprompts');
+		t_container.innerHTML    = '';
+		a_container.innerHTML    = '';
+		p_container.innerHTML    = '';
+		fp_container.innerHTML   = '';
+		t_container_u.innerHTML  = '';
+		a_container_u.innerHTML  = '';
+		p_container_u.innerHTML  = '';
+		fp_container_u.innerHTML = '';
+		for (const [index, tone] of tones.Tones.entries()){       
+			let option 		 = document.createElement('option');
+			option.innerHTML = tone.Tag === "" ? tone.Name : `${tone.Name} (${tone.Tag})`;         
+			option.value     = JSON.stringify(tone);   
+			t_container.appendChild(option);     
+			let option_u = document.createElement('option');
+			option_u.innerHTML = tone.Tag === "" ? tone.Name : `${tone.Name} (${tone.Tag})`;         
+			option_u.value     = JSON.stringify(tone);   
+			t_container_u.appendChild(option_u);
+		}
+		for (const [index, audience] of tones.Audiences.entries()){
+			let option 		 = document.createElement('option');
+			option.innerHTML = audience.Tag === "" ? audience.Name : `${audience.Name} (${audience.Tag})`;	     
+			option.value     = JSON.stringify(audience);
+			a_container.appendChild(option);
+			let option_u       = document.createElement('option');
+			option_u.innerHTML = audience.Tag === "" ? audience.Name : `${audience.Name} (${audience.Tag})`;	     
+			option_u.value     = JSON.stringify(audience);
+			a_container_u.appendChild(option_u);
+		}    
+		for (const prompt in DASHBOARD_OptionO('Prompts')){
+			let option 		 = document.createElement('option');	
+			option.innerHTML = prompt
+			option.value     = prompt
+			p_container.appendChild(option);	
+			let option_u       = document.createElement('option');	
+			option_u.innerHTML = prompt
+			option_u.value     = prompt
+			p_container_u.appendChild(option_u);			
+		}   
+		for (const prompt in DASHBOARD_OptionO('More Prompts')['Fix content']){
+			let option 		 = document.createElement('option');	
+			option.innerHTML = prompt
+			option.value     = prompt
+			fp_container.appendChild(option);	
+			let option_u       = document.createElement('option');	
+			option_u.innerHTML = prompt	
+			option_u.value     = prompt
+			fp_container_u.appendChild(option_u);			
+		}    
+	}
+	async function CLIENTS_ListClients(){
+		document.getElementById('CLIENTS::clients-spinner').style.display  = 'flex';
+		document.getElementById('CLIENTS::clients-footer').innerHTML       = 'Fethching clients list from the database';
+		document.getElementById('CLIENTS::Clients').innerHTML              = '';
+		document.getElementById('CLIENTS::domains-spinner').style.display  = '';
+		document.getElementById('CLIENTS::domains-footer').innerHTML       = 'Access a domain\'s clusters';
+		document.getElementById('CLIENTS::Domains').innerHTML              = '';
+		document.getElementById('CLIENTS::clusters-spinner').style.display = '';
+		document.getElementById('CLIENTS::clusters-footer').innerHTML      = 'Edit or delete clusters';
+		document.getElementById('CLIENTS::new-domain-button').onclick      = function(){alert('Please select a client first');};
+		document.getElementById('CLIENTS::import-cluster-button').onclick  = function(){alert('Please select a client and domain first');};
+		let container = document.getElementById('CLIENTS::Clients');
+		let reply     = await DASHBOARD_Fetch('/client_owned_clusters-list_clients', DASHBOARD_FetchOPtions());
+		for (let client of reply.Clients){
+			container.insertAdjacentHTML('beforeend', /*html*/`	
+			<div class="CTA_Client">
+                <div style="margin-top:10px">${client}</div>
+                <div style="flex-grow: 1;"></div>   
+                <button class="CTA_button-alt" onclick="CLIENTS_ListDomains('${client}')">View domains</button> 
+                <i class="fa-solid fa-trash CTA_3dots" onclick="CLIENTS_DeleteClient(this, '${client}')"></i>               
+            </div>`);
+		}
+		document.getElementById('CLIENTS::clients-spinner').style.display  = 'none';
+		document.getElementById('CLIENTS::clients-footer').innerHTML       = 'Access a client\'s domains';
+		return reply.Clients;
+	}
+	CLIENTS_ListClients()
+	document.getElementById('CTAS::clients-tab-button').click();
+	document.getElementById('CLIENTS::new-client-button').onclick = function(){
+		document.getElementById('CLIENTS::create-dialog').style.display = 'flex';
+	};
+	async function CLIENTS_DeleteClient(element, client) {
+		DASHBOARD_OK_Cancel(`Are you sure you want to delete client ${client}?`, 'delete', async function () 
+		{	
+			try 
+			{
+				result = await DASHBOARD_Fetch(`/client_owned_clusters-delete-client?Client=${client}`, DASHBOARD_FetchOPtions());
+				if (result.Err != 'S_OK')
+				{
+					throw new Error(result.Err);
+				}	
+				else
+				{
+					element.parentElement.remove();
+					CLIENTS_OnClientDeleted(client)
+				}		
+			}
+			catch (error) 
+			{
+				DASHBOARD_except(error);
+			}
+		});			
+	}
+	async function CLIENTS_CreateClient(){
+		document.getElementById('CLIENTS::create-dialog').style.display  = 'flex';
+		let client = "";
+		try	{
+			client = document.getElementById('CLIENTS::client-name').value;	
+			let clients = await DASHBOARD_Fetch('/client_owned_clusters-list_clients', DASHBOARD_FetchOPtions());
+			if (clients.Clients.includes(client)){
+				alert('Client already exists');
+				document.getElementById('CLIENTS::create-spinner').style.display  = 'none';
+				return ;
+			}
+		} catch (error) {
+			DASHBOARD_except(error);
+			document.getElementById('CLIENTS::create-spinner').style.display  = 'none';
+		}
+		try {
+			if (client.length === 0){
+				alert('Please enter a client name');
+				return;
+			}			
+			
+			let options  = DASHBOARD_FetchOPtions();
+			options.body = JSON.stringify({"Request":{ 
+				'Client'      : client, 
+				'ClusterName' : "PLACEHOLDER", 
+				'Domain'      : "PLACEHOLDER",
+				"data"        : {}
+				}
+			});
+			let result = await DASHBOARD_Fetch('/client_owned_clusters-save', options);
+			if (result.Err === 'S_OK'){
+				document.getElementById('CLIENTS::Clients').insertAdjacentHTML('beforeend', /*html*/`	
+				<div class="CTA_Client">
+					<div style="margin-top:10px">${client}</div>
+					<div style="flex-grow: 1;"></div>   
+					<button class="CTA_button-alt" onclick="CLIENTS_ListDomains('${client}')">View domains</button> 
+					<i class="fa-solid fa-trash CTA_3dots" onclick="CLIENTS_DeleteClient(this, '${client}')"></i>               
+				</div>`);
+			}
+		} catch (error) {
+			DASHBOARD_except(error)
+		}
+		finally {
+			document.getElementById('CLIENTS::create-dialog').style.display  = 'none';
+			document.getElementById('CLIENTS::create-spinner').style.display = 'none';
+		}
+	}
+	async function CLIENTS_CreateDomain(client){
+		document.getElementById('CLIENTS::create-domain-spinner').style.display = 'flex';
+		let domain = document.getElementById('CLIENTS::domain-name').value;
+		try {
+			if (domain.length === 0){
+				alert('Please enter a domain name');
+				document.getElementById('CLIENTS::create-domain-spinner').style.display = 'none';
+				return;
+			}
+			let domains = await DASHBOARD_Fetch(`/client_owned_clusters-list_domains?client=${client}`, DASHBOARD_FetchOPtions());
+			console.log(domain, domains.Domains);
+			if (domains.Domains.includes(domain)){
+				alert('Domain already exists');
+				document.getElementById('CLIENTS::create-domain-spinner').style.display = 'none';
+				return ;
+			}			
+		} catch (error) {
+			DASHBOARD_except(error);
+			document.getElementById('CLIENTS::create-domain-spinner').style.display = 'none';
+			return;
+		}		
+		let tone     
+		let audience 
+		let prompts 
+		let fprompts 
+		try {
+			tone     = DASHBOARD_GetOptions('CLIENTS::domain-tones');
+			audience = DASHBOARD_GetOptions('CLIENTS::domain-audience');
+			prompts  = DASHBOARD_GetOptions('CLIENTS::domain-prompts');
+			fprompts = DASHBOARD_GetOptions('CLIENTS::domain-fprompts');
+			if (tone.length > 2){
+				alert('Please select at most two tone');
+				document.getElementById('CLIENTS::create-domain-spinner').style.display = 'none';
+				return;				
+			} else if (tone.length === 0){
+				alert('Please select at least one tone');
+				document.getElementById('CLIENTS::create-domain-spinner').style.display = 'none';				
+				return;
+			}		
+			audience = audience[0]	
+			prompts  = prompts[0]
+			fprompts = fprompts[0]
+			console.log(tone, audience, prompts, fprompts);
+		} catch (error) {
+			DASHBOARD_except(error);
+			document.getElementById('CLIENTS::create-domain-spinner').style.display = 'none';
+			return;
+		}		
+		try {
+			let options  = DASHBOARD_FetchOPtions();
+			options.body = JSON.stringify({"Request":{ 
+				'Client'      : client, 
+				'ClusterName' : "PLACEHOLDER", 
+				'Domain'      : domain,
+				"data"        : {}
+				}
+			});
+			let result = await DASHBOARD_Fetch('/client_owned_clusters-save', options);
+			if (result.Err === 'S_OK'){
+				options.body = JSON.stringify({
+					"Domain"  : domain,
+					"Settings": {
+						"Tones"    : tone,
+						"Audience" : audience,
+						"Prompt"   : prompts,
+						"F-Prompt" : fprompts
+					}					
+				});
+				result = await DASHBOARD_Fetch('/domain-settings-save-settigs', options);
+				console.log(result);
+				if (result.Err != 'S_OK'){
+					throw new Error("Error creating domain: " + result.Err);
+				}
+			} else {
+				throw new Error("Error initializing domain settings: " + result.Err);
+			}
+		} catch (error) {
+			DASHBOARD_except(error)
+		} finally {
+			document.getElementById('CLIENTS::Domains').insertAdjacentHTML('beforeend', /*html*/`
+			<div class="CTA_Client">
+                <div style="margin-top:10px">${domain}</div>
+                <div style="flex-grow: 1;"></div>   
+                <button class="CTA_button-alt" onclick="CLIENTS_ListClusters('${client}', '${domain}')">View clusters</button> 
+				<i class="fa-solid fa-link CTA_3dots" onclick="CLIENTS_DomainKeywords('${client}', '${domain}')"></i>
+				<i class="fa-solid fa-gear CTA_3dots" onclick="CLIENTS_DomainSettings('${client}', '${domain}')"></i>
+                <i class="fa-solid fa-trash CTA_3dots" onclick="CLIENTS_DeleteDomain(this, '${client}', '${domain}')"></i>               
+            </div>`);
+			document.getElementById('CLIENTS::create-domain-dialog').style.display  = 'none';
+			document.getElementById('CLIENTS::create-domain-spinner').style.display = 'none';
+		}
+	}
+	async function CLIENTS_DomainSettings(client, domain){ 
+		document.getElementById('CLIENTS::update-domain-header').innerHTML       = `Update ${domain} settings`;
+		document.getElementById('CLIENTS::update-domain-dialog').style.display   = 'flex';
+		document.getElementById('CLIENTS::update-domain-spinner').style.display  = 'none';
+		await CLIENTS_InitDomainSettingsUIFilelds();
+		try 
+		{
+			let result = await DASHBOARD_Fetch(`/domain-settings_get-settings?Domain=${domain}`, DASHBOARD_FetchOPtions());
+			console.log(result);
+			if (result.Err != 'S_OK')
+			{
+				throw new Error("Error getting domain settings: " + result.Err);
+			} 
+			else if (true === "Settings" in result) 
+			{
+				if (true === "Tones"    in result.Settings){DASHBOARD_SetOptions('CLIENTS::update-domain-tones', result.Settings.Tones)}
+				if (true === "Audience" in result.Settings){DASHBOARD_SetOptions('CLIENTS::update-domain-audience', result.Settings.Audience)}
+				if (true === "Prompt"   in result.Settings){DASHBOARD_SetOptions('CLIENTS::update-domain-prompts', result.Settings.Prompt)}
+				if (true === "F-Prompt" in result.Settings){DASHBOARD_SetOptions('CLIENTS::update-domain-fprompts', result.Settings["F-Prompt"])}
+			} 
+			document.getElementById('CLIENTS::update-domain-button').onclick = async function()
+			{
+				try 
+				{
+					document.getElementById('CLIENTS::update-domain-spinner').style.display = 'flex';
+					let options  = DASHBOARD_FetchOPtions();
+					options.body = JSON.stringify({
+						"Domain"  : domain,
+						"Settings": {
+							"Tones"    : DASHBOARD_GetOptions('CLIENTS::update-domain-tones'),
+							"Audience" : DASHBOARD_GetOptions('CLIENTS::update-domain-audience'),
+							"Prompt"   : DASHBOARD_GetOptions('CLIENTS::update-domain-prompts'),
+							"F-Prompt" : DASHBOARD_GetOptions('CLIENTS::update-domain-fprompts')
+						}					
+					});
+					let result = await DASHBOARD_Fetch('/domain-settings-save-settigs', options);
+					if (result.Err != 'S_OK')
+					{
+						throw new Error("Error creating domain: " + result.Err);
+					} 
+					else
+					{
+						document.getElementById('CLIENTS::update-domain-spinner').style.display  = 'none';
+						alert('Domain settings updated');
+						document.getElementById('CLIENTS::update-domain-dialog').style.display = 'none';
+					}					
+				} 
+				catch (error) 
+				{
+					document.getElementById('CLIENTS::update-domain-spinner').style.display  = 'none';
+					DASHBOARD_except(error)
+				}
+			};
+		} 
+		catch (error) 
+		{
+			DASHBOARD_except(error)
+			document.getElementById('CLIENTS::update-domain-spinner').style.display  = 'none';
+		}
+		
+	}
+	async function CLIENTS_ImportCluster(client, domain){
+		document.getElementById('CLIENTS::import-cluster-modal').style.display    = 'flex';
+		document.getElementById('CLIENTS::import-cluster-spinner').style.display  = 'flex';
+		document.getElementById('CLIENTS::import-cluster-modal-header').innerHTML = 'Loading cluster';
+		DASHBOARD_LoadB(accept = '.json', async function(name, data){
+			try 
+			{
+				let cluster = JSON.parse(data);
+				if (false === "CLUSTER-SETTINGS-V2" in cluster){	
+					let settings = await DASHBOARD_Fetch(`/domain-settings_get-settings?Client=${client}&Domain=${domain}&cluster=${cluster.NAME}`);
+					console.log(settings);
+					cluster["CLUSTER-SETTINGS-V2"] = settings.Settings;
+				}
+				document.getElementById('CLIENTS::import-cluster-modal-header').innerHTML = 'Name the new cluster';
+				document.getElementById('CLIENTS::import-cluster-name').value             = name.replace('.json', '');
+				document.getElementById('CLIENTS::import-cluster-spinner').style.display  = 'none';
+				document.getElementById('CLIENTS::import-cluster-inputs').style.display   = 'flex';
+				document.getElementById('CLIENTS::import-cluster-dialog-button').onclick = async function()
+				{
+					try{
+						let new_cluster_name = document.getElementById('CLIENTS::import-cluster-name').value;
+						if (new_cluster_name == ''){
+							alert("Please enter a name for the new cluster");
+							return
+						}
+						let clusters = (await DASHBOARD_Fetch(`/client_owned_clusters-list_clusters?client=${client}&domain=${domain}`, DASHBOARD_FetchOPtions())).Clusters
+						if (clusters.includes(new_cluster_name)){
+							alert(`Cluster ${new_cluster_name} already exists`);
+							return
+						}
+						let options = DASHBOARD_FetchOPtions();
+						options.body = JSON.stringify({"Request" : {
+								"Domain"      : domain,
+								"Client"      : client,
+								"ClusterName" : new_cluster_name,
+								"data"        : cluster
+							}});
+						let err = await DASHBOARD_Fetch(`/client_owned_clusters-save`, options);
+						if (err.Err === 'S_OK'){						
+							document.getElementById('CLIENTS::Clusters').insertAdjacentHTML('beforeend', /*html*/`	
+							<div class="CTA_Client">
+								<div style="margin-top:10px">${new_cluster_name}</div>
+								<div style="flex-grow: 1;"></div>   
+								<i class="fa-solid fa-gear CTA_3dots" onclick="CLIENTS_ClusterSettings('${client}', '${domain}', '${new_cluster_name}')"></i>
+								<i class="fa-solid fa-pen CTA_3dots" onclick="CLIENTS_EditCluster('${client}', '${domain}', '${new_cluster_name}')"></i>
+								<i class="fa-solid fa-trash CTA_3dots" onclick="CLIENTS_DeleteCluster(this, '${client}', '${domain}', '${new_cluster_name}')"></i>               
+							</div>`);			
+							document.getElementById('CLIENTS::import-cluster-modal').style.display  = 'none';			
+						}else {
+							throw new Error("Error importing cluster: " + err.Err);
+						}
+					} catch (error) {
+						DASHBOARD_except(error);
+						return
+					}
+				}
+			} catch (error) {
+				DASHBOARD_except(error);
+				document.getElementById('CLIENTS::import-cluster-modal').style.display  = 'none';
+				return
+			} 
+		})
+	}
+	async function CLIENTS_DeleteDomain(element, client, domain)
+	{		
+		DASHBOARD_OK_Cancel(`Are you sure you want to delete domain ${domain}?`, 'delete', async function ()
+		{	
+			try 
+			{
+				let reply = await DASHBOARD_Fetch(`/client_owned_clusters-delete-client-domain?Client=${client}&Domain=${domain}`, DASHBOARD_FetchOPtions());
+				console.log(reply);
+				if (reply.Err === 'S_OK')
+				{
+					CLIENTS_OnDomainDeleted(client, domain);
+					return element.parentElement.remove();
+				} 
+				else 
+				{
+					throw new Error("Error deleting domain: " + reply.Err);
+				}
+			}
+			catch (error) 
+			{
+				DASHBOARD_except(error);
+			}
+		});				
+	}
+	function CLIENTS_EditCluster(client, domain, cluster){
+		window.open(`/seo_tool?page=ClusterCreator&Client=${client}&Domain=${domain}&Cluster=${cluster}`, '_blank');
+	}
+	async function CLIENTS_DomainKeywords(client, domain){
+		let elements = await AdditionalKeywordsComponent(async() => {
+			try {
+				let links = await DASHBOARD_Fetch(`domain-settings-get-additional-links?Domain=${domain}`, DASHBOARD_FetchOPtions())
+				console.log(links);
+				
+				if (links.AdditionalLinks instanceof Array){ 
+					links.AdditionalLinks = {}
+				}
+				
+				return links.AdditionalLinks;
+			} catch (error) {
+				DASHBOARD_except(error);
+			}	
+		});
+		elements.Commit.onclick = async function(){
+			try {
+				elements.Spinner.style.display = 'flex';
+				console.log(JSON.stringify(elements.Data()));
+				let options  = DASHBOARD_FetchOPtions();
+				options.body = JSON.stringify({
+					Links : elements.Data(),
+					Domain: domain
+				});
+				let result = await DASHBOARD_Fetch('/domain-settings-save-additional-links', options);
+				console.log(result);
+				if (result.Err != 'S_OK'){
+					throw new Error("Error saving additional links: " + result.Err);
+				}
+			} catch (error) {
+				DASHBOARD_except(error);
+			} finally {
+				elements.Spinner.style.display = 'none';
+			}			
+		}
+	}
+</script>	

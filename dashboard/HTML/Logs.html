@@ -1,0 +1,154 @@
+{% extends 'dashboard.html' %}
+
+{% block breadcrumbs %}  
+<div style='display:flex; flex-direction: column; width:100%; margin-right:20px; margin-bottom:-16px;'>
+    <div style='display:flex; margin-bottom:20px; text-transform: uppercase;'> 
+        <span>SEO Tools</span>
+        <span>Logs</span>           
+    </div>        
+    <h1 class='az-content-title'>Logs
+        <button onclick="DASHBOARD_except(new Error('Client exception loggin test'));">Client exception test</button>
+    </h1>
+    
+</div>    
+{% endblock %}    
+
+{% block tool_content %} 
+<style>  
+.LOGS_root{
+    display       : flex;  
+    flex-direction: row;
+    height        : calc(100% - 20px);
+    width         : 100%;
+    overflow      : hidden;   
+    box-sizing    : border-box;
+}
+</style>    
+
+<div class='LOGS_root'>
+    <div style='display:flex;flex-direction:column;width:20%;overflow-y:none;gap:6px'>
+        <div style='display:flex;flex-direction:column;width:100%;height:30%;overflow-y:none;gap:6px;border:1px solid lightgray;padding: 6 6 0 6;'>
+            <div class="az-content-label mg-b-5;" style="margin-bottom:10px;margin-top:0px">Users</div>
+            <div id='LOGS::users' style='display:flex;flex-direction:column;width:100%;overflow-y:auto;'></div>
+        </div>
+        <div style='display:flex;flex-direction:column;width:100%;height:50%;overflow-y:none;gap:6px; border: 1px solid lightgray; padding: 6 6 0 6;'>
+            <div class="az-content-label mg-b-5;" style="margin-bottom:10px;margin-top:0px">Functions</div>
+            <div id='LOGS::functions' style='display:flex;flex-direction:column;width:100%;overflow-y:auto;'></div>
+        </div>
+        <div style='display:flex;flex-direction:column;width:100%;height:20%;overflow-y:none;gap:6px; border: 1px solid lightgray; padding: 6 6 0 6;'>
+            <div class="az-content-label mg-b-5;" style="margin-bottom:10px;margin-top:0px">Log type</div>
+            <div id='LOGS::types' style='display:flex;flex-direction:column;width:100%;overflow-y:auto;'></div>
+        </div>
+    </div>
+    <div style='display:flex;flex-direction:column;width:100%;overflow-y:none;gap:6px; border:1px solid lightgray;margin-left:10px;padding: 6 6 0 6;'>
+        <div class="az-content-label mg-b-5;" style="margin-bottom:2px;margin-top:0px">Logs</div>
+        <div style="display:flex;margin-bottom:2px;margin-top:0px;width:100%;padding:0 0 0 0;">
+            <div style="width:10%;font-weight: bold;">Type</div>
+            <div style="width:16%;font-weight: bold;">Timestamp</div>
+            <div style="width:16%;font-weight: bold;">Function</div>
+            <div style="width:4%;font-weight: bold;"></div>
+            <div style="width:54%;font-weight: bold;">Log</div>
+        </div>
+        <div id='LOGS::logs' style='display:flex;flex-direction:column;width:100%;overflow-y:auto;margin-bottom:10px;'></div>
+    </div>
+</div>
+
+<script>
+    function LOGS_DeleteLog(timestamp, func, user){
+        let options  = DASHBOARD_FetchOPtions();
+        options.body = JSON.stringify({
+            'Timestamp' : timestamp,
+            'Func'      : func,
+            'User'      : user
+        })
+        DASHBOARD_Fetch('/admin-delete-log', options);
+        let log_div        = event.target.parentElement.parentElement.parentElement;
+        let logs_container = log_div.parentElement;
+        logs_container.removeChild(log_div);        
+        color = 'white';
+        for (let child of logs_container.children){
+            child.style.backgroundColor = color;
+            color = color === 'white' ? 'lightgray' : 'white';
+        }
+    }
+    (async function(){
+        let keys                  = await DASHBOARD_Fetch('/admin-get-logs-keys', DASHBOARD_FetchOPtions())
+        let container             = document.getElementById('LOGS::users');
+        let users                 = keys.Users;
+        let logs_container        = document.getElementById('LOGS::logs');
+        let funcs_container       = document.getElementById('LOGS::functions');
+        let types_container       = document.getElementById('LOGS::types');
+        let thrash = `<svg xmlns="http://www.w3.org/2000/svg" class="DASHBOARD_icon-small" viewBox="0 0 448 512" style='margin-top:2px;margin-bottom:0px' onclick='Dummy()'>
+            <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"/>
+        </svg>`
+        funcs_container.innerHTML = '';        
+        logs_container.innerHTML  = '';
+        container.innerHTML       = '';
+        for (let func of keys.Functions){
+            let func_div         = document.createElement('div');
+            let func_box         = document.createElement('input');
+            let func_label       = document.createElement('p');
+            func_div.style       = 'display:flex;flex-direction:row;margin:0 0 0 0; gap:2px';
+            func_box.type        = 'checkbox';
+            func_box.style       = 'margin:0 0 0 0';
+            func_label.style     = 'margin:2 0 0 0';           
+            func_box.checked     = true;
+            func_label.innerHTML = func;     
+            func_div.appendChild(func_box);       
+            func_div.appendChild(func_label);            
+            funcs_container.appendChild(func_div);
+        }
+        for (let log_type of keys.Types){
+            console.log(log_type)
+            let log_div         = document.createElement('div');
+            let log_box         = document.createElement('input');
+            let log_label       = document.createElement('p');
+            log_div.style       = 'display:flex;flex-direction:row;margin:0 0 0 0; gap:2px';
+            log_box.type        = 'checkbox';
+            log_box.style       = 'margin:0 0 0 0';
+            log_label.style     = 'margin:2 0 0 0';           
+            log_box.checked     = true;
+            log_label.innerHTML = log_type;     
+            log_div.appendChild(log_box);       
+            log_div.appendChild(log_label);            
+            types_container.appendChild(log_div);            
+        }
+        for (let user of users){
+            let user_link       =  document.createElement('p');
+            user_link.innerHTML = user;
+            user_link.className = 'DASHBOARD_ClicableText';
+            user_link.style.marginBottom = '0px';
+            container.appendChild(user_link);
+            user_link.onclick = async function(){                       
+                let selected_funtions = [];
+                let selected_types    = [];
+                for (let child of funcs_container.children){
+                    if (child.firstChild.checked) selected_funtions.push(child.firstChild.nextSibling.innerHTML);
+                }
+                for (let child of types_container.children){
+                    if (child.firstChild.checked) selected_types.push(child.firstChild.nextSibling.innerHTML);
+                }                
+                console.log(selected_funtions, selected_types)   
+                let options  =  DASHBOARD_FetchOPtions()
+                options.body = JSON.stringify({User: user, Functions: selected_funtions, Types: selected_types}) 
+                let reply    = await DASHBOARD_Fetch(`/admin-get-user-logs?User=${user}`, options);
+                let color    = 'lightgray'
+                logs_container.innerHTML = '';
+                for (let log of reply.Logs){
+                    let delbutton = thrash.replace('Dummy()', `LOGS_DeleteLog(${log.Time}, "${log.Function}", "${user}", event)`);
+                    logs_container.innerHTML += `
+                    <div style="display:flex;margin-bottom:2px;margin-top:0px;width:100%;padding:0 0 0 0;background-color:${color};">
+                        <div style="width:10%;">${log.Type}</div>
+                        <div style="width:16%;">${log.Timestamp}</div>
+                        <div style="width:16%;">${log.Function}</div>
+                        <div style="width:4%;">${delbutton}</div>
+                        <div style="width:54%;">${log.Log.replaceAll('\n', '<br>').replaceAll('    ', '&ensp;')}</div>
+                    </div>`
+                    color = color == 'lightgray' ? 'white' : 'lightgray'                    
+                }
+            }
+        }
+    })()
+</script>    
+    
+{% endblock %}

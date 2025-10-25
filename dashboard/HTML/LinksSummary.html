@@ -1,0 +1,340 @@
+<style id='LINKS-SUMMARY::style'>
+    .LINKS-SUMMARY_summary{
+        display          : flex;        
+        flex-direction   : column;       
+        overflow         : none;    
+        background-color : white;         
+        padding          : 0 0 0 0; 
+        width            : 550px ;
+        height           : 100%;
+    }
+    .LINKS-SUMMARY_tabs-header{
+        display          : flex;      
+        flex-direction   : row-reverse;     
+        overflow-y       : hidden;    
+        background-color : white;          
+        margin           : 0 0 0 0;
+        padding          : 0 0 0 10; 
+        width            : 540px;
+        gap              : 10px;
+        height           : 40px;
+    }
+    .LINKS-SUMMARY_tabs-button{
+        background-color : white;    
+        border           : none;
+        padding-top      : 10px;        
+        z-index          : 1;  
+        margin-bottom    : 0px ;                 
+    }
+    .LINKS-SUMMARY_tabs-row{
+        display          : flex;  
+        margin           : 0 0 0 0;
+        padding          : 0 0 0 0;           
+        margin-top       : 0px;
+        border-top       : 1px solid lightgray;
+        overflow         : auto; 
+        height           : 100%;     
+        white-space: nowrap   
+    }
+    .LINKS-SUMMARY_tabs-content{
+        display          : flex;
+        flex-direction   : column;        
+        margin           : 0 0 0 0;
+        padding          : 10 10 10 10;
+        width            : 100%;              
+    }
+    .LINKS-SUMMARY_item{
+        margin           : 0 0 0 0;
+        padding          : 0 0 0 0;
+    }
+    .LINKS-SUMMARY_anchor-option{
+        background-color   : lightgray; 
+        color              : black; 
+        border             : none;
+        text-align         : left;
+        height             : 30px;
+        padding            : 4 4 4 4;
+    }
+    .LINKS-SUMMARY_anchor-option:hover{
+        background-color   :black; 
+        color              :white;         
+    }
+</style>
+
+<div class='tw_Ctrl-Group LINKS-SUMMARY_summary'>
+    <div class='LINKS-SUMMARY_tabs-header'>
+        <button class='tw_button-alt' style="margin-top:3px" onclick='LINKS_SUMMARY_Export()'>Export</button>  
+        <button class='LINKS-SUMMARY_tabs-button tw_h3' id='LINKS-SUMMARY::tabs-button-origin' onclick='LINKS_SUMMARY_Select(this)'>By source</button>
+        <button class='LINKS-SUMMARY_tabs-button tw_h3' id='LINKS-SUMMARY::tabs-button-target' onclick='LINKS_SUMMARY_Select(this)'>By target</button>          
+        <div class='spacer'></div>
+        <h3 class='tw_h3' style='padding-top: 12px;'>Summary</h3>     
+    </div>
+    <div class='LINKS-SUMMARY_tabs-row'>
+        <div id='LINKS-SUMMARY::origin-tab' class='LINKS-SUMMARY_tabs-content'></div>
+        <div id='LINKS-SUMMARY::target-tab' class='LINKS-SUMMARY_tabs-content'></div>
+    </div>     
+</div>   
+
+<script>
+    function LINKS_SUMMARY_Select(el){    
+        document.getElementById('LINKS-SUMMARY::tabs-button-origin').style.borderBottom = 'none';   
+        document.getElementById('LINKS-SUMMARY::tabs-button-target').style.borderBottom = 'none';   
+        el.style.borderBottom = '2px solid black';               
+        if (el.innerHTML === 'By source'){
+            document.getElementById('LINKS-SUMMARY::origin-tab').style.display      = 'flex';   
+            document.getElementById('LINKS-SUMMARY::target-tab').style.display      = 'none';  
+        } else {
+            document.getElementById('LINKS-SUMMARY::origin-tab').style.display   = 'none';   
+            document.getElementById('LINKS-SUMMARY::target-tab').style.display   = 'flex';  
+        }
+    }
+    LINKS_SUMMARY_Select(document.getElementById('LINKS-SUMMARY::tabs-button-origin'));
+
+    function LINKS_SUMMARY_Export(){        
+        LINKS_SUMMARY_Select(document.getElementById('LINKS-SUMMARY::tabs-button-origin'));
+        let clone = document.getElementById('LINKS-SUMMARY::origin-tab').cloneNode(true);
+        let win   = window.open();
+        win.document.body.appendChild(document.getElementById('LINKS-SUMMARY::style').cloneNode(true));
+        win.document.body.innerHTML += '<h1>Internal Linking Data</h1><br><h2 style="margin-bottom:-10px">Keywords</h2>'
+        win.document.body.appendChild(clone);
+    }
+
+    var LINKS_SUMMARY = {
+        __OriginTab     : document.getElementById('LINKS-SUMMARY::origin-tab'),
+        __TargetTab     : document.getElementById('LINKS-SUMMARY::target-tab'),
+        __OgGroups      : [],
+        __TargetGroups  : [],
+        __GetOg(origin){
+            for (const og of this.__OgGroups) {
+                if (origin === og.GetKeyword()){
+                    return og;
+                }
+            }
+            return null;
+        },   
+        __GetTrgt(target){
+            for (const trgt of this.__TargetGroups) {
+                if (target === trgt.GetTarget()){
+                    return trgt;
+                }
+            }
+            return null;
+        },    
+        __CreateOgGrup(Keyword){
+            var Group = {
+                __Links       : [],
+                __Keyword     : Keyword,
+                __MasterDiv   : document.createElement('div'),
+                GetKeyword(){return this.__Keyword},
+                FindLink(Kword, target){
+                    let found = null;
+                    for (const link of this.__Links){
+                        found = link.IsThatYou(Kword, target)
+                        if (null != found){break}
+                    }
+                    return found;
+                },
+                RemoveLink(to_remove){
+                    var links = [];
+                    if (to_remove == null) return
+                    for (const link of this.__Links){
+                        if (link !== to_remove) links.push(link)
+                    } 
+                    this.__Links = links;
+                    to_remove.Div.parentElement.removeChild(to_remove.Div);
+                },
+                LinkSectionChanged(Kword, target, new_section){
+                    let link = this.FindLink(Kword, target);
+                    if (link == null) return;
+                    link.SetSection(new_section);
+                },
+                LinkAnchorChanged(Kword, target, new_anchor){
+                    let link = this.FindLink(Kword, target);
+                    if (link == null) return;
+                    link.SetAnchor(new_anchor);
+                },
+                Addlink(lnk){
+                    let link = {
+                        Div        : document.createElement('div'),
+                        AnchorsDiv : document.createElement('div'),
+                        Origin     : document.createElement('div'),
+                        Position   : document.createElement('div'),
+                        Anchor     : document.createElement('div'),
+                        Kword      : lnk.Origin,
+                        Trgt       : lnk.Target,
+                        IsThatYou(Kword, target){
+                            console.log(this.Kword);
+                            return Kword === this.Kword && target === this.Trgt ? this : null;
+                        },
+                        SetSection(section){
+                            this.Position.innerHTML = `Link position: ${section}`;
+                        },
+                        SetAnchor(anchor){
+                            this.Anchor.innerHTML = `Anchor text: ${anchor}`;
+                        }
+                    }   
+                    let line                = document.createElement('p');                                  
+                    link.Origin.innerHTML   = `Link to: ${lnk.Target}`;
+                    link.Position.innerHTML = `Link position: ${lnk.OriginSection}`;
+                    link.Anchor.innerHTML   = `Anchor text: ${lnk.Anchor}`;
+                    link.Origin.className   = 'tw_h4';
+                    link.Position.className = 'tw_h4';
+                    link.Anchor.classList   = 'tw_h4 DASHBOARD_ClicableText';
+                    link.Div.appendChild(link.Origin);
+                    link.Div.appendChild(link.Position);
+                    link.Div.appendChild(link.Anchor);
+                    link.Div.appendChild(link.AnchorsDiv);
+                    link.Div.appendChild(line);
+                    link.Anchor.onclick = function(event){event.stopPropagation(), LINKS_SUMMARY.ShowAnchorDialog(link.Kword, link.Trgt, link.AnchorsDiv)}
+                    this.__MasterDiv.appendChild(link.Div);  
+                    this.__Links.push(link);                
+                }
+            }
+            let Title       = document.createElement('h3');
+            Title.className = 'tw_h3';
+            Title.innerHTML = `${Keyword}`;
+            Group.__MasterDiv.appendChild(Title)
+            this.__OriginTab.appendChild(Group.__MasterDiv);
+            this.__OgGroups.push(Group);
+            return Group;
+        },
+        __CreateTrgtGrup(target){
+            var Group = {
+                __Links      : [],
+                __Target     : target,
+                __MasterDiv  : document.createElement('div'),
+                GetTarget(){return this.__Target},
+                FindLink(Kword, target){
+                    let found = null;
+                    for (const link of this.__Links){
+                        found = link.IsThatYou(Kword, target)
+                        if (null != found){break}
+                    }
+                    return found;
+                },
+                RemoveLink(to_remove){
+                    if (to_remove == null) return
+                    var links = [];
+                    for (const link of this.__Links){
+                        if (link !== to_remove) links.push(link)
+                    } 
+                    this.__Links = links;
+                    to_remove.Div.parentElement.removeChild(to_remove.Div);
+                },
+                LinkSectionChanged(Kword, target, new_section){
+                    let link = this.FindLink(Kword, target);
+                    if (link == null) return;
+                    link.SetSection(new_section);
+                },
+                LinkAnchorChanged(Kword, target, new_anchor){
+                    let link = this.FindLink(Kword, target);
+                    if (link == null) return;
+                    link.SetAnchor(new_anchor);
+                },
+                Addlink(lnk){
+                    let link = {
+                        Div       : document.createElement('div'),
+                        AnchorsDiv : document.createElement('div'),
+                        Target    : document.createElement('div'),
+                        Position  : document.createElement('div'),
+                        Anchor    : document.createElement('div'),
+                        Kword     : lnk.Origin,
+                        Trgt      : lnk.Target,
+                        IsThatYou(Kword, target){
+                            return Kword === this.Kword && target === this.Trgt ? this : null;
+                        },
+                        SetSection(section){
+                            this.Position.innerHTML = `Link position: ${section}`;
+                        },
+                        SetAnchor(anchor){
+                            this.Anchor.innerHTML = `Anchor text: ${anchor}`;
+                        }
+                    }
+                    let line                = document.createElement('p');       
+                    link.Target.innerHTML   = `Link from: ${lnk.Origin}`;
+                    link.Position.innerHTML = `Link position: ${lnk.OriginSection}`;
+                    link.Anchor.innerHTML   = `Anchor text: ${lnk.Anchor}`;
+                    link.Target.className   = 'tw_h4';
+                    link.Position.className = 'tw_h4';
+                    link.Anchor.classList   = 'tw_h4 DASHBOARD_ClicableText';
+                    link.Div.appendChild(link.Target);
+                    link.Div.appendChild(link.Position);
+                    link.Div.appendChild(link.Anchor);
+                    link.Div.appendChild(link.AnchorsDiv);
+                    link.Div.appendChild(line);
+                    link.Anchor.onclick = function(event){event.stopPropagation(), LINKS_SUMMARY.ShowAnchorDialog(link.Kword, link.Trgt, link.AnchorsDiv)}
+                    this.__MasterDiv.appendChild(link.Div);  
+                    this.__Links.push(link);                
+                }
+            }
+            let Title       = document.createElement('p');
+            Title.className = 'tw_h3';
+            Title.innerHTML = `<b>${target}</b>`;
+            Group.__MasterDiv.appendChild(Title)
+            this.__TargetTab.appendChild(Group.__MasterDiv);
+            this.__TargetGroups.push(Group);
+            return Group;
+        },
+        Addlink(link){
+            var orgroup = this.__GetOg(link.Origin)
+            if (orgroup == null){
+                orgroup = this.__CreateOgGrup(link.Origin)
+            } orgroup.Addlink(link);
+
+            var trgtroup = this.__GetTrgt(link.Target)
+            if (trgtroup == null){
+                trgtroup = this.__CreateTrgtGrup(link.Target)
+            } trgtroup.Addlink(link);
+        },
+        RemoveLink(link){
+            for (const og of this.__OgGroups)     og.RemoveLink(og.FindLink(link.Origin, link.Target));
+            for (const tg of this.__TargetGroups) tg.RemoveLink(tg.FindLink(link.Origin, link.Target));
+        },
+        LinkSectionChanged(Origin, Target, new_section){
+            for (const og of this.__OgGroups)     og.LinkSectionChanged(Origin, Target, new_section);
+            for (const tg of this.__TargetGroups) tg.LinkSectionChanged(Origin, Target, new_section);
+        },
+        UpdateAnchor(Origin, Target, anchor){
+            for (const og of this.__OgGroups)     og.LinkAnchorChanged(Origin, Target, anchor);
+            for (const tg of this.__TargetGroups) tg.LinkAnchorChanged(Origin, Target, anchor);
+        },
+        Clear(){
+            this.__OriginTab.innerHTML = '' ;
+            this.__TargetTab.innerHTML = '' ; 
+            this.__OgGroups     = [];
+            this.__TargetGroups = [];        
+        },
+        ShowAnchorDialog(name, target, div){
+            div.innerHTML    = ''
+            div.style        = 'display:flex; flex-direction:column'
+            div.setAttribute('Name', 'DASHBOARD::hide-me');
+            let kword        = KEYWORDS.GetKeyWord(target);      
+            let anchors_list = null     
+            if (kword == null) {
+                anchors_list = 
+                DOMAIN_KEYWORS.GetKeyWord(target) ? DOMAIN_KEYWORS.GetAnchorsForKeyword(target) : 
+                DOMAIN_OWNED_KEYWORS.GetKeyWord(target) ? DOMAIN_OWNED_KEYWORS.GetAnchorsForKeyword(target) :
+                ADDITIONAL_KEYWORDS.GetAnchorsForKeyword(target)
+                if (anchors_list === null) {
+                    alert(`${target} is not a keyword or additional keyword`)
+                    return;
+                }                
+            } else {
+                anchors_list = kword.GetAnchors();
+            }
+            for (const anchor of anchors_list){
+                let button       = document.createElement('button');
+                button.innerHTML = anchor + '<br><br>';
+                button.className = 'LINKS-SUMMARY_anchor-option';
+                div.appendChild(button);
+                button.onclick = function(){
+                    div.style.display = 'none';
+                    let _kword = KEYWORDS.GetKeyWord(name);
+                    if (_kword == null) return;
+                    _kword.UpdateLinkAnchor(target, button.innerHTML);
+                    LINKS_SUMMARY.UpdateAnchor(name, target, button.innerHTML)
+                }
+            }
+        }
+    }
+</script>    
