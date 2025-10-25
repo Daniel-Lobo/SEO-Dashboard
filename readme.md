@@ -27,8 +27,6 @@ A comprehensive AI-powered SEO content management and automation platform design
 - [API Endpoints](#api-endpoints)
 - [Project Structure](#project-structure)
 - [Deployment](#deployment)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## 🎯 Overview
 
@@ -489,47 +487,7 @@ SEO-Dashboard/
 
 ### Production Recommendations
 
-1. **Use a Production WSGI Server**
-
-```bash
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 "dashboard.app:g_.app"
-```
-
-2. **Set Up Reverse Proxy (Nginx)**
-
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-
-    location / {
-        proxy_pass http://localhost:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
-
-3. **Enable HTTPS**
-
-```bash
-certbot --nginx -d your-domain.com
-```
-
-4. **Database Backup**
-
-```bash
-chmod +x export_database.sh
-./export_database.sh
-```
-
-### Scaling Considerations
-
-- Use Redis for session management in multi-instance deployments
-- Implement task queues (Celery) for long-running AI operations
-- Consider CDN for static assets
-- Enable database connection pooling
+Deployment was done with [Cloudron](https://www.cloudron.io/). Please check the CloudronManifest.json file and Cloudron's documentation
 
 ### Development Setup
 
