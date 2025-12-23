@@ -875,7 +875,7 @@ def init_database(app):
     print('mysql', mysql)
     if _URL is not None: app.config['SQLALCHEMY_DATABASE_URI'] = mysql        
     #else: app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{dirname(realpath(__file__))}/seo_dashboard.db'
-    else: app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://root:pocoto@localhost:3306/seo_dashboard'
+    else: app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:lalilulelo@localhost:3306/seo_dashboard'
     Alchemy_db.init_app(app)
     #return
     with app.app_context(): 
